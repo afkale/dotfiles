@@ -1,3 +1,6 @@
+vim.g.user42 = 'arubio-o'
+vim.g.mail42 = 'arubio-o@student.42madrid.com'
+
 vim.opt.number = true
 vim.opt.relativenumber = true
 
