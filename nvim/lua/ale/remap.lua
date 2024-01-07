@@ -14,6 +14,8 @@ vim.keymap.set('n', '<C-j>', '<C-w>j')
 vim.keymap.set('n', '<C-k>', '<C-w>k')
 vim.keymap.set('n', '<C-l>', '<C-w>l')
 
+vim.keymap.set('n', '<C-S-r>', 'gg=G')
+
 vim.keymap.set('n', 'ZZ', function()
 	local filetype = vim.api.nvim_buf_get_option(0, "filetype")
 	if  filetype ~= 'netrw' and filetype ~= '' then
