@@ -1,0 +1,27 @@
+## THEME
+import = ["~/.config/alacritty/rose-pine.toml"]
+## THEME
+[window]
+opacity = 0.86
+
+## FONT
+[font]
+size = 13.0
+
+[font.normal]
+family = "CaskaydiaMono Nerd Font Propo"
+style = "Regular"
+
+[font.bold]
+family = "CaskaydiaMono Nerd Font Propo"
+style = "Bold"
+
+[font.italic]
+family = "CaskaydiaMono Nerd Font Propo"
+style = "Italic"
+
+[font.bold_italic]
+family = "CaskaydiaMono Nerd Font Propo"
+style = "Bold Italic"
+## FONT
+
