@@ -74,6 +74,11 @@ end
 time([[try_loadstring definition]], false)
 time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
+  ["nvim-colorizer.lua"] = {
+    loaded = true,
+    path = "/home/ale/.local/share/nvim/site/pack/packer/start/nvim-colorizer.lua",
+    url = "https://github.com/norcalli/nvim-colorizer.lua"
+  },
   ["nvim-treesitter"] = {
     loaded = true,
     path = "/home/ale/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
@@ -114,6 +119,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/ale/.local/share/nvim/site/pack/packer/start/vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
+  },
+  ["vim-tmux-navigator"] = {
+    loaded = true,
+    path = "/home/ale/.local/share/nvim/site/pack/packer/start/vim-tmux-navigator",
+    url = "https://github.com/christoomey/vim-tmux-navigator"
   }
 }
 

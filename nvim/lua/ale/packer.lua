@@ -19,5 +19,6 @@ return require('packer').startup(function(use)
 	use({'nvim-treesitter/playground'})
 	use({'mbbill/undotree'})
 	use({'tpope/vim-fugitive'})
-
+	use({'norcalli/nvim-colorizer.lua'})
+	use({'christoomey/vim-tmux-navigator'})
 end)

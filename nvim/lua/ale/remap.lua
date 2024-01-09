@@ -18,7 +18,8 @@ vim.keymap.set('n', '<C-S-r>', 'gg=G')
 
 vim.keymap.set('n', 'ZZ', function()
 	local filetype = vim.api.nvim_buf_get_option(0, "filetype")
-	if  filetype ~= 'netrw' and filetype ~= '' then
+	local filename = vim.fn.expand('%:p')
+	if  filetype ~= 'netrw' and filename ~= '' then
 		vim.cmd(':w')
 		vim.cmd(':Explore')
 	else
