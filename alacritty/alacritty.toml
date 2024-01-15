@@ -25,3 +25,6 @@ family = "CaskaydiaMono Nerd Font Propo"
 style = "Bold Italic"
 ## FONT
 
+[shell]
+  program = "/bin/zsh"
+  args = ["-l", "-c", "tmux attach || tmux"]
