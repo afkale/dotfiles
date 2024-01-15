@@ -2,6 +2,7 @@ image=/usr/share/backgrounds/ale/001.png
 
 clock
 indicator
+daemonize
 grace-no-mouse
 ignore-empty-password
 
