@@ -26,5 +26,5 @@ style = "Bold Italic"
 ## FONT
 
 [shell]
-  program = "/bin/zsh"
+  program = "/usr/bin/tmux"
   args = ["-l", "-c", "tmux attach || tmux"]
