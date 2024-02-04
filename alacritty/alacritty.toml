@@ -9,19 +9,19 @@ opacity = 0.86
 size = 13.0
 
 [font.normal]
-family = "CaskaydiaMono Nerd Font"
+family = "CaskaydiaCove Nerd Font Propo"
 style = "Regular"
 
 [font.bold]
-family = "CaskaydiaMono Nerd Font"
+family = "CaskaydiaCove Nerd Font Propo"
 style = "Bold"
 
 [font.italic]
-family = "CaskaydiaMono Nerd Font"
+family = "CaskaydiaCove Nerd Font Propo"
 style = "Italic"
 
 [font.bold_italic]
-family = "CaskaydiaMono Nerd Font"
+family = "CaskaydiaCove Nerd Font Propo"
 style = "Bold Italic"
 ## FONT
 
