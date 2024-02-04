@@ -1,9 +1,8 @@
 /*
-!zsh/plugins/init
-!zsh/.zshrc
 !nvim
 !alacritty
 !sway
 !swaylock
 !tmux
 !starship
+!fish
