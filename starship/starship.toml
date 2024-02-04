@@ -1,6 +1,7 @@
 add_newline = false
 
 palette = "catppuccin_mocha"
+
 format = """
 $username\
 $hostname\
@@ -175,9 +176,6 @@ symbol = " "
 
 [hostname]
 ssh_symbol = " "
-ssh_only = false
-detect_env_vars = ['!TMUX', 'SSH_CONNECTION']
-disabled = false
 
 [java]
 symbol = " "
@@ -208,47 +206,6 @@ symbol = " "
 
 [ocaml]
 symbol = " "
-
-[os.symbols]
-Alpaquita = " "
-Alpine = " "
-Amazon = " "
-Android = " "
-Arch = " "
-Artix = " "
-CentOS = " "
-Debian = " "
-DragonFly = " "
-Emscripten = " "
-EndeavourOS = " "
-Fedora = " "
-FreeBSD = " "
-Garuda = "󰛓 "
-Gentoo = " "
-HardenedBSD = "󰞌 "
-Illumos = "󰈸 "
-Linux = " "
-Mabox = " "
-Macos = " "
-Manjaro = " "
-Mariner = " "
-MidnightBSD = " "
-Mint = " "
-NetBSD = " "
-NixOS = " "
-OpenBSD = "󰈺 "
-openSUSE = " "
-OracleLinux = "󰌷 "
-Pop = " "
-Raspbian = " "
-Redhat = " "
-RedHatEnterprise = " "
-Redox = "󰀘 "
-Solus = "󰠳 "
-SUSE = " "
-Ubuntu = " "
-Unknown = " "
-Windows = "󰍲 "
 
 [package]
 symbol = "󰏗 "
@@ -295,6 +252,9 @@ format = '[$symbol$branch(:$remote_branch)]($style) '
 style = 'bold yellow'
 ignore_branches = []
 
-[git_commit]
-commit_hash_length = 4
-tag_symbol = '🔖 '
+[os.symbols]
+Arch = "🎗️ "
+Linux = "🐧 "
+Manjaro = "🥭 "
+Raspbian = "🍓 "
+Ubuntu = "🎯 "
