@@ -158,9 +158,6 @@ symbol = " "
 [fossil_branch]
 symbol = " "
 
-[git_branch]
-symbol = " "
-
 [golang]
 symbol = " "
 
@@ -288,3 +285,9 @@ ssh_only = false
 format = '[$localipv4](bold mauve) '
 disabled = false
 
+[git_branch]
+symbol = '🌱 '
+truncation_symbol = ''
+format = '[$symbol$branch(:$remote_branch)]($style) '
+style = 'bold yellow'
+ignore_branches = []
