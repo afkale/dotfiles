@@ -175,6 +175,9 @@ symbol = " "
 
 [hostname]
 ssh_symbol = " "
+ssh_only = false
+detect_env_vars = ['!TMUX', 'SSH_CONNECTION']
+disabled = false
 
 [java]
 symbol = " "
@@ -291,3 +294,7 @@ truncation_symbol = ''
 format = '[$symbol$branch(:$remote_branch)]($style) '
 style = 'bold yellow'
 ignore_branches = []
+
+[git_commit]
+commit_hash_length = 4
+tag_symbol = '🔖 '
