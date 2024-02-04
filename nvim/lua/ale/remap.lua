@@ -46,16 +46,16 @@ vim.keymap.set("n", "<leader><leader>", function()
 	vim.cmd("so")
 end)
 
-vim.keymap.set('n', 'ZZ', function()
-	local filetype = vim.api.nvim_buf_get_option(0, "filetype")
-	local filename = vim.fn.expand('%:p')
-	if filetype ~= 'netrw' and filename ~= '' then
-		vim.cmd(':w')
-		vim.cmd(':Explore')
-	else
-		vim.cmd(':exit')
-	end
-end)
+--vim.keymap.set('n', 'ZZ', function()
+--	local filetype = vim.api.nvim_buf_get_option(0, "filetype")
+--	local filename = vim.fn.expand('%:p')
+--	if filetype ~= 'netrw' and filename ~= '' then
+--		vim.cmd(':w')
+--		vim.cmd(':Explore')
+--	else
+--		vim.cmd(':exit')
+--	end
+--end)
 
 function open_broot_in_path(path, args)
 	local expanded_path = vim.fn.expand(path)
@@ -66,4 +66,3 @@ end
 vim.api.nvim_set_keymap('n', '<Leader>bc', ':lua open_broot_in_path("%:p:h", "")<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>bw', ':lua open_broot_in_path(".", "")<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>bh', ':lua open_broot_in_path("~", "")<CR>', { noremap = true, silent = true })
-
