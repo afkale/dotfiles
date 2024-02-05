@@ -5,10 +5,6 @@ vim.api.nvim_set_option('compatible', false)
 vim.api.nvim_set_option('filetype', 'plugin')
 vim.api.nvim_set_option('syntax', 'on')
 
-vim.g.broot_replace_netrw = 'TRUE'
-vim.g.broot_default_explore_path = '.'
-vim.g.broot_default_conf_path = vim.fn.expand('~/.config/broot/conf.hjson')
-
 vim.opt.number = true
 vim.opt.relativenumber = true
 

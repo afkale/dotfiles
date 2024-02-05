@@ -1,7 +1,6 @@
 add_newline = false
 
 palette = "catppuccin_mocha"
-
 format = """
 $username\
 $hostname\
@@ -251,6 +250,7 @@ truncation_symbol = ''
 format = '[$symbol$branch(:$remote_branch)]($style) '
 style = 'bold yellow'
 ignore_branches = []
+disabled = true
 
 [os.symbols]
 Arch = "🎗️ "
