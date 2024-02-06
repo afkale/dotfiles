@@ -1,81 +1,21 @@
 add_newline = false
 
-palette = "catppuccin_mocha"
+scan_timeout = 10
+
+palette = "tokyo_night"
 format = """
 $username\
 $hostname\
-$shlvl\
-$singularity\
-$kubernetes\
 $directory\
-$vcsh\
-$fossil_branch\
-$fossil_metrics\
-$git_branch\
-$git_commit\
-$git_state\
-$git_metrics\
-$git_status\
-$hg_branch\
-$pijul_channel\
 $docker_context\
-$package\
 $c\
 $cmake\
-$cobol\
-$daml\
-$dart\
-$deno\
-$dotnet\
-$elixir\
-$elm\
-$erlang\
-$fennel\
-$golang\
-$guix_shell\
-$haskell\
-$haxe\
-$helm\
-$java\
-$julia\
-$kotlin\
-$gradle\
 $lua\
 $nim\
 $nodejs\
-$ocaml\
-$opa\
-$perl\
-$php\
-$pulumi\
-$purescript\
 $python\
-$raku\
-$rlang\
-$red\
-$ruby\
-$rust\
-$scala\
-$solidity\
-$swift\
-$terraform\
-$typst\
-$vlang\
-$vagrant\
-$zig\
-$buf\
-$nix_shell\
-$conda\
-$meson\
-$spack\
+${custom.fish}\
 $memory_usage\
-$gcloud\
-$openstack\
-$azure\
-$direnv\
-$env_var\
-$crystal\
-$custom\
 $sudo\
 $cmd_duration\
 $fill\
@@ -91,170 +31,95 @@ $container\
 $shell\
 $character"""
  
-[palettes.catppuccin_mocha]
-rosewater = "#f5e0dc"
-flamingo = "#f2cdcd"
-pink = "#f5c2e7"
-mauve = "#cba6f7"
-red = "#f38ba8"
-maroon = "#eba0ac"
-peach = "#fab387"
-yellow = "#f9e2af"
-green = "#a6e3a1"
-teal = "#94e2d5"
-sky = "#89dceb"
-sapphire = "#74c7ec"
-blue = "#89b4fa"
-lavender = "#b4befe"
-text = "#cdd6f4"
-subtext1 = "#bac2de"
-subtext0 = "#a6adc8"
-overlay2 = "#9399b2"
-overlay1 = "#7f849c"
-overlay0 = "#6c7086"
-surface2 = "#585b70"
-surface1 = "#45475a"
-surface0 = "#313244"
-base = "#1e1e2e"
-mantle = "#181825"
-crust = "#11111b"
 
-[aws]
-symbol = "  "
-
-[buf]
-symbol = " "
-
-[c]
-symbol = " "
-
-[conda]
-symbol = " "
-
-[crystal]
-symbol = " "
-
-[dart]
-symbol = " "
+[palettes.tokyo_night]
+bg = "#1a1b26"
+bg_dark = "#16161e"
+bg_highlight = "#292e42"
+terminal_black = "#414868"
+fg = "#c0caf5"
+fg_dark = "#a9b1d6"
+fg_gutter = "#3b4261"
+dark3 = "#545c7e"
+comment = "#565f89"
+dark5 = "#737aa2"
+blue0 = "#3d59a1"
+blue = "#7aa2f7"
+cyan = "#7dcfff"
+blue1 = "#2ac3de"
+blue2 = "#0db9d7"
+blue5 = "#89ddff"
+blue6 = "#b4f9f8"
+blue7 = "#394b70"
+magenta = "#bb9af7"
+magenta2 = "#ff007c"
+purple = "#9d7cd8"
+orange = "#ff9e64"
+yellow = "#e0af68"
+green = "#9ece6a"
+green1 = "#73daca"
+green2 = "#41a6b5"
+teal = "#1abc9c"
+red = "#f7768e"
+red1 = "#db4b4b"
+change = "#6183bb"
+add = "#449dab"
+delete = "#914c54"
 
 [directory]
-truncation_length = 1
-style = "bold teal"
+truncation_length = 2
+style = "bold magenta"
 read_only = " 󰌾"
-read_only_style = "red"
+read_only_style = "magenta2"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+
+[c]
+symbol = ""
+format = '[▓ [$symbol $version]($style) ▓]($style)'
+
+[lua]
+symbol = ""
+style = "bold yellow"
+format = '[▓ [$symbol $version]($style) ▓]($style)'
+
+[nodejs]
+symbol = ""
+format = '[▓ [$symbol $version]($style) ▓]($style)'
+
+[python]
+symbol = ""
+format = '[▓ [$symbol $version]($style) ▓]($style)'
+
+[bun]
+symbol = "🍔"
+format = '[▓ [$symbol $version]($style) ▓]($style)'
+
+[custom.fish]
+command = "fish -v | awk '{print $3}'"
+detect_extensions = ['fish']
+symbol = "🐟"
+style = "bold fg:blue5"
+format = '[▓ [$symbol $output]($style) ▓]($style)'
 
 [docker_context]
 symbol = " "
 
-[elixir]
-symbol = " "
-
-[elm]
-symbol = " "
-
-[fennel]
-symbol = " "
-
-[fossil_branch]
-symbol = " "
-
-[golang]
-symbol = " "
-
-[guix_shell]
-symbol = " "
-
-[haskell]
-symbol = " "
-
-[haxe]
-symbol = " "
-
-[hg_branch]
-symbol = " "
-
-[hostname]
-ssh_symbol = " "
-
-[java]
-symbol = " "
-
-[julia]
-symbol = " "
-
-[kotlin]
-symbol = " "
-
-[lua]
-symbol = " "
+[aws]
+symbol = "  "
 
 [memory_usage]
 symbol = "󰍛 "
 
-[meson]
-symbol = "󰔷 "
-
-[nim]
-symbol = "󰆥 "
-
-[nix_shell]
-symbol = " "
-
-[nodejs]
-symbol = " "
-
-[ocaml]
-symbol = " "
-
 [package]
 symbol = "󰏗 "
 
-[perl]
-symbol = " "
-
-[php]
-symbol = " "
-
-[pijul_channel]
-symbol = " "
-
-[python]
-symbol = " "
-
-[rlang]
-symbol = "󰟔 "
-
-[ruby]
-symbol = " "
-
-[rust]
-symbol = " "
-
-[scala]
-symbol = " "
-
-[swift]
-symbol = " "
-
-[zig]
-symbol = " "
-
 [localip]
 ssh_only = false
-format = '[$localipv4](bold mauve) '
+format = '[$localipv4](bold magenta2) '
 disabled = false
-
-[git_branch]
-symbol = '🌱 '
-truncation_symbol = ''
-format = '[$symbol$branch(:$remote_branch)]($style) '
-style = 'bold yellow'
-ignore_branches = []
-disabled = true
-
-[os.symbols]
-Arch = "🎗️ "
-Linux = "🐧 "
-Manjaro = "🥭 "
-Raspbian = "🍓 "
-Ubuntu = "🎯 "
