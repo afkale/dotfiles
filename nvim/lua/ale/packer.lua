@@ -7,9 +7,15 @@ return require('packer').startup(function(use)
 		'nvim-telescope/telescope.nvim',
 		tag = '0.1.5',
 		-- or                            , branch = '0.1.x',
-		requires = { { 'nvim-lua/plenary.nvim' } }
+		requires = { 'nvim-lua/plenary.nvim' }
 	})
-	use({ 'nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' } })
+	use({
+		'nvim-treesitter/nvim-treesitter',
+		requires = {
+			'nvim-treesitter/nvim-treesitter-textobjects'
+		},
+		{ run = ':TSUpdate' }
+	})
 	use({ 'nvim-treesitter/playground' })
 	use({ 'mbbill/undotree' })
 	use({ 'tpope/vim-fugitive' })
@@ -38,12 +44,25 @@ return require('packer').startup(function(use)
 		}
 	}
 	use({ 'vimwiki/vimwiki' })
+	use({ 'folke/neodev.nvim' })
 	use({
-		"folke/tokyonight.nvim",
+		'folke/tokyonight.nvim',
 		lazy = false,
 		priority = 1000,
 		opts = {},
 	})
 	use({ 'nvim-tree/nvim-tree.lua' })
 	use({ 'nvim-tree/nvim-web-devicons' })
+	use({ 'lewis6991/gitsigns.nvim' })
+	use({ 'lukas-reineke/indent-blankline.nvim',
+		config = function()
+			require("ibl").setup()
+		end
+	})
+	use {
+		'numToStr/Comment.nvim',
+		config = function()
+			require('Comment').setup()
+		end
+	}
 end)
