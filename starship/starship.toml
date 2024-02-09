@@ -68,7 +68,7 @@ delete = "#914c54"
 
 [directory]
 truncation_length = 2
-style = "bold magenta"
+style = "bold teal"
 read_only = " 󰌾"
 read_only_style = "magenta2"
 
