@@ -211,15 +211,16 @@ _G.packer_plugins = {
     path = "/home/ale/.local/share/nvim/site/pack/packer/start/vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
   },
-  ["vim-tmux-navigator"] = {
-    loaded = true,
-    path = "/home/ale/.local/share/nvim/site/pack/packer/start/vim-tmux-navigator",
-    url = "https://github.com/christoomey/vim-tmux-navigator"
-  },
   vimwiki = {
     loaded = true,
     path = "/home/ale/.local/share/nvim/site/pack/packer/start/vimwiki",
     url = "https://github.com/vimwiki/vimwiki"
+  },
+  ["zellij.nvim"] = {
+    config = { "\27LJ\2\n\1\0\0\4\0\4\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\3\0005\3\3\0>\3\1\2B\0\2\1K\0\1\0\1\0\4\tpath\20/usr/bin/zellij'replaceVimWindowNavigationKeybinds\1\29vimTmuxNavigatorKeybinds\1\ndebug\2\nsetup\vzellij\frequire\0" },
+    loaded = true,
+    path = "/home/ale/.local/share/nvim/site/pack/packer/start/zellij.nvim",
+    url = "https://github.com/Lilja/zellij.nvim"
   }
 }
 
@@ -228,6 +229,10 @@ time([[Defining packer_plugins]], false)
 time([[Config for Comment.nvim]], true)
 try_loadstring("\27LJ\2\n5\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\fComment\frequire\0", "config", "Comment.nvim")
 time([[Config for Comment.nvim]], false)
+-- Config for: zellij.nvim
+time([[Config for zellij.nvim]], true)
+try_loadstring("\27LJ\2\n\1\0\0\4\0\4\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\3\0005\3\3\0>\3\1\2B\0\2\1K\0\1\0\1\0\4\tpath\20/usr/bin/zellij'replaceVimWindowNavigationKeybinds\1\29vimTmuxNavigatorKeybinds\1\ndebug\2\nsetup\vzellij\frequire\0", "config", "zellij.nvim")
+time([[Config for zellij.nvim]], false)
 -- Config for: indent-blankline.nvim
 time([[Config for indent-blankline.nvim]], true)
 try_loadstring("\27LJ\2\n1\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\bibl\frequire\0", "config", "indent-blankline.nvim")

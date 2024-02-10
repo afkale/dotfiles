@@ -5,6 +5,8 @@ import = ["~/.config/alacritty/rose-pine.toml"]
 opacity = 0.90
 blur = true
 
+[env]
+TERM = "xterm-256color"
 ## FONT
 [font]
 size = 13.0

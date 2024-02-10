@@ -20,7 +20,21 @@ return require('packer').startup(function(use)
 	use({ 'mbbill/undotree' })
 	use({ 'tpope/vim-fugitive' })
 	use({ 'norcalli/nvim-colorizer.lua' })
-	use({ 'christoomey/vim-tmux-navigator' })
+	use({
+		'Lilja/zellij.nvim',
+		config = function()
+			require('zellij').setup({
+				{
+					path = "/usr/bin/zellij", -- Zellij binary path
+					replaceVimWindowNavigationKeybinds = false,
+					vimTmuxNavigatorKeybinds = false,
+					debug = true, -- Will log things to /tmp/zellij.nvim
+				}
+
+			})
+		end
+
+	})
 	use {
 		'VonHeikemen/lsp-zero.nvim',
 		branch = 'v1.x',
