@@ -28,4 +28,4 @@ style = "Bold Italic"
 
 [shell]
 program = "/usr/bin/tmux"
-args = ["-l", "-c", "tmux attach || tmux"]
+args = ["-l", "-c", "zellij attach --index 0 || zellij"]
