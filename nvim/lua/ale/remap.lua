@@ -16,10 +16,10 @@ vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle)
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
-vim.keymap.set('n', '<A-h>', vim.cmd.ZellijNavigateLeft)
-vim.keymap.set('n', '<A-j>', vim.cmd.ZellijNavigateDown)
-vim.keymap.set('n', '<A-k>', vim.cmd.ZellijNavigateUp)
-vim.keymap.set('n', '<A-l>', vim.cmd.ZellijNavigateRight)
+vim.keymap.set('n', '<C-h>', '<C-w>h')
+vim.keymap.set('n', '<C-j>', '<C-w>j')
+vim.keymap.set('n', '<C-k>', '<C-w>k')
+vim.keymap.set('n', '<C-l>', '<C-w>l')
 
 vim.keymap.set('n', '<C-S-r>', 'gg=G')
 
