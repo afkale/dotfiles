@@ -1,9 +1,9 @@
 /*
+tmux/plugins
 !nvim
-!alacritty
 !sway
 !swaylock
 !tmux
 !starship
 !fish
-!zellij
+!kitty
