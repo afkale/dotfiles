@@ -45,13 +45,8 @@ return require('packer').startup(function(use)
 	}
 	use({ 'vimwiki/vimwiki' })
 	use({ 'folke/neodev.nvim' })
-	use({
-		'folke/tokyonight.nvim',
-		lazy = false,
-		priority = 1000,
-		opts = {},
-	})
 	use({ 'nvim-tree/nvim-tree.lua' })
+	use({ "catppuccin/nvim", as = "catppuccin" })
 	use({ 'nvim-tree/nvim-web-devicons' })
 	use({ 'lewis6991/gitsigns.nvim' })
 	use({ 'lukas-reineke/indent-blankline.nvim',
