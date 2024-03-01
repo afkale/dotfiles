@@ -46,10 +46,11 @@ return require('packer').startup(function(use)
 	use({ 'vimwiki/vimwiki' })
 	use({ 'folke/neodev.nvim' })
 	use({ 'nvim-tree/nvim-tree.lua' })
-	use({ 'catppuccin/nvim", as = "catppuccin' })
+	use({ 'catppuccin/nvim', as = 'catppuccin' })
 	use({ 'nvim-tree/nvim-web-devicons' })
 	use({ 'lewis6991/gitsigns.nvim' })
-	use({ 'lukas-reineke/indent-blankline.nvim',
+	use({
+		'lukas-reineke/indent-blankline.nvim',
 		config = function()
 			require("ibl").setup()
 		end
@@ -60,4 +61,5 @@ return require('packer').startup(function(use)
 			require('Comment').setup()
 		end
 	}
+	use({ 'rcarriga/nvim-notify' })
 end)
