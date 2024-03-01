@@ -1,7 +1,7 @@
 /*
 /tmux/plugins
 !nvim
-nvim/plugin/packer_compiled.lua
+*packer_compiled.lua
 !sway
 !swaylock
 !tmux
