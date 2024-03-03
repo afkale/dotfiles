@@ -26,6 +26,9 @@ vim.keymap.set('n', 'tn', vim.cmd.tabnext)
 vim.keymap.set('n', 'tp', vim.cmd.tabprev)
 vim.keymap.set('n', 'tc', vim.cmd.tabclose)
 
+vim.keymap.set('n', '<leader>bp', vim.cmd.bp)
+vim.keymap.set('n', '<leader>bn', vim.cmd.bn)
+
 vim.keymap.set('n', 'sv', vim.cmd.vsplit)
 vim.keymap.set('n', 'sh', vim.cmd.split)
 vim.keymap.set('n', 'sc', vim.cmd.close)
