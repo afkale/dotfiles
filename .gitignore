@@ -8,4 +8,5 @@ nvim/plugin/packer_compiled.lua
 !starship
 !fish
 fish/completions/bun.fish
+fish/conf.d/*.custom.fish
 !kitty
