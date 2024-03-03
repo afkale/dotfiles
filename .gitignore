@@ -9,4 +9,5 @@ nvim/plugin/packer_compiled.lua
 !fish
 fish/completions/bun.fish
 fish/conf.d/*.custom.fish
+fish/fish_variables
 !kitty
