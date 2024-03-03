@@ -1,11 +1,10 @@
 /*
-/tmux/plugins
+tmux/plugins
 !nvim
-*packer_compiled.lua
+nvim/plugin/packer_compiled.lua
 !sway
 !swaylock
 !tmux
 !starship
 !fish
-fish/fish_variables
 !kitty
