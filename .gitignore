@@ -7,4 +7,5 @@ nvim/plugin/packer_compiled.lua
 !tmux
 !starship
 !fish
+fish/completions/bun.fish
 !kitty
