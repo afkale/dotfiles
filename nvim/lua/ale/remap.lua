@@ -2,14 +2,13 @@ vim.g.mapleader = ' '
 
 vim.keymap.set({ 'v', 'x' }, '<leader>y', '"+y')
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
-
 vim.keymap.set("n", "<leader>Y", [["+Y]])
+
 vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
 vim.keymap.set({ 'n', 'x' }, 'x', '"_x')
 vim.keymap.set({ 'n', 'x' }, 'X', '"_d')
 
-vim.keymap.set('n', '<leader>ww', '<cmd>write<cr>')
 vim.keymap.set('n', '<leader><leader>', ':source<cr>')
 vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle)
 
@@ -26,25 +25,26 @@ vim.keymap.set('n', 'tn', vim.cmd.tabnext)
 vim.keymap.set('n', 'tp', vim.cmd.tabprev)
 vim.keymap.set('n', 'tc', vim.cmd.tabclose)
 
-vim.keymap.set('n', '<leader>bp', vim.cmd.bp)
-vim.keymap.set('n', '<leader>bn', vim.cmd.bn)
-
 vim.keymap.set('n', 'sv', vim.cmd.vsplit)
 vim.keymap.set('n', 'sh', vim.cmd.split)
 vim.keymap.set('n', 'sc', vim.cmd.close)
 
-vim.keymap.set("n", "J", "mzJ`z")
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set('n', 'mp', vim.cmd.bp)
+vim.keymap.set('n', 'mn', vim.cmd.bn)
+vim.keymap.set('n', 'mc', vim.cmd.bd)
+vim.keymap.set('n', 'mf', vim.lsp.buf.format)
 
-vim.keymap.set("i", "<C-c>", "<Esc>")
+vim.keymap.set('n', 'J', 'mzJ`z')
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
+vim.keymap.set('n', 'n', 'nzzzv')
 
-vim.keymap.set("n", "Q", "<nop>")
-vim.keymap.set("n", "ff", vim.lsp.buf.format)
+vim.keymap.set('n', 'zz', '<cmd>write<cr>')
+vim.keymap.set('i', '<C-c>', '<Esc>')
+vim.keymap.set('n', 'Q', '<nop>')
 
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
-vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
+vim.keymap.set('n', '<leader>s', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { silent = true })
 
-vim.keymap.set("n", "<leader><leader>", function() vim.cmd("so") end)
+vim.keymap.set('n', '<leader><leader>', function() vim.cmd('so') end)
+
