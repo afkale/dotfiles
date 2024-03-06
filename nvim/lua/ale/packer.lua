@@ -44,10 +44,16 @@ return require('packer').startup(function(use)
 		}
 	}
 	use({ 'vimwiki/vimwiki' })
-	use({ 'folke/neodev.nvim' })
 	use({ 'nvim-tree/nvim-tree.lua' })
 	use({ 'catppuccin/nvim', as = 'catppuccin' })
 	use({ 'nvim-tree/nvim-web-devicons' })
+	use({ 'folke/neodev.nvim' })
+	use({
+		'folke/todo-comments.nvim',
+		config = function()
+			require('todo-comments.config').setup()
+		end
+	})
 	use({ 'lewis6991/gitsigns.nvim' })
 	use({
 		'lukas-reineke/indent-blankline.nvim',
