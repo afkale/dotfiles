@@ -1,19 +1,18 @@
 vim.g.mapleader = ' '
 
 vim.keymap.set({ 'v', 'x' }, '<leader>y', '"+y')
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
-vim.keymap.set("n", "<leader>Y", [["+Y]])
+vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]])
+vim.keymap.set('n', '<leader>Y', [["+Y]])
 
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
+vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
 
 vim.keymap.set({ 'n', 'x' }, 'x', '"_x')
 vim.keymap.set({ 'n', 'x' }, 'X', '"_d')
 
 vim.keymap.set('n', '<leader><leader>', ':source<cr>')
-vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle)
 
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
 
 vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('n', '<C-j>', '<C-w>j')

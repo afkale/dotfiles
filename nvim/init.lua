@@ -1,1 +1,1 @@
-require("ale")
+require "ale"

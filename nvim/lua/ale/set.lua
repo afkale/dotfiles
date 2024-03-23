@@ -1,9 +1,17 @@
 vim.g.user42 = 'arubio-o'
 vim.g.mail42 = 'arubio-o@student.42madrid.com'
 
-vim.api.nvim_set_option('compatible', false)
-vim.api.nvim_set_option('filetype', 'plugin')
-vim.api.nvim_set_option('syntax', 'on')
+vim.g.python3_host_prog = '/usr/bin/python'
+
+vim.g.vimtex_view_method = 'zathura'
+vim.g.vimtex_view_general_viewer = 'zathura'
+vim.g.vimtex_view_general_options = '--synctex-forward "%s:source:%s#%d" | zathura --fork %s'
+vim.g.vimtex_compiler_method = 'latexrun'
+
+vim.g.maplocalleader = ','
+
+vim.opt.filetype = 'plugin'
+vim.opt.syntax = 'enable'
 
 vim.opt.number = true
 vim.opt.relativenumber = true
