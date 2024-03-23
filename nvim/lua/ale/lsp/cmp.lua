@@ -21,7 +21,14 @@ if cmp_status_ok then
 			end
 		},
 		formatting = {
-			format = lspkind.cmp_format({ mode = 'symbol_text', maxwidth = 50, })
+			fields = { 'menu', 'abbr', 'kind' },
+			expandable_indicator = true,
+			format = lspkind.cmp_format({
+				mode = 'symbol_text',
+				maxwidth = 50,
+				elipsis_char = '...',
+				show_labelDetails = true,
+			})
 		},
 		mapping = {
 			["<CR>"] = cmp.mapping.confirm({ select = true }),
