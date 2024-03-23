@@ -5,8 +5,6 @@
 # Read `man 5 sway` for a complete reference.
 
 # styles - set the folder for your theme definition file
-set $mod Mod4
-
 set $theme /usr/share/sway/themes/matcha-green
 
 # theme variables
@@ -22,7 +20,6 @@ include /etc/sway/definitions
 include $HOME/.config/sway/definitions.d/*.conf
 
 include /etc/sway/inputs/*
-include /etc/sway/outputs/*
 
 # enable modes
 include /etc/sway/modes/*
