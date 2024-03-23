@@ -21,4 +21,5 @@ return {
 	{ "lukas-reineke/lsp-format.nvim" },
 	{ "kyazdani42/nvim-web-devicons" },
 	{ "lervag/vimtex" },
+	{ 'vimwiki/vimwiki' },
 }
