@@ -105,10 +105,7 @@ local linters = {
 	"pyflakes"
 }
 
-local debuggers = {
-	"js-debug-adapter",
-	"node-debug2-adapter",
-}
+local debuggers = {}
 
 local all = u.merge(servers, linters, debuggers)
 
