@@ -7,6 +7,7 @@ return {
 			neodev.setup()
 		end
 
+
 		require("lspconfig").lua_ls.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
