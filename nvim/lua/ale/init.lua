@@ -1,3 +1,4 @@
-require("ale.packer")
-require("ale.remap")
-require("ale.set")
+require 'ale.set'
+require 'ale.remap'
+require 'ale.lazy'
+require 'ale.lsp'
