@@ -12,7 +12,7 @@ return {
 	{ "hrsh7th/cmp-path" },
 	{ "hrsh7th/cmp-path" },
 	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "kdheepak/cmp-latex-symbols" },
+	{ "kdheepak/cmp-latex-symbols", lazy = true },
 	{ "saadparwaiz1/cmp_luasnip" },
 	{ "christoomey/vim-tmux-navigator" },
 	{ "folke/neodev.nvim" },

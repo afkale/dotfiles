@@ -29,18 +29,11 @@ local on_attach = function(client, bufnr)
 
 	buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
-	-- Debounce by 300ms by default
-	client.config.flags.debounce_text_changes = 100
+	client.config.flags.debounce_text_changes = 200
 
-	-- This will set up formatting for the attached LSPs
 	client.server_capabilities.documentFormattingProvider = true
 
-	-- Turn off semantic tokens (too slow)
-	-- if client.server_capabilities.semanticTokensProvider = nil
-
-	-- Formatting for Vue handled by Eslint
-	-- Formatting for Clojure handled by custom ZPrint function, see lua/lsp/servers/clojure-lsp.lua
-	if u.has_value({ "eslint", "lua_ls", "pyright" }, client.name) then
+	if u.has_value({ "eslint", "lua_ls", "pyright", "clangd" }, client.name) then
 		lsp_format.on_attach(client)
 	end
 
@@ -86,10 +79,6 @@ local on_attach = function(client, bufnr)
 	end)
 end
 
--- These servers are automatically installed by Mason.
--- We then iterate over their names and load their relevant
--- configuration files, which are stored in lua/lsp/servers,
--- passing along the global on_attach and capabilities functions
 local servers = {
 	"clangd",
 	"pyright",
@@ -148,12 +137,3 @@ for type, icon in pairs(signs) do
 	local hl = "DiagnosticSign" .. type
 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
-
--- Change border of documentation hover window, See https://github.com/neovim/neovim/pull/13998.
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-	border = "solid",
-})
-
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-	border = "solid",
-})

@@ -1,8 +1,8 @@
 local cmp_status_ok, cmp = pcall(require, "cmp")
 local lspkind_status_ok, lspkind = pcall(require, "lspkind")
-local luasnip_status_ok, luasnip = pcall(require, "luasnip")
+-- local luasnip_status_ok, luasnip = pcall(require, "luasnip")
 
-if not (cmp_status_ok and lspkind_status_ok and luasnip_status_ok) then
+if not (cmp_status_ok and lspkind_status_ok) then
 	vim.api.nvim_err_writeln("CMP dependencies not yet installed!")
 	return
 end
@@ -17,7 +17,7 @@ if cmp_status_ok then
 		},
 		snippet = {
 			expand = function(args)
-				luasnip.lsp_expand(args.body)
+				require('luasnip').lsp_expand(args.body)
 			end
 		},
 		formatting = {
