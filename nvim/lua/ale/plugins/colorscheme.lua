@@ -44,6 +44,7 @@ return {
 					nvimtree = true,
 					treesitter = true,
 					notify = true,
+					mason = true,
 					mini = {
 						enabled = true,
 						indentscope_color = "",
@@ -51,7 +52,25 @@ return {
 					telescope = {
 						enabled = true
 					},
-					vimwiki = true
+					vimwiki = true,
+					native_lsp = {
+						enabled = true,
+						virtual_text = {
+							errors = { "italic" },
+							hints = { "italic" },
+							warnings = { "italic" },
+							information = { "italic" },
+						},
+						underlines = {
+							errors = { "underline" },
+							hints = { "underline" },
+							warnings = { "underline" },
+							information = { "underline" },
+						},
+						inlay_hints = {
+							background = true,
+						},
+					},
 				},
 			})
 			vim.cmd.colorscheme "catppuccin"

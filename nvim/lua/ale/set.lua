@@ -14,10 +14,10 @@ vim.g.lazygit_floating_window_winblend = 0
 vim.g.lazygit_floating_window_scaling_factor = 0.9
 vim.g.lazygit_floating_window_border_chars = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' }
 vim.g.lazygit_floating_window_use_plenary = 0
-vim.g.lazygit_use_neovim_remote = 1
+vim.g.lazygit_use_neovim_remote = 0
 
-vim.g.lazygit_use_custom_config_file_path = 0
-vim.g.lazygit_config_file_path = ''
+vim.g.lazygit_use_custom_config_file_path = 1
+vim.g.lazygit_config_file_path = os.getenv('HOME') .. '/.config/lazygit/config.yml'
 
 vim.opt.filetype = 'plugin'
 vim.opt.syntax = 'enable'
@@ -43,6 +43,7 @@ vim.opt.smartcase = true
 vim.opt.incsearch = true
 
 vim.opt.termguicolors = true
+vim.opt.cursorline = true
 
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = 'yes'
@@ -51,3 +52,4 @@ vim.opt.isfname:append('@-@')
 vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = '80'
+vim.opt.showtabline = 2
