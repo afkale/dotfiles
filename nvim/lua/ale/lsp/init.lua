@@ -91,11 +91,12 @@ end
 -- configuration files, which are stored in lua/lsp/servers,
 -- passing along the global on_attach and capabilities functions
 local servers = {
-	"lua-language-server",
-	"eslint-lsp",
+	"clangd",
 	"pyright",
-	"typescript-language-server",
+	"eslint-lsp",
+	"lua-language-server",
 	"vue-language-server",
+	"typescript-language-server",
 	--	"marksman",
 	--	"tailwindcss",
 }
