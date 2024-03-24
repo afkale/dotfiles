@@ -12,4 +12,5 @@ fish/completions/bun.fish
 fish/conf.d/*.custom.fish
 fish/fish_variables
 !kitty
-nvim/lazy-lock.json
+!lazygit
+lazygit/state.yml
