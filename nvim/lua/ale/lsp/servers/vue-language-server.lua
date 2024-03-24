@@ -2,17 +2,21 @@ return {
 	setup = function(on_attach, capabilities)
 		local lspconfig = require("lspconfig")
 
-		require("lspconfig").volar.setup({
-			filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
+		lspconfig.volar.setup({
+			filetypes = { "typescript", "javascript", "vue", "json" },
 			capabilities = capabilities,
 			on_attach = on_attach,
 			init_options = {
+				typescript = {
+					tsdk = vim.fn.expand("$HOME") ..
+						'/.local/share/nvim/mason/packages/typescript-language-server/node_modules/typescript/lib',
+				},
 				languageFeatures = {
 					references = true,
 					definition = true,
 					typeDefinition = true,
 					callHierarchy = true,
-					hover = true,
+					hover = false,
 					rename = true,
 					signatureHelp = true,
 					codeAction = true,

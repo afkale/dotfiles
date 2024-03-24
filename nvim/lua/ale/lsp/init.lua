@@ -12,6 +12,7 @@ end
 
 mason.setup()
 
+
 lsp_format.setup({
 	order = {
 		"tsserver",
@@ -29,7 +30,7 @@ local on_attach = function(client, bufnr)
 	buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
 	-- Debounce by 300ms by default
-	client.config.flags.debounce_text_changes = 300
+	client.config.flags.debounce_text_changes = 100
 
 	-- This will set up formatting for the attached LSPs
 	client.server_capabilities.documentFormattingProvider = true
@@ -39,7 +40,7 @@ local on_attach = function(client, bufnr)
 
 	-- Formatting for Vue handled by Eslint
 	-- Formatting for Clojure handled by custom ZPrint function, see lua/lsp/servers/clojure-lsp.lua
-	if u.has_value({ "eslint", "lua_ls" }, client.name) then
+	if u.has_value({ "eslint", "lua_ls", "pyright" }, client.name) then
 		lsp_format.on_attach(client)
 	end
 
@@ -92,7 +93,7 @@ end
 local servers = {
 	"lua-language-server",
 	"eslint-lsp",
-	"python-lsp-server",
+	"pyright",
 	"typescript-language-server",
 	"vue-language-server",
 	--	"marksman",

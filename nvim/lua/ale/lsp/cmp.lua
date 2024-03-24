@@ -39,10 +39,10 @@ if cmp_status_ok then
 			["<S-Up>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
 		},
 		sources = cmp.config.sources({
-			{ name = "nvim_lua",                max_item_count = 5 },
-			{ name = "luasnip",                 max_item_count = 5 },
-			{ name = "nvim_lsp",                max_item_count = 5 },
-			{ name = "buffer",                  max_item_count = 5 },
+			{ name = "nvim_lua",                max_item_count = 10 },
+			{ name = "luasnip",                 max_item_count = 10 },
+			{ name = "nvim_lsp",                max_item_count = 10 },
+			{ name = "buffer",                  max_item_count = 10 },
 			{ name = "nvim_lsp_signature_help", },
 			{ name = "latex_symbols",           option = { strategy = 0, } }
 		}),
