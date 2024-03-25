@@ -1,7 +1,5 @@
 /*
 !nvim
-nvim/plugin/packer_compiled.lua
-nvim/lazy-lock.json
 !sway
 !swaylock
 !tmux
