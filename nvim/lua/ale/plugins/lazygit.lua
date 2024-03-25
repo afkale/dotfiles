@@ -12,7 +12,7 @@ return {
 			"nvim-lua/plenary.nvim"
 		},
 		config = function()
-			vim.keymap.set('n', '<leader>g', ':LazyGit<CR>', { silent = true })
+			vim.keymap.set('n', 'gl', ':LazyGit<CR>', { silent = true })
 		end,
 	},
 }

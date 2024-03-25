@@ -12,7 +12,7 @@ return {
 	{ "hrsh7th/cmp-path" },
 	{ "hrsh7th/cmp-path" },
 	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "kdheepak/cmp-latex-symbols", lazy = true },
+	{ "kdheepak/cmp-latex-symbols",               lazy = true },
 	{ "saadparwaiz1/cmp_luasnip" },
 	{ "christoomey/vim-tmux-navigator" },
 	{ "folke/neodev.nvim" },
@@ -22,4 +22,5 @@ return {
 	{ "lervag/vimtex" },
 	{ "vimwiki/vimwiki" },
 	{ "junegunn/fzf" },
+	{ "folke/todo-comments.nvim",                 dependencies = { "nvim-lua/plenary.nvim" }, }
 }
