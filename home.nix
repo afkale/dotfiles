@@ -51,6 +51,7 @@
 	home.file = {
 		".config/fish".source = ./dotfiles/fish;
 		".config/atuin".source = ./dotfiles/atuin;
+		".config/wezterm".source = ./dotfiles/wezterm;
 		# # Building this configuration will create a copy of 'dotfiles/screenrc' in
 		# # the Nix store. Activating the configuration will then make '~/.screenrc' a
 		# # symlink to the Nix store copy.
