@@ -6,12 +6,12 @@
 ## where to store your encryption key, default is your system data directory
 ## linux/mac: ~/.local/share/atuin/key
 ## windows: %USERPROFILE%/.local/share/atuin/key
-# key_path = "~/.key"
+key_path = "~/.config/atuin/data/key"
 
 ## where to store your auth session token, default is your system data directory
 ## linux/mac: ~/.local/share/atuin/session
 ## windows: %USERPROFILE%/.local/share/atuin/session
-# session_path = "~/.session"
+session_path = "~/.config/atuin/data/session"
 
 ## date format used, either "us" or "uk"
 # dialect = "us"
