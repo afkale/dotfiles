@@ -1,4 +1,3 @@
-
 install-nix:
 	@if ! command -v home-manager > /dev/null; then \
 		echo "Installing Nix and Home Manager..."; \
@@ -26,4 +25,3 @@ update-home-manager:
 
 install: install-nix download-submodules configure-home-manager
 update: update-home-manager configure-home-manager
-
