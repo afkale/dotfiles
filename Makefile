@@ -10,7 +10,7 @@ install:
 	@git submodule init
 	@git submodule update --remote --recursive
 	@cd dotfiles/nvim && git checkout main
-	@sed -i "s#\/home\/afkale#$HOME#" filename
-	@sed -i "s/afkale/$USER/" filename
+	@sed -i "s#\/home\/afkale#$HOME#" home.nix
+	@sed -i "s/afkale/$USER/" home.nix
 	@home-manager switch -b backup
 
