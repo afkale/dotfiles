@@ -11,8 +11,9 @@ if wezterm.config_builder then
 end
 
 -- Config color scheme to rose-pine-moon
-local theme = wezterm.plugin.require("https://github.com/neapsix/wezterm").moon
-config.colors = theme.colors()
+-- local theme = wezterm.plugin.require("https://github.com/neapsix/wezterm").moon
+-- config.colors = theme.colors()
+config.color_scheme = "Tokyo Night"
 
 config.window_decorations = "NONE"
 config.window_background_opacity = 0.80
@@ -68,7 +69,7 @@ config.keys = {
 		mods = 'ALT',
 		action = wezterm.action.SplitPane {
 			direction = 'Down',
-			command = { args = { 'sudo', 'ncdu' , '/' } },
+			command = { args = { 'sudo', 'ncdu', '/' } },
 			size = { Percent = 95 },
 		},
 	},
