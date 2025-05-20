@@ -25,5 +25,5 @@ update-home-manager:
 	@git pull
 
 install: install-nix download-submodules configure-home-manager
-update: configure-home-manager update-home-manager
+update: update-home-manager configure-home-manager
 
