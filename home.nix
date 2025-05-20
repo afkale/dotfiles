@@ -19,7 +19,11 @@
 	# environment.
 	home.packages =  with pkgs; [
 		# Dependencies
-		libgccjit
+		gcc
+    binutils
+    gnumake
+    pkg-config
+    cmake
 		# Tools
 		neovim
 		git
