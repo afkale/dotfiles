@@ -20,10 +20,10 @@
 	home.packages =  with pkgs; [
 		# Dependencies
 		gcc
-    binutils
-    gnumake
-    pkg-config
-    cmake
+		binutils
+		gnumake
+		pkg-config
+		cmake
 		# Tools
 		neovim
 		git
