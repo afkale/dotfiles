@@ -47,6 +47,7 @@
 
 		# LSP Packages
 		lua-language-server
+		bash-language-server
 		# # python
 		ruff
 		pyright
