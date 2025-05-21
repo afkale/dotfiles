@@ -20,9 +20,10 @@ config.window_background_opacity = 0.80
 config.inactive_pane_hsb = { saturation = 0.9, brightness = 0.7 }
 
 -- Font configuration
-config.font_size = 18
+config.font_size = 16
 config.freetype_load_flags = "NO_HINTING"
 config.font = wezterm.font_with_fallback {
+	"Input Mono",
 	"Share Tech Mono",
 	"Symbols Nerd Font Mono",
 }
