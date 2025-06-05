@@ -23,8 +23,9 @@ config.inactive_pane_hsb = { saturation = 0.9, brightness = 0.7 }
 config.font_size = 16
 config.freetype_load_flags = "NO_HINTING"
 config.font = wezterm.font_with_fallback {
-	"Input Mono",
+	"Cascadia Code",
 	"Share Tech Mono",
+	"Input Mono",
 	"Symbols Nerd Font Mono",
 }
 
