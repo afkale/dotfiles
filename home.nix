@@ -24,6 +24,7 @@
 		gnumake
 		pkg-config
 		cmake
+		perl
 		# Tools
 		neovim
 		git
@@ -44,13 +45,20 @@
 		fd
 		ripgrep
 		zoxide
+		silver-searcher
+		universal-ctags
 
 		# LSP Packages
 		lua-language-server
 		bash-language-server
+		angular-language-server
+		vscode-langservers-extracted
 		# # python
 		ruff
 		pyright
+
+		# Utilities
+		python312Packages.ipython
 	];
 
 	# Home Manager is pretty good at managing dotfiles. The primary way to manage
