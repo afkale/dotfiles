@@ -53,10 +53,14 @@
 		bash-language-server
 		angular-language-server
 		vscode-langservers-extracted
+		dockerfile-language-server-nodejs
 		# # python
 		ruff
 		pyright
 
+		# # rust
+		rustc
+		cargo
 		# Utilities
 		python312Packages.ipython
 	];

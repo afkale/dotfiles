@@ -66,7 +66,7 @@ config.keys = {
 		},
 	},
 	{
-		label = 'Btop',
+		label = 'Ncdu',
 		key = 'd',
 		mods = 'ALT',
 		action = wezterm.action.SplitPane {
