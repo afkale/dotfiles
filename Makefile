@@ -5,12 +5,20 @@ PKGS = \
 	lua-language-server bash-language-server vscode-langservers-extracted \
 	ruff pyright rust cargo
 
+APPS = \
+	atuin \
+	fish \
+	nvim \
+	starship \
+	wezterm
+
+
 # Tasks
 install-packages:
 	@yay -Syu --noconfirm --needed $(PKGS)
 
 link-dotfiles:
-	@stow -d ./ -t ~ *
+	@stow -d ./ -t ~ $(APPS)
 
 set-default-shell:
 	@chsh -s $$(which fish)
@@ -18,12 +26,8 @@ set-default-shell:
 sync-submodules:
 	@git submodule init
 	@git submodule update --remote --recursive
-	@cd dotfiles/nvim && git checkout main
-
-update-packages:
-	@yay -Syuu
+	@cd nvim/.config/nvim && git checkout main
 
 # Combined Tasks
-install: update-packages install-packages sync-submodules link-dotfiles set-default-shell
+install: install-packages sync-submodules link-dotfiles set-default-shell
 update: update-packages
-

@@ -24,4 +24,4 @@ _darcs
 ^/LICENSE.*
 ^/COPYING
 
-Makefile
+# Makefile
