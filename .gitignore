@@ -2,5 +2,3 @@ tags
 result
 atuin/.config/nvim/data/key
 atuin/.config/nvim/atuin-receipt.json
-dotfiles/atuin/data
-dotfiles/atuin/atuin-receipt.json
