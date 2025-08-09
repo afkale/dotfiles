@@ -1,10 +1,12 @@
 # Package list
 PKGS = \
-	neovim git lazygit ncdu btop fish atuin bat carapace starship lsd stow \
+	wezterm neovim git lazygit ncdu btop fish atuin bat carapace starship lsd stow \
 	fzf fd ripgrep zoxide the_silver_searcher universal-ctags \
 	lua-language-server bash-language-server vscode-langservers-extracted \
-	ruff pyright rust cargo
+	ruff pyright rust cargo \
+	ttf-cascadia-code ttf-nerd-fonts-symbols
 
+# App list
 APPS = \
 	atuin \
 	fish \
@@ -28,6 +30,4 @@ sync-submodules:
 	@git submodule update --remote --recursive
 	@cd nvim/.config/nvim && git checkout main
 
-# Combined Tasks
 install: install-packages sync-submodules link-dotfiles set-default-shell
-update: update-packages
