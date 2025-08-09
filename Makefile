@@ -1,27 +1,33 @@
-install-nix:
-	@if ! command -v home-manager > /dev/null; then \
-		echo "Installing Nix and Home Manager..."; \
-		curl -L https://nixos.org/nix/install | sh -s -- --daemon --yes; \
-		. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; \
-		nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager; \
-		nix-channel --update; \
-		nix-shell '<home-manager>' -A install; \
-	fi
+# Package list
+PKGS = \
+	wezterm neovim git lazygit ncdu btop fish atuin bat carapace starship lsd stow \
+	fzf fd ripgrep zoxide the_silver_searcher universal-ctags \
+	lua-language-server bash-language-server vscode-langservers-extracted \
+	ruff pyright rust cargo \
+	ttf-cascadia-code ttf-nerd-fonts-symbols-mono
 
-download-submodules:
+# App list
+APPS = \
+	atuin \
+	fish \
+	nvim \
+	starship \
+	wezterm
+
+
+# Tasks
+install-packages:
+	@yay -Syu --noconfirm --needed $(PKGS)
+
+link-dotfiles:
+	@stow -d ./ -t ~ $(APPS)
+
+set-default-shell:
+	@chsh -s $$(which fish)
+
+sync-submodules:
 	@git submodule init
 	@git submodule update --remote --recursive
-	@cd dotfiles/nvim && git checkout main
+	@cd nvim/.config/nvim && git checkout main
 
-configure-home-manager:
-	@sed -i "s#\/home\/afkale#$$HOME#" home.nix
-	@sed -i "s/afkale/$$USER/" home.nix
-
-	@home-manager switch -b backup
-
-update-home-manager:
-	@git restore .
-	@git pull
-
-install: install-nix download-submodules configure-home-manager
-update: update-home-manager configure-home-manager
+install: install-packages sync-submodules link-dotfiles set-default-shell
