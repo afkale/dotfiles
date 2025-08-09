@@ -4,7 +4,7 @@ PKGS = \
 	fzf fd ripgrep zoxide the_silver_searcher universal-ctags \
 	lua-language-server bash-language-server vscode-langservers-extracted \
 	ruff pyright rust cargo \
-	ttf-cascadia-code ttf-nerd-fonts-symbols
+	ttf-cascadia-code ttf-nerd-fonts-symbols-mono
 
 # App list
 APPS = \
