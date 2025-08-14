@@ -15,13 +15,12 @@ APPS = \
 			 wezterm
 
 DESKTOP_PKGS = \
-							 sway mako swayosd waybar \
-							 nm-applet pwvucontrol bitwarden \
+							 sway mako swayosd waybar sway-contrib \
+							 network-manager-applet pwvucontrol bitwarden \
 							 papirus-icon-theme-git 
 
 DESKTOP_APPS = \
 							 sway \
-							 sway-contrib \
 							 mako \
 							 swayosd \
 							 waybar \
