@@ -1,0 +1,36 @@
+# ================================
+# COLOR SCHEME - Cosmic Purple
+# ================================
+set $cosmic_purple_dark #1f1535
+set $cosmic_purple_base #2b1f45
+set $cosmic_purple_surface #3f2f5f
+set $cosmic_purple_overlay #4f457f
+set $cosmic_purple_accent #5f4f7f
+set $cosmic_purple_bright #6f5f8f
+set $cosmic_purple_highlight #7f6f9f
+set $cosmic_purple_light #9f8fbf
+set $cosmic_purple_pale #bfafdf
+set $cosmic_purple_text #d4c5ff
+set $cosmic_purple_fg #e6d9ff
+
+# Accent colors
+set $cosmic_green #60a080
+set $cosmic_blue #6080a0
+set $cosmic_cyan #6090a0
+set $cosmic_red #a06080
+set $cosmic_orange #a08060
+set $cosmic_yellow #a0a060
+set $cosmic_pink #a06090
+
+# Map to standard names for compatibility
+set $base $cosmic_purple_base
+set $surface0 $cosmic_purple_surface
+set $surface1 $cosmic_purple_overlay
+set $overlay0 $cosmic_purple_accent
+set $overlay1 $cosmic_purple_bright
+set $text $cosmic_purple_text
+set $subtext0 $cosmic_purple_pale
+set $subtext1 $cosmic_purple_light
+set $lavender $cosmic_purple_highlight
+set $rosewater $cosmic_purple_fg
+set $peach $cosmic_orange

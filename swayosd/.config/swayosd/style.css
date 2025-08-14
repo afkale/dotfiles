@@ -1,0 +1,114 @@
+/* SwayOSD Cosmic Purple Theme */
+
+window#osd {
+    background-color: rgba(43, 31, 69, 0.85); /* cosmic_purple_base with transparency */
+    border: 2px solid #7f6f9f; /* cosmic_purple_highlight */
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 200px;
+    max-width: 250px;
+}
+
+#container {
+    margin: 8px;
+}
+
+#icon {
+    color: #7f6f9f; /* cosmic_purple_highlight */
+    font-size: 28px;
+    margin-bottom: 4px;
+}
+
+#label {
+    color: #d4c5ff; /* cosmic_purple_text */
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+#progress {
+    background-color: #3f2f5f; /* cosmic_purple_surface */
+    border: 1px solid #7f6f9f; /* cosmic_purple_highlight */
+    border-radius: 4px;
+    margin-top: 6px;
+    min-height: 4px;
+}
+
+#progress bar {
+    background-color: #7f6f9f; /* cosmic_purple_highlight */
+    border-radius: 3px;
+    min-height: 4px;
+}
+
+/* Volume specific styling */
+window#osd.volume #icon {
+    color: #9f8fbf; /* cosmic_purple_light */
+}
+
+window#osd.volume #progress bar {
+    background-color: #9f8fbf; /* cosmic_purple_light */
+}
+
+window#osd.volume #progress {
+    border-color: #9f8fbf; /* cosmic_purple_light */
+}
+
+/* Volume muted styling */  
+window#osd.volume.muted #icon {
+    color: #a06080; /* cosmic_red */
+}
+
+window#osd.volume.muted #label {
+    color: #a06080; /* cosmic_red */
+}
+
+window#osd.volume.muted #progress {
+    border-color: #a06080; /* cosmic_red */
+}
+
+window#osd.volume.muted #progress bar {
+    background-color: #a06080; /* cosmic_red */
+}
+
+/* Brightness specific styling */
+window#osd.brightness #icon {
+    color: #a0a060; /* cosmic_yellow */
+}
+
+window#osd.brightness #progress bar {
+    background-color: #a0a060; /* cosmic_yellow */
+}
+
+window#osd.brightness #progress {
+    border-color: #a0a060; /* cosmic_yellow */
+}
+
+/* Microphone specific styling */
+window#osd.input #icon {
+    color: #60a080; /* cosmic_green */
+}
+
+window#osd.input #progress bar {
+    background-color: #60a080; /* cosmic_green */
+}
+
+window#osd.input #progress {
+    border-color: #60a080; /* cosmic_green */
+}
+
+/* Microphone muted styling */
+window#osd.input.muted #icon {
+    color: #a06080; /* cosmic_red */
+}
+
+window#osd.input.muted #label {
+    color: #a06080; /* cosmic_red */
+}
+
+window#osd.input.muted #progress {
+    border-color: #a06080; /* cosmic_red */
+}
+
+window#osd.input.muted #progress bar {
+    background-color: #a06080; /* cosmic_red */
+}
