@@ -14,6 +14,7 @@ end
 -- local theme = wezterm.plugin.require("https://github.com/neapsix/wezterm").moon
 -- config.colors = theme.colors()
 config.color_scheme = "Tokyo Night"
+config.enable_wayland = false
 
 config.window_decorations = "NONE"
 config.window_background_opacity = 0.80

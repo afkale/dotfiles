@@ -3,12 +3,14 @@
 	"height": 30,
 	"spacing": 4,
 	"modules-left": [
-		"sway/workspaces",
-		"sway/mode",
-		"sway/scratchpad"
+		// "sway/workspaces",
+		"hyprland/workspaces",
+		"hyprland/mode"
+		// "sway/mode"
 	],
 	"modules-center": [
-		"sway/window"
+		// "sway/window",
+		"hyprland/window"
 	],
 	"modules-right": [
 		"mpd",
@@ -32,7 +34,7 @@
 			"unlocked": ""
 		}
 	},
-	"sway/workspaces": {
+	"hyprland/workspaces": {
 		"all-outputs": true,
 		"disable-scroll": true,
 		"format": "{icon}",
@@ -48,7 +50,7 @@
 			"9": "",
 			"10": "",
 			"urgent": "",
-			"focused": "",
+			"active": "",
 			"default": ""
 		}
 	},
