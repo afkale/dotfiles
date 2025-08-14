@@ -12,7 +12,7 @@ APPS = \
 			 fish \
 			 nvim \
 			 starship \
-			 wezterm
+			 wezterm 
 
 DESKTOP_PKGS = \
 							 sway mako swayosd waybar sway-contrib \
@@ -24,7 +24,8 @@ DESKTOP_APPS = \
 							 mako \
 							 swayosd \
 							 waybar \
-							 gtk-4.0
+							 gtk-4.0 \
+							 backgrounds
 
 # Tasks
 install-packages:

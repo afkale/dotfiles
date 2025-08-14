@@ -34,7 +34,7 @@ set $menu wmenu-run -N "2b1f45" -n "d4c5ff" -M "3f2f5f" -m "e6d9ff" -S "7f6f9f" 
 # ================================
 # OUTPUT CONFIGURATION
 # ================================
-output * background /usr/share/backgrounds/sway/purple.jpg fill
+output * background $HOME/.config/backgrounds/purple.jpg fill
 output * scale 1.8
 
 # ================================
