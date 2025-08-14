@@ -28,6 +28,7 @@ set $up k
 set $right l
 set $term wezterm
 set $browser zen-browser
+set $pwmanager bitwarden-desktop
 set $menu wmenu-run -N "2b1f45" -n "d4c5ff" -M "3f2f5f" -m "e6d9ff" -S "7f6f9f" -s "bfafdf" -f "JetBrains Mono 16"
 
 # ================================
@@ -52,6 +53,7 @@ input type:touchpad {
 # WINDOW RULES
 # ================================
 for_window [app_id="com.saivert.pwvucontrol"] floating enable, resize set 800 600, move position center
+for_window [class="Bitwarden"] floating enable, resize set 1000 800, move position center
 
 # ================================
 # KEY BINDINGS
@@ -60,6 +62,7 @@ for_window [app_id="com.saivert.pwvucontrol"] floating enable, resize set 800 60
 # Basic actions
 bindsym $mod+Return exec $term
 bindsym $mod+b exec $browser
+bindsym $mod+p exec $pwmanager
 bindsym $mod+q kill
 bindsym $mod+d exec $menu
 bindsym $mod+Shift+c reload
