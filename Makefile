@@ -24,7 +24,8 @@ DESKTOP_APPS = \
 							 sway-contrib \
 							 mako \
 							 swayosd \
-							 waybar
+							 waybar \
+							 gtk-4.0
 
 # Tasks
 install-packages:
