@@ -16,7 +16,8 @@ APPS = \
 
 DESKTOP_PKGS = \
 							 sway mako swayosd waybar \
-							 nm-applet
+							 nm-applet pwvucontrol \
+							 papirus-icon-theme-git 
 
 DESKTOP_APPS = \
 							 sway \
