@@ -16,7 +16,7 @@ APPS = \
 
 DESKTOP_PKGS = \
 							 hyprland hyprpaper mako swayosd waybar wlogout \
-							 network-manager-applet pwvucontrol bitwarden brave-bin \
+							 network-manager-applet blueman pwvucontrol bitwarden brave-bin \
 							 papirus-icon-theme-git 
 
 DESKTOP_APPS = \
