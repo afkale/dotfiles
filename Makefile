@@ -44,6 +44,9 @@ link-dotfiles:
 link-desktop-dotfiles:
 	@stow -d ./ -t ~ $(DESKTOP_APPS)
 
+dektop-scripts:
+	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+
 set-default-shell:
 	@chsh -s $$(which fish)
 
@@ -53,4 +56,4 @@ sync-submodules:
 	@cd nvim/.config/nvim && git checkout main
 
 install: install-packages sync-submodules link-dotfiles set-default-shell
-install-desktop: install-desktop-packages link-desktop-dotfiles
+install-desktop: install-desktop-packages link-desktop-dotfiles dektop-scripts
