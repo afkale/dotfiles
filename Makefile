@@ -15,13 +15,14 @@ APPS = \
 			 wezterm 
 
 DESKTOP_PKGS = \
-							 hyprland hyprpaper mako swayosd waybar \
-							 network-manager-applet pwvucontrol bitwarden \
+							 hyprland hyprpaper mako swayosd waybar wlogout \
+							 network-manager-applet pwvucontrol bitwarden brave-bin \
 							 papirus-icon-theme-git 
 
 DESKTOP_APPS = \
 							 hypr \
 							 mako \
+							 wlogout \
 							 swayosd \
 							 waybar \
 							 gtk-4.0 \
