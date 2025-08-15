@@ -110,9 +110,9 @@
 		// "format-critical": "{temperatureC}°C {icon}",
 		"format": "{temperatureC}°C {icon}",
 		"format-icons": [
-			"",
 			"",
-			""
+			"",
+			""
 		]
 	},
 	"backlight": {
@@ -137,7 +137,7 @@
 		},
 		"format": "{capacity}% {icon}",
 		"format-full": "{capacity}% {icon}",
-		"format-charging": "{capacity}% ",
+		"format-charging": "{capacity}% ",
 		"format-plugged": "{capacity}% ",
 		"format-alt": "{time} {icon}",
 		// "format-good": "", // An empty format will hide the module
@@ -168,10 +168,10 @@
 		// "scroll-step": 1, // %, can be a float
 		"format": "{volume}% {icon} {format_source}",
 		"format-bluetooth": "{volume}% {icon} {format_source}",
-		"format-bluetooth-muted": " {icon} {format_source}",
-		"format-muted": " {format_source}",
+		"format-bluetooth-muted": "󰝟  {icon} {format_source}",
+		"format-muted": "󰝟 {format_source}",
 		"format-source": "{volume}% ",
-		"format-source-muted": "",
+		"format-source-muted": " ",
 		"format-icons": {
 			"headphone": "",
 			"hands-free": "",
@@ -193,7 +193,7 @@
 		"menu": "on-click",
 		"menu-file": "$HOME/.config/waybar/power_menu.xml",
 		"menu-actions": {
-			"lock": "swaylock",
+			"lock": "hyprlock",
 			"shutdown": "shutdown",
 			"reboot": "reboot",
 			"suspend": "systemctl suspend",

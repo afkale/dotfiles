@@ -1,7 +1,6 @@
 # Cosmic Purple Mako Configuration
-max-visible=7
+max-visible=6
 sort=-time
-output=hdmi-a-1
 layer=top
 font=Roboto 10
 width=320
@@ -11,19 +10,18 @@ padding=12
 border-radius=8
 icons=1
 max-icon-size=48
-icon-path=""
 markup=1
 actions=1
-default-timeout=10000
 ignore-timeout=0
-group-by=none
+default-timeout=4000
+anchor=top-right
+layer=overlay
 
 # Cosmic purple color scheme to match Waybar
-background-color=#2b1f45
+background-color=#2b1f4588
 text-color=#e6d9ff
 border-color=#5f4f7f
-border-size=2
-progress-color=over #3f2f5f
+border-size=1
 
 # High urgency notifications (errors, warnings)
 [urgency=high]
