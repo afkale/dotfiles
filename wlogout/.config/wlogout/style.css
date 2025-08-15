@@ -1,0 +1,60 @@
+* {
+	background-image: none;
+	box-shadow: none;
+}
+
+/* Main window - fullscreen overlay */
+window {
+	background: linear-gradient(135deg, 
+		rgba(31, 21, 53, 0.95), 
+		rgba(43, 31, 69, 0.95)
+		);
+}
+
+/* Button container */
+button {
+	color: rgba(230, 217, 255, 1.0);
+	background: rgba(79, 69, 127, 0.6);
+	border: 2px solid rgba(127, 111, 159, 0.4);
+	border-radius: 12px;
+
+	margin: 16px;
+	padding: 20px;
+
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 25%;
+
+	font-family: "JetBrains Mono";
+	font-size: 16px;
+	font-weight: bold;
+}
+
+button:focus, button:active {
+	border-color: #9F8FBF;
+}
+
+/* Individual button styling with your color palette */
+#lock {
+	background-image: image(url("icons/lock.png"));
+}
+
+#logout {
+	background-image: image(url("icons/logout.png"));
+}
+
+#suspend {
+	background-image: image(url("icons/suspend.png"));
+}
+
+#hibernate {
+	background-image: image(url("icons/hibernate.png"));
+}
+
+#shutdown {
+	background-image: image(url("icons/shutdown.png"));
+}
+
+#reboot {
+	background-image: image(url("icons/reboot.png"));
+}
