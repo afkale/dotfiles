@@ -26,6 +26,9 @@ DESKTOP_APPS = \
 							 swayosd \
 							 waybar \
 							 gtk-4.0 \
+							 gtk-3.0 \
+							 gtk-3.20 \
+							 gtk-2.0 \
 							 backgrounds
 
 # Tasks
