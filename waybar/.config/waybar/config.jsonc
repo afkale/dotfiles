@@ -2,6 +2,7 @@
 {
 	"height": 30,
 	"spacing": 4,
+	"margin": "8 5",
 	"modules-left": [
 		"hyprland/workspaces",
 		"hyprland/submap"
