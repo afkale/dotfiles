@@ -8,11 +8,11 @@ PKGS = \
 
 # App list
 APPS = \
-			 atuin \
 			 fish \
 			 nvim \
 			 starship \
-			 wezterm 
+			 wezterm \
+			 lazygit
 
 DESKTOP_PKGS = \
 							 hyprland hyprpaper mako swayosd waybar wlogout \

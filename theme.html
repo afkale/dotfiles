@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Cosmic Purple - Color Palette</title>
+		<style>
+		@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'JetBrains Mono', monospace;
+			background: linear-gradient(135deg, #1f1535 0%, #2b1f45 100%);
+			color: #e6d9ff;
+			min-height: 100vh;
+			padding: 2rem;
+		}
+
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.header {
+			text-align: center;
+			margin-bottom: 3rem;
+		}
+
+		.title {
+			font-size: 3rem;
+			font-weight: 700;
+			background: linear-gradient(135deg, #e6d9ff, #9f8fbf);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			margin-bottom: 1rem;
+		}
+
+		.subtitle {
+			font-size: 1.2rem;
+			color: #9f8fbf;
+			font-weight: 300;
+		}
+
+		.section {
+			margin-bottom: 2.5rem;
+		}
+
+		.section-title {
+			font-size: 1.5rem;
+			font-weight: 600;
+			margin-bottom: 1.5rem;
+			color: #bfafdf;
+		}
+
+		.color-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			gap: 1rem;
+			margin-bottom: 2rem;
+		}
+
+		.color-card {
+			background: rgba(79, 69, 127, 0.3);
+			border: 1px solid rgba(127, 111, 159, 0.3);
+			border-radius: 12px;
+			overflow: hidden;
+			transition: transform 0.3s ease, border-color 0.3s ease;
+		}
+
+		.color-card:hover {
+			transform: translateY(-2px);
+			border-color: rgba(159, 143, 191, 0.6);
+		}
+
+		.color-swatch {
+			height: 80px;
+			position: relative;
+			cursor: pointer;
+		}
+
+		.color-info {
+			padding: 1rem;
+		}
+
+		.color-name {
+			font-size: 1.1rem;
+			font-weight: 600;
+			margin-bottom: 0.5rem;
+			color: #e6d9ff;
+		}
+
+		.color-values {
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+		}
+
+		.color-value {
+			font-size: 0.85rem;
+			color: #9f8fbf;
+			font-family: 'JetBrains Mono', monospace;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.copy-btn {
+			background: rgba(127, 111, 159, 0.3);
+			border: 1px solid rgba(159, 143, 191, 0.3);
+			color: #e6d9ff;
+			padding: 0.2rem 0.5rem;
+			border-radius: 4px;
+			font-size: 0.7rem;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.copy-btn:hover {
+			background: rgba(159, 143, 191, 0.5);
+			border-color: rgba(159, 143, 191, 0.6);
+		}
+
+		.usage-section {
+			background: rgba(43, 31, 69, 0.5);
+			border: 1px solid rgba(95, 79, 127, 0.4);
+			border-radius: 12px;
+			padding: 1.5rem;
+			margin-top: 2rem;
+		}
+
+		.code-block {
+			background: rgba(31, 21, 53, 0.8);
+			border: 1px solid rgba(79, 69, 127, 0.6);
+			border-radius: 8px;
+			padding: 1rem;
+			margin: 1rem 0;
+			font-family: 'JetBrains Mono', monospace;
+			font-size: 0.9rem;
+			color: #bfafdf;
+			overflow-x: auto;
+		}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1 class="title">Cosmic Purple</h1>
+				<p class="subtitle">A mystical color palette for dark themes and cosmic interfaces</p>
+			</div>
+
+			<div class="section">
+				<h2 class="section-title">Base Colors</h2>
+				<div class="color-grid">
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(31, 21, 53, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Dark Base</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#1f1535')">#1f1535</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('31, 21, 53')">31, 21, 53</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('259°, 43%, 15%')">259°, 43%, 15%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(43, 31, 69, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Base</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#2b1f45')">#2b1f45</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('43, 31, 69')">43, 31, 69</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('259°, 38%, 20%')">259°, 38%, 20%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(79, 69, 127, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Surface</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#4f457f')">#4f457f</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('79, 69, 127')">79, 69, 127</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('250°, 30%, 38%')">250°, 30%, 38%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="section">
+				<h2 class="section-title">Purple Variations</h2>
+				<div class="color-grid">
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(95, 79, 127, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Accent</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#5f4f7f')">#5f4f7f</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('95, 79, 127')">95, 79, 127</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('260°, 23%, 40%')">260°, 23%, 40%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(127, 111, 159, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Highlight</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#7f6f9f')">#7f6f9f</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('127, 111, 159')">127, 111, 159</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('260°, 20%, 53%')">260°, 20%, 53%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(159, 143, 191, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Light</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#9f8fbf')">#9f8fbf</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('159, 143, 191')">159, 143, 191</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('260°, 25%, 65%')">260°, 25%, 65%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+					<div class="color-swatch" style="background: rgba(191, 175, 223, 1);"></div>
+					<div class="color-info">
+						<div class="color-name">Bright</div>
+						<div class="color-values">
+							<div class="color-value">
+								<span>HEX</span>
+								<button class="copy-btn" onclick="copyToClipboard('#bfafdf')">#bfafdf</button>
+							</div>
+							<div class="color-value">
+								<span>RGB</span>
+								<button class="copy-btn" onclick="copyToClipboard('191, 175, 223')">191, 175, 223</button>
+							</div>
+							<div class="color-value">
+								<span>HSL</span>
+								<button class="copy-btn" onclick="copyToClipboard('260°, 38%, 78%')">260°, 38%, 78%</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+
+			<div class="section">
+				<h2 class="section-title">Foreground Colors</h2>
+				<div class="color-grid">
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(230, 217, 255, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Primary Text</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#e6d9ff')">#e6d9ff</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('230, 217, 255')">230, 217, 255</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('260°, 100%, 93%')">260°, 100%, 93%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(111, 95, 143, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Secondary Text</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#6f5f8f')">#6f5f8f</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('111, 95, 143')">111, 95, 143</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('260°, 20%, 47%')">260°, 20%, 47%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="section">
+				<h2 class="section-title">Accent Colors</h2>
+				<div class="color-grid">
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(160, 96, 128, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Red</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#a06080')">#a06080</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('160, 96, 128')">160, 96, 128</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('330°, 25%, 50%')">330°, 25%, 50%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(96, 160, 128, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Green</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#60a080')">#60a080</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('96, 160, 128')">96, 160, 128</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('150°, 25%, 50%')">150°, 25%, 50%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+						<div class="color-swatch" style="background: rgba(96, 128, 160, 1);"></div>
+						<div class="color-info">
+							<div class="color-name">Blue</div>
+							<div class="color-values">
+								<div class="color-value">
+									<span>HEX</span>
+									<button class="copy-btn" onclick="copyToClipboard('#6080a0')">#6080a0</button>
+								</div>
+								<div class="color-value">
+									<span>RGB</span>
+									<button class="copy-btn" onclick="copyToClipboard('96, 128, 160')">96, 128, 160</button>
+								</div>
+								<div class="color-value">
+									<span>HSL</span>
+									<button class="copy-btn" onclick="copyToClipboard('210°, 25%, 50%')">210°, 25%, 50%</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color-card">
+					<div class="color-swatch" style="background: rgba(160, 128, 96, 1);"></div>
+					<div class="color-info">
+						<div class="color-name">Orange</div>
+						<div class="color-values">
+							<div class="color-value">
+								<span>HEX</span>
+								<button class="copy-btn" onclick="copyToClipboard('#a08060')">#a08060</button>
+							</div>
+							<div class="color-value">
+								<span>RGB</span>
+								<button class="copy-btn" onclick="copyToClipboard('160, 128, 96')">160, 128, 96</button>
+							</div>
+							<div class="color-value">
+								<span>HSL</span>
+								<button class="copy-btn" onclick="copyToClipboard('30°, 25%, 50%')">30°, 25%, 50%</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+
+			<div class="usage-section">
+				<h2 class="section-title">Usage Examples</h2>
+
+				<h3 style="color: #bfafdf; margin: 1rem 0 0.5rem 0;">CSS Variables</h3>
+				<div class="code-block">:root {
+					--cosmic-dark-base: #1f1535;
+					--cosmic-base: #2b1f45;
+					--cosmic-surface: #4f457f;
+					--cosmic-accent: #5f4f7f;
+					--cosmic-highlight: #7f6f9f;
+					--cosmic-light: #9f8fbf;
+					--cosmic-bright: #bfafdf;
+					--cosmic-fg: #e6d9ff;
+					--cosmic-fg-secondary: #6f5f8f;
+					--cosmic-red: #a06080;
+					--cosmic-green: #60a080;
+					--cosmic-blue: #6080a0;
+					--cosmic-orange: #a08060;
+					}</div>
+
+				<h3 style="color: #bfafdf; margin: 1rem 0 0.5rem 0;">Terminal Colors</h3>
+				<div class="code-block"># Background: #1f1535
+					# Foreground: #e6d9ff
+					# Cursor: #9f8fbf
+					# Selection: #4f457f
+
+					# Normal Colors
+					color0:  #1f1535  # black
+					color1:  #a06080  # red
+					color2:  #60a080  # green  
+					color3:  #a08060  # yellow/orange
+					color4:  #6080a0  # blue
+					color5:  #9f8fbf  # magenta
+					color6:  #60a080  # cyan
+					color7:  #e6d9ff  # white
+
+					# Bright Colors
+					color8:  #4f457f  # bright black
+					color9:  #a06080  # bright red
+					color10: #60a080  # bright green
+					color11: #a08060  # bright yellow
+					color12: #6080a0  # bright blue
+					color13: #bfafdf  # bright magenta
+					color14: #60a080  # bright cyan
+					color15: #e6d9ff  # bright white</div>
+			</div>
+		</div>
+
+		<script>
+		function copyToClipboard(text) {
+			navigator.clipboard.writeText(text).then(function() {
+				// Visual feedback could be added here
+				console.log('Copied to clipboard: ' + text);
+			});
+		}
+		</script>
+	</body>
+</html>
