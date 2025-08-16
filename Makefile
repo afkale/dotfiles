@@ -1,6 +1,11 @@
+
+
+CORE_PKGS = \
+						git neovim stow wezterm
+
 # Package list
 PKGS = \
-			 wezterm neovim git lazygit ncdu btop fish atuin bat carapace starship lsd stow \
+			 wezterm lazygit ncdu btop fish atuin bat carapace starship lsd \
 			 fzf fd ripgrep zoxide the_silver_searcher universal-ctags \
 			 lua-language-server bash-language-server vscode-langservers-extracted \
 			 ruff pyright rust cargo \
@@ -17,7 +22,7 @@ APPS = \
 DESKTOP_PKGS = \
 							 hyprland hyprpaper mako swayosd waybar wlogout \
 							 network-manager-applet blueman pwvucontrol bitwarden brave-bin \
-							 papirus-icon-theme-git 
+							 dracula-icons-git
 
 DESKTOP_APPS = \
 							 hypr \
@@ -25,27 +30,23 @@ DESKTOP_APPS = \
 							 wlogout \
 							 swayosd \
 							 waybar \
-							 gtk-4.0 \
-							 gtk-3.0 \
-							 gtk-3.20 \
-							 gtk-2.0 \
 							 backgrounds
 
 # Tasks
 install-packages:
-	@yay -Syu --noconfirm --needed $(PKGS)
+	@paru -Syu --noconfirm --needed $(CORE_PKGS) $(PKGS)
 
 install-desktop-packages:
-	@yay -Syu --noconfirm --needed $(DESKTOP_PKGS)
+	@paru -Syu --noconfirm --needed $(CORE_PKGS) $(DESKTOP_PKGS)
 
 link-dotfiles:
-	@stow -d ./ -t ~ $(APPS)
+	@stow -t ~ $(APPS) 
 
 link-desktop-dotfiles:
-	@stow -d ./ -t ~ $(DESKTOP_APPS)
+	@stow -t ~ $(DESKTOP_APPS) 
 
 dektop-scripts:
-	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+	@scripts/setup_gtk_theme.sh
 
 set-default-shell:
 	@chsh -s $$(which fish)
