@@ -1,3 +1,6 @@
+PKGS_MANAGER := paru
+PKGS_MANAGER_FLAGS := -Syu --noconfirm --needed
+
 CORE_PKGS := git neovim stow wezterm
 
 TERMINAL_PKGS := $(CORE_PKGS) \
@@ -25,11 +28,15 @@ DESKTOP_CFG_DIRS := hypr \
 										waybar \
 										backgrounds
 
-install-packages:
-	@paru -Syu --noconfirm --needed  $(TERMINAL_PKGS)
+GTK_THEME_DIR := /usr/share/themes/Dracula/
+GTK_THEME_REPO := https://github.com/afkale/dracula-gtk
+
+
+install-terminal-packages:
+	@$(PKGS_MANAGER) $(PKGS_MANAGER_FLAGS) $(TERMINAL_PKGS)
 
 install-desktop-packages:
-	@paru -Syu --noconfirm --needed $(DESKTOP_PKGS)
+	@$(PKGS_MANAGER) -Syu --noconfirm --needed $(DESKTOP_PKGS)
 
 link-terminal-dotfiles:
 	@stow -t ~ $(TERMINAL_CFG_DIRS) 
@@ -37,13 +44,13 @@ link-terminal-dotfiles:
 link-desktop-dotfiles:
 	@stow -t ~ $(DESKTOP_CFG_DIRS) 
 
-dektop-scripts:
-	# Create 
+desktop-scripts:
 	@touch hypr/.config/hypr/pc.conf
-
-	# Setup gtk-themes
+	
 	@sudo mkdir -p /usr/share/themes
-	@sudo git clone https://github.com/afkale/dracula-gtk /usr/share/themes/Dracula
+	@[ -d $(GTK_THEME_DIR) ] && echo "Removing $(GTK_THEME_DIR) ..." && sudo rm -rfI $(GTK_THEME_DIR)
+	@[ -d $(GTK_THEME_DIR) ] || sudo git clone $(GTK_THEME_REPO) $(GTK_THEME_DIR)
+
 	@gsettings set org.gnome.desktop.interface gtk-theme "Dracula"
 	@gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
 	@gsettings set org.gnome.desktop.interface icon-theme "Dracula"
@@ -56,6 +63,7 @@ sync-submodules:
 	@git submodule update --remote --recursive
 	@cd nvim/.config/nvim && git checkout main
 
-install-terminal: install-packages sync-submodules link-dotfiles set-default-shell
-install-desktop: install-desktop-packages dektop-scripts link-desktop-dotfiles
+install-terminal: install-terminal-packages sync-submodules link-dotfiles set-default-shell
+install-desktop: install-desktop-packages desktop-scripts link-desktop-dotfiles
+
 install: install-terminal install-desktop
