@@ -46,6 +46,7 @@ link-desktop-dotfiles:
 	@stow -t ~ $(DESKTOP_APPS) 
 
 dektop-scripts:
+	@touch $HOME/.config/hypr/pc.conf
 	@scripts/setup_gtk_theme.sh
 
 set-default-shell:
