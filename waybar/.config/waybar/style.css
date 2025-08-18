@@ -1,109 +1,78 @@
-/* Improved Waybar Cosmic Purple Theme */
-/* Using your defined color variables for better consistency */
+/* Cosmic Purple Waybar Theme - Improved, Simplified & Sorted */
 
+/* =============================
+   Global Defaults
+   ============================= */
 * {
   font-family: 'Cascadia Code', 'Symbols Nerd Font', sans-serif;
   font-size: 14px;
   min-height: 0;
-  padding-right: 0px;
-  padding-left: 0px;
-  padding-bottom: 0px;
+  padding: 0;
 }
 
-/* Specific icon sizing for consistency */
-#workspaces button {
-  min-width: 22px;
-}
-
-#battery,
-#pulseaudio,
-#backlight,
-#network,
-#cpu,
-#memory,
-#temperature,
-#clock,
-#mpd,
-#power-profiles-daemon,
-#tray,
-#custom-power {
-  min-height: 20px;
-}
-
-#power-profiles-daemon {
-  min-width: 30px;
-}
-
+/* =============================
+   Waybar Window
+   ============================= */
 window#waybar {
-  background: rgba(0, 0, 0, 0.0);
+  background: transparent;
   color: #e6d9ff; /* cosmic_purple_fg */
-  transition-property: background-color;
-  transition-duration: .5s;
+  transition: background-color 0.5s;
 }
 
 window#waybar.hidden {
   opacity: 0.2;
 }
 
-/* Better application-specific backgrounds */
+/* App-specific backgrounds */
 window#waybar.termite {
-  background: linear-gradient(135deg, rgba(43, 31, 69, 0.95), rgba(31, 21, 53, 0.95)); /* base to dark */
+  background: linear-gradient(135deg, rgba(43,31,69,0.95), rgba(31,21,53,0.95));
 }
 
 window#waybar.chromium {
-  background: linear-gradient(135deg, rgba(31, 21, 53, 0.95), rgba(31, 21, 53, 0.98)); /* dark variations */
+  background: linear-gradient(135deg, rgba(31,21,53,0.95), rgba(31,21,53,0.98));
   border: none;
 }
 
+/* =============================
+   Buttons
+   ============================= */
 button {
-  box-shadow: inset 0 -3px transparent;
   border: none;
   border-radius: 0;
-}
-
-button:hover {
-  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
-  box-shadow: inset 0 -3px #9f8fbf; /* cosmic_purple_light */
-}
-
-#power-profiles-daemon:hover {
-  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
+  box-shadow: inset 0 -3px transparent;
   transition: all 0.3s ease;
 }
 
-#pulseaudio:hover {
+button:hover,
+#power-profiles-daemon:hover,
+#pulseaudio:hover,
+#workspaces button:hover,
+#custom-power:hover {
   background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
-  transition: all 0.3s ease;
 }
 
+/* =============================
+   Workspaces
+   ============================= */
 #workspaces button {
   background: rgba(79, 69, 127, 0.4); /* cosmic_purple_overlay */
-  padding: 0 20px;
   color: #e6d9ff; /* cosmic_purple_fg */
+  padding: 0 20px;
   margin: 3px 1px;
   border-radius: 3px;
-  font-weight: 400;
+  min-width: 22px;
   min-height: 18px;
-  transition: all 0.3s ease;
+  font-weight: 400;
 }
-
-#workspaces button:hover {
-  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
-  transition: all 0.3s ease;
-}
-
 
 #workspaces button.urgent {
   background: rgba(160, 96, 128, 0.8); /* cosmic_red */
   box-shadow: 0 0 8px rgba(160, 96, 128, 0.4);
 }
 
-#submap {
-  background: linear-gradient(135deg, rgba(127, 111, 159, 0.8), rgba(111, 95, 143, 0.8));
-  box-shadow: inset 0 -3px #bfafdf;
-}
-
-/* Consistent module styling using your color palette */
+/* =============================
+   Modules (common styling)
+   ============================= */
 #clock,
 #battery,
 #cpu,
@@ -117,94 +86,57 @@ button:hover {
 #custom-media,
 #tray,
 #submap,
-#idle_inhibitor,
 #scratchpad,
 #power-profiles-daemon,
-#mpd,
 #custom-power {
   background: rgba(79, 69, 127, 0.4); /* cosmic_purple_overlay */
-  padding: 0 12px;
   color: #e6d9ff; /* cosmic_purple_fg */
+  padding: 0 12px;
   margin: 3px 1px;
   border-radius: 3px;
-  font-weight: 400;
   min-height: 18px;
+  font-weight: 400;
+  transition: all 0.3s ease;
 }
 
-#window,
-#workspaces {
-  margin: 0 4px;
+/* =============================
+   Special Modules
+   ============================= */
+/* Submap */
+#submap {
+  background: linear-gradient(135deg, rgba(127,111,159,0.8), rgba(111,95,143,0.8));
+  box-shadow: inset 0 -3px #bfafdf;
 }
 
-.modules-left > widget:first-child > #workspaces {
-  margin-left: 0;
+/* Custom Power */
+#custom-power {
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 0 8px;
 }
 
-.modules-right > widget:last-child > #workspaces {
-  margin-right: 0;
-}
-
-/* Module-specific colors using your accent palette */
-#clock {
-}
-
+/* Battery */
 #battery {
   font-family: 'Cascadia Code', 'FontAwesome', sans-serif;
 }
 
-#battery.charging, #battery.plugged {
+#battery.charging,
+#battery.plugged {
   background: rgba(96, 160, 128, 0.7); /* cosmic_green */
-  color: #ffffff;
+  color: #fff;
 }
 
 #battery.critical:not(.charging) {
   background: rgba(160, 96, 128, 0.8); /* cosmic_red */
-  color: #ffffff;
+  color: #fff;
 }
 
+/* Pulseaudio */
 #pulseaudio.muted {
   color: #9f8fbf; /* cosmic_purple_light */
 }
 
+/* Temperature */
 #temperature.critical {
   background: rgba(160, 96, 128, 0.8); /* cosmic_red */
 }
-
-#mpd.disconnected {
-  background: rgba(160, 96, 128, 0.7); /* cosmic_red */
-}
-
-#mpd.stopped {
-  background: rgba(79, 69, 127, 0.7); /* cosmic_purple_overlay */
-}
-
-#mpd.paused {
-  background: rgba(159, 143, 191, 0.7); /* cosmic_purple_light */
-}
-
-/* Custom power button styling */
-#custom-power {
-  color: #e6d9ff; /* cosmic_purple_fg */
-  padding: 0 8px;
-  margin: 3px 1px;
-  border-radius: 4px;
-  font-weight: bold;
-}
-
-#custom-power:hover {
-  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
-}
-
-/* Privacy indicators */
-#privacy-item.screenshare {
-  background: rgba(160, 128, 96, 0.8); /* cosmic_orange */
-}
-
-#privacy-item.audio-in {
-  background: rgba(96, 160, 128, 0.8); /* cosmic_green */
-}
-
-#privacy-item.audio-out {
-  background: rgba(96, 128, 160, 0.8); /* cosmic_blue */
-}
-
