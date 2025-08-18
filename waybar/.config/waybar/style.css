@@ -148,3 +148,8 @@ button:hover,
 #temperature.critical {
   background: rgba(160, 96, 128, 0.8); /* cosmic_red */
 }
+
+/* Power Profile Daemon */
+#power-profiles-daemon {
+  min-width: 25px
+}
