@@ -2,7 +2,7 @@
 /* Using your defined color variables for better consistency */
 
 * {
-	font-family: FontAwesome, "JetBrains Mono", Roboto, Helvetica, Arial, sans-serif;
+	font-family: "Symbols Nerd Font", "JetBrains Mono", Roboto, Helvetica, Arial, sans-serif;
 	font-size: 16px;
 }
 
@@ -39,6 +39,10 @@
 #custom-power {
 	font-size: 16px;
 	min-height: 20px;
+}
+
+#power-profiles-daemon {
+	min-width: 30px;
 }
 
 window#waybar {
@@ -164,7 +168,6 @@ button:hover {
 }
 
 #pulseaudio.muted {
-	background: rgba(79, 69, 127, 0.7); /* cosmic_purple_overlay muted */
 	color: #9f8fbf; /* cosmic_purple_light */
 }
 
