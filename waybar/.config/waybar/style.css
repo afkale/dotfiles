@@ -10,6 +10,7 @@
   padding: 0;
 }
 
+
 /* =============================
    Waybar Window
    ============================= */
@@ -17,6 +18,13 @@ window#waybar {
   background: transparent;
   color: #e6d9ff; /* cosmic_purple_fg */
   transition: background-color 0.5s;
+}
+
+tooltip {
+  background: rgba(43, 31, 69, 0.95); /* cosmic_purple_base */
+  border-radius: 6px;
+  padding: 6px 10px;
+  border: 1px solid rgba(159, 143, 191, 0.4); /* cosmic_purple_light border */
 }
 
 window#waybar.hidden {
