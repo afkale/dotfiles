@@ -62,12 +62,18 @@ button {
 }
 
 button:hover {
-  background: rgba(127, 111, 159, 0.2); /* cosmic_purple_highlight */
+  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
   box-shadow: inset 0 -3px #9f8fbf; /* cosmic_purple_light */
 }
 
+#power-profiles-daemon:hover {
+  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
+  transition: all 0.3s ease;
+}
+
 #pulseaudio:hover {
-  background: rgba(111, 95, 143, 0.3); /* cosmic_purple_bright */
+  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
+  transition: all 0.3s ease;
 }
 
 #workspaces button {
@@ -83,6 +89,7 @@ button:hover {
 
 #workspaces button:hover {
   background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
+  transition: all 0.3s ease;
 }
 
 
@@ -185,7 +192,7 @@ button:hover {
 }
 
 #custom-power:hover {
-  background: rgba(111, 95, 143, 0.3); /* cosmic_purple_bright */
+  background: rgba(95, 79, 127, 0.6); /* cosmic_purple_accent */
 }
 
 /* Privacy indicators */
@@ -200,3 +207,4 @@ button:hover {
 #privacy-item.audio-out {
   background: rgba(96, 128, 160, 0.8); /* cosmic_blue */
 }
+
