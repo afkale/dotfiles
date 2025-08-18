@@ -5,6 +5,7 @@
   "margin": "8 5",
   "modules-left": [
     "power-profiles-daemon",
+    "battery",
     "temperature",
     "cpu",
     "memory",
@@ -16,7 +17,6 @@
   "modules-right": [
     "clock",
     "pulseaudio",
-    "battery",
     "tray",
     "custom/power"
   ],
@@ -111,8 +111,8 @@
     },
     "format": "{capacity}% {icon}",
     "format-full": "{capacity}% {icon}",
-    "format-charging": " {capacity}%",
-    "format-plugged": " {capacity}%",
+    "format-charging": "{capacity}% ",
+    "format-plugged": " {capacity}% ",
     "format-alt": "{time} {icon}",
     "format-icons": [
       "",
@@ -140,10 +140,12 @@
       "default": [
         "",
         "",
+        "",
+        "",
         ""
       ]
     },
-    "on-click": "pavucontrol"
+    "on-click": "pwvucontrol"
   },
   "custom/power": {
     "format": "⏻",

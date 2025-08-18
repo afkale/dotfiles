@@ -2,7 +2,7 @@
 /* Using your defined color variables for better consistency */
 
 * {
-  font-family: 'Cascadia Code', FontAwesome, 'Symbols Nerd Font', sans-serif;
+  font-family: 'Cascadia Code', 'Symbols Nerd Font', sans-serif;
   font-size: 14px;
   min-height: 0;
   padding-right: 0px;
