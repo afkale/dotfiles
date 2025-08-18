@@ -142,6 +142,7 @@ button:hover {
 }
 
 #battery {
+  font-family: 'Cascadia Code', 'FontAwesome', sans-serif;
 }
 
 #battery.charging, #battery.plugged {

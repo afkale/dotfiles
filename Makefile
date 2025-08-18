@@ -8,7 +8,7 @@ TERMINAL_PKGS := $(CORE_PKGS) \
 								 fzf fd ripgrep zoxide the_silver_searcher universal-ctags \
 								 lua-language-server bash-language-server vscode-langservers-extracted \
 								 ruff pyright rust cargo \
-								 ttf-cascadia-code ttf-nerd-fonts-symbols-mono ttf-jetbrains-mono
+								 ttf-cascadia-code ttf-nerd-fonts-symbols-mono ttf-jetbrains-mono font-awesome-5
 
 TERMINAL_CFG_DIRS := fish \
 										 nvim \
