@@ -153,3 +153,15 @@ button:hover,
 #power-profiles-daemon {
   min-width: 25px
 }
+
+#power-profiles-daemon.performance {
+  color: #a08060;
+}
+
+#power-profiles-daemon.balanced {
+  color: #6080a0;
+}
+
+#power-profiles-daemon.power-saver {
+  color: #60a080;
+}
