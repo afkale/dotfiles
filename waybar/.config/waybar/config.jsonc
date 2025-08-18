@@ -15,10 +15,9 @@
   ],
   "modules-right": [
     "mpd",
+    "clock",
     "pulseaudio",
     "battery",
-    "battery#bat2",
-    "clock",
     "tray",
     "custom/power"
   ],
@@ -150,9 +149,6 @@
       "",
       ""
     ]
-  },
-  "battery#bat2": {
-    "bat": "BAT2"
   },
   "power-profiles-daemon": {
     "format": " {icon} ",

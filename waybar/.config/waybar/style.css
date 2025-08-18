@@ -12,7 +12,6 @@
 
 /* Specific icon sizing for consistency */
 #workspaces button {
-  font-size: 16px; /* Slightly larger for workspace icons */
   min-width: 22px;
 }
 
