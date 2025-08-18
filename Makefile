@@ -36,7 +36,7 @@ install-terminal-packages:
 	@$(PKGS_MANAGER) $(PKGS_MANAGER_FLAGS) $(TERMINAL_PKGS)
 
 install-desktop-packages:
-	@$(PKGS_MANAGER) -Syu --noconfirm --needed $(DESKTOP_PKGS)
+	@$(PKGS_MANAGER) $(PKGS_MANAGER_FLAGS) $(DESKTOP_PKGS)
 
 link-terminal-dotfiles:
 	@stow -t ~ $(TERMINAL_CFG_DIRS) 
@@ -55,7 +55,7 @@ desktop-scripts:
 	@gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
 	@gsettings set org.gnome.desktop.interface icon-theme "Dracula"
 
-set-default-shell:
+terminal-scripts:
 	@chsh -s /usr/bin/fish
 
 sync-submodules:
@@ -63,7 +63,7 @@ sync-submodules:
 	@git submodule update --remote --recursive
 	@cd nvim/.config/nvim && git checkout main
 
-install-terminal: install-terminal-packages sync-submodules link-dotfiles set-default-shell
+install-terminal: install-terminal-packages sync-submodules link-dotfiles terminal-scripts
 install-desktop: install-desktop-packages desktop-scripts link-desktop-dotfiles
 
 install: install-terminal install-desktop
