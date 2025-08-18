@@ -68,12 +68,12 @@
   "clock": {
     "timezone": "Europe/Madrid",
     "tooltip": false,
-    "format": "{:%H:%M:%S - %A, %d}",
+    "format": "{:%H:%M:%S}",
     "interval": 1
   },
   "cpu": {
     "interval": 1,
-    "format": "{usage:>2}% "
+    "format": "{usage}% "
   },
   "memory": {
     "interval": 30,
