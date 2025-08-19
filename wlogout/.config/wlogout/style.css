@@ -5,16 +5,13 @@
 
 /* Main window - fullscreen overlay */
 window {
-	background: linear-gradient(135deg, 
-		rgba(31, 21, 53, 0.95), 
-		rgba(43, 31, 69, 0.95)
-		);
+  background-image: image(url("backgrounds/purple.jpg"))
 }
 
 /* Button container */
 button {
 	color: rgba(230, 217, 255, 1.0);
-	background: rgba(79, 69, 127, 0.6);
+  background: rgba(79, 69, 127, 0.4);
 	border: 2px solid rgba(127, 111, 159, 0.4);
 	border-radius: 12px;
 

@@ -68,12 +68,8 @@
   },
   "temperature": {
     "critical-threshold": 80,
-    "format": "{temperatureC}°C {icon}",
-    "format-icons": [
-      "",
-      "",
-      ""
-    ]
+    "format": "{temperatureC} 󰔄 ",
+    "tooltip": false
   },
   "backlight": {
     "format": "{percent}% {icon}",
@@ -132,7 +128,7 @@
         ""
       ]
     },
-    "on-click": "pwvucontrol"
+    "on-click": "pavucontrol -t 3"
   },
   "custom/power": {
     "format": "⏻",
