@@ -2,7 +2,7 @@ PKGS_MANAGER := paru
 PKGS_MANAGER_FLAGS := -Syu --noconfirm --needed
 
 CORE_PKGS := git neovim stow kitty \
-						 ttf-cascadia-code ttf-cascadia-code-nerd-font ttf-nerd-fonts-symbols ttf-jetbrains-mono ttf-font-awesome-5
+						 ttf-cascadia-code ttf-cascadia-code-nerd ttf-nerd-fonts-symbols ttf-jetbrains-mono ttf-font-awesome-5
 
 TERMINAL_PKGS := $(CORE_PKGS) \
 								 tmux lazygit ncdu btop fish atuin bat carapace starship lsd \
@@ -63,7 +63,7 @@ sync-submodules:
 	@git submodule update --remote --recursive
 	@cd nvim/.config/nvim && git checkout main
 
-install-terminal: install-terminal-packages sync-submodules link-dotfiles terminal-scripts
+install-terminal: install-terminal-packages sync-submodules link-terminal-dotfiles terminal-scripts
 install-desktop: install-desktop-packages desktop-scripts link-desktop-dotfiles
 
 install: install-terminal install-desktop
