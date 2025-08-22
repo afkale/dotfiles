@@ -1,25 +1,26 @@
 PKGS_MANAGER := paru
 PKGS_MANAGER_FLAGS := -Syu --noconfirm --needed
 
-CORE_PKGS := git neovim stow wezterm
+CORE_PKGS := git neovim stow kitty \
+						 ttf-cascadia-code ttf-cascadia-code-nerd-font ttf-nerd-fonts-symbols ttf-jetbrains-mono ttf-font-awesome-5
 
 TERMINAL_PKGS := $(CORE_PKGS) \
-								 wezterm lazygit ncdu btop fish atuin bat carapace starship lsd \
+								 tmux lazygit ncdu btop fish atuin bat carapace starship lsd \
 								 fzf fd ripgrep zoxide the_silver_searcher universal-ctags \
 								 lua-language-server bash-language-server vscode-langservers-extracted \
-								 ruff pyright rust cargo \
-								 ttf-cascadia-code ttf-nerd-fonts-symbols ttf-nerd-fonts-symbols-mono ttf-jetbrains-mono ttf-font-awesome-5
+								 ruff pyright rust cargo
 
 TERMINAL_CFG_DIRS := fish \
 										 nvim \
 										 starship \
-										 wezterm \
+										 kitty \
+										 tmux \
 										 lazygit
 
 DESKTOP_PKGS := $(CORE_PKGS) \
-								hyprland hyprpaper mako swayosd waybar wlogout \
+								hyprland hyprpaper hyprlock hypridle mako swayosd waybar wlogout \
 								network-manager-applet pwvucontrol bitwarden brave-bin \
-								dracula-icons-git
+								dracula-icons-git bibata-cursor-theme-bin 
 
 DESKTOP_CFG_DIRS := hypr \
 										mako \
@@ -46,7 +47,6 @@ link-desktop-dotfiles:
 
 desktop-scripts:
 	@touch hypr/.config/hypr/pc.conf
-	
 	@sudo mkdir -p /usr/share/themes
 	@[ -d $(GTK_THEME_DIR) ] && echo "Removing $(GTK_THEME_DIR) ..." && sudo rm -rfI $(GTK_THEME_DIR)
 	@[ -d $(GTK_THEME_DIR) ] || sudo git clone $(GTK_THEME_REPO) $(GTK_THEME_DIR)

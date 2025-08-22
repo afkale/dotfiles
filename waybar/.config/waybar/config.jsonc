@@ -16,6 +16,7 @@
   ],
   "modules-right": [
     "clock",
+    "backlight",
     "pulseaudio",
     "tray",
     "custom/power"
@@ -30,23 +31,21 @@
     }
   },
   "hyprland/workspaces": {
-    "all-outputs": true,
-    "disable-scroll": true,
-    "format": "{icon}",
+    "format": "",
     "format-icons": {
-      "1": "",
-      "2": "",
-      "3": "",
-      "4": "",
-      "5": "",
-      "6": "",
-      "7": "",
-      "8": "",
-      "9": "",
-      "10": "",
-      "urgent": "",
-      "active": "",
-      "default": ""
+      "active": "",
+      "default": "",
+      "empty": ""
+    },
+    "persistent-workspaces": {
+      "*": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
     }
   },
   "tray": {
@@ -72,7 +71,8 @@
     "tooltip": false
   },
   "backlight": {
-    "format": "{percent}% {icon}",
+    "format": "{icon}",
+    "tooltip": false,
     "format-icons": [
       "",
       "",
@@ -96,6 +96,7 @@
     "format-charging": "{capacity}% ",
     "format-plugged": "{capacity}% ",
     "format-alt": "{time} {icon}",
+    "tooltip": false,
     "format-icons": [
       "",
       "",
@@ -106,8 +107,7 @@
   },
   "power-profiles-daemon": {
     "format": " {icon} ",
-    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
-    "tooltip": true,
+    "tooltip": false,
     "format-icons": {
       "default": "",
       "performance": "",
@@ -117,7 +117,7 @@
   },
   "pulseaudio": {
     "format": "{icon}",
-    "format-muted": "",
+    "format-muted": " ",
     "format-icons": {
       "default": [
         "",
@@ -133,6 +133,6 @@
   "custom/power": {
     "format": "⏻",
     "tooltip": false,
-    "on-click": "wlogout"
+    "on-click": "wlogout --buttons-per-row 4"
   }
 }
