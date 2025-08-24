@@ -6,9 +6,6 @@
   "modules-left": [
     "power-profiles-daemon",
     "battery",
-    "cpu",
-    "memory",
-    "temperature",
     "hyprland/submap"
   ],
   "modules-center": [
