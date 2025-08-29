@@ -27,7 +27,7 @@ DESKTOP_CFG_DIRS := hypr \
 										wlogout \
 										swayosd \
 										waybar \
-										backgrounds
+										assets
 
 GTK_THEME_DIR := /usr/share/themes/Dracula/
 GTK_THEME_REPO := https://github.com/afkale/dracula-gtk

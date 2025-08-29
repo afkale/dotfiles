@@ -1,24 +1,24 @@
 {
     "label" : "logout",
     "action" : "hyprctl exit",
-    "text" : "Logout",
-    "keybind" : "e"
+    "text" : "(L)ogout",
+    "keybind" : "l"
 }
 {
     "label" : "shutdown",
     "action" : "systemctl poweroff",
-    "text" : "Shutdown",
+    "text" : "(S)hutdown",
     "keybind" : "s"
 }
 {
     "label" : "suspend",
     "action" : "systemctl suspend",
-    "text" : "Suspend",
+    "text" : "S(u)spend",
     "keybind" : "u"
 }
 {
     "label" : "reboot",
     "action" : "systemctl reboot",
-    "text" : "Reboot",
+    "text" : "(R)eboot",
     "keybind" : "r"
 }

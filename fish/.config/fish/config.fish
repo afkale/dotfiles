@@ -20,7 +20,7 @@ set -Ux CARAPACE_BRIDGES 'zsh,fish,bash,inshellisense' # optional
 
 if status is-interactive
 		atuin init fish | source
-    carapace _carapace | source
+    # carapace _carapace | source
 		zoxide init fish | source
-		starship init fish | source
+		# starship init fish | source
 end

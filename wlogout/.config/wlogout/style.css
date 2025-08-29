@@ -3,12 +3,10 @@
 	box-shadow: none;
 }
 
-/* Main window - fullscreen overlay */
 window {
-  background-image: image(url("backgrounds/purple.jpg"))
+  background-image: image(url("assets/purple.jpg"))
 }
 
-/* Button container */
 button {
   border-radius: 100px;
 
@@ -35,29 +33,28 @@ button:focus, button:active {
 	border-color: #9F8FBF;
 }
 
-/* Individual button styling with your color palette */
 #lock {
-	background-image: image(url("icons/lock.png"));
+	background-image: image(url("assets/lock.png"));
 }
 
 #logout {
-	background-image: image(url("icons/logout.png"));
+	background-image: image(url("assets/logout.png"));
 }
 
 #suspend {
-	background-image: image(url("icons/suspend.png"));
+	background-image: image(url("assets/suspend.png"));
 }
 
 #hibernate {
-	background-image: image(url("icons/hibernate.png"));
+	background-image: image(url("assets/hibernate.png"));
 }
 
 #shutdown {
-	background-image: image(url("icons/shutdown.png"));
+	background-image: image(url("assets/shutdown.png"));
 }
 
 #reboot {
-	background-image: image(url("icons/reboot.png"));
+	background-image: image(url("assets/reboot.png"));
 }
 
 button:hover {
