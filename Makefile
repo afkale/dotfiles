@@ -5,14 +5,13 @@ CORE_PKGS := git neovim stow kitty \
 						 ttf-cascadia-code ttf-cascadia-code-nerd ttf-nerd-fonts-symbols ttf-jetbrains-mono ttf-font-awesome-5
 
 TERMINAL_PKGS := $(CORE_PKGS) \
-								 tmux lazygit ncdu btop fish atuin bat carapace starship lsd \
+								 tmux lazygit ncdu btop fish atuin bat carapace lsd \
 								 fzf fd ripgrep zoxide the_silver_searcher universal-ctags \
 								 lua-language-server bash-language-server vscode-langservers-extracted \
 								 ruff pyright rust cargo
 
 TERMINAL_CFG_DIRS := fish \
 										 nvim \
-										 starship \
 										 kitty \
 										 tmux \
 										 lazygit
