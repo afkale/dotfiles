@@ -1,6 +1,6 @@
 #!/bin/sh
 
-tmux list-panes -a -F '#S:#I.#P - #W' | grep -v $(tmux display-message -p '#S:#I.#P') | fzf \
+tmux list-panes -a -F '#S:#I.#P - #W' | grep -v "$(tmux display-message -p '#S:#I.#P')" | fzf \
   --preview "tmux capture-pane -t {1} -p -e -S -100 | tail -n 45" \
   --bind "enter:execute(tmux switch-client -t {1})+abort" \
-  --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload(tmux list-panes -a -F '#S:#I.#P - #W')"
+  --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload(tmux list-panes -a -F '#S:#I.#P - #W' | grep -v $(tmux display-message -p '#S:#I.#P'))"
