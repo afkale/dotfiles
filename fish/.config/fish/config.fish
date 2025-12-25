@@ -20,3 +20,6 @@ if status is-interactive
 		atuin init fish | source
 		zoxide init fish | source
 end
+
+# uv
+fish_add_path "/home/afkale/.local/bin"

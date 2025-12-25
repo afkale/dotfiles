@@ -29,10 +29,8 @@ gui:
       - '#e6d9ff'
     searchingActiveBorderColor:
       - '#f9e2af'
-
   authorColors:
-    '*': '#b4befe' 
-
+    '*': '#b4befe'
   commitLength:
     show: true
   mouseEvents: true
@@ -51,11 +49,10 @@ gui:
   splitDiff: 'auto' # one of 'auto' | 'always'
   skipRewordInEditorWarning: false # for skipping the confirmation before launching the reword editor
   border: 'single' # one of 'single' | 'double' | 'rounded' | 'hidden'
-
 git:
-  paging:
-    colorArg: always
-    useConfig: false
+  pagers:
+    - colorArg: always
+      useConfig: false
   commit:
     signOff: false
     verbose: default # one of 'default' | 'always' | 'never'
@@ -184,7 +181,7 @@ keybinding:
     viewResetOptions: 'D'
     fetch: 'f'
     toggleTreeView: '`'
-    openMergeTool: 'M'
+    openMergeOptions: 'M'
     openStatusFilter: '<c-b>'
   branches:
     createPullRequest: 'o'

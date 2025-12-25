@@ -17,7 +17,7 @@ TERMINAL_CFG_DIRS := fish \
 										 lazygit
 
 DESKTOP_PKGS := $(CORE_PKGS) \
-								hyprland hyprpaper hyprlock hypridle mako swayosd waybar wlogout \
+								hyprland hyprpaper hyprlock hypridle hyprshot mako swayosd waybar wlogout \
 								network-manager-applet pwvucontrol bitwarden brave-bin \
 								dracula-icons-git bibata-cursor-theme-bin 
 
