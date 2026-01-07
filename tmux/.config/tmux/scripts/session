@@ -1,7 +1,41 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-tmux list-panes -a -F '#S:#I.#P - #W' | grep -v "$(tmux display-message -p '#S:#I.#P')" | fzf \
+current_pane=$(tmux display-message -p '#S:#I.#P - #W')
+panes=$(tmux list-panes -a -F '#S:#I.#P - #W')
+fzf_session_history=${FZF_SESSION_HISTORY:-~/.fzf_session_history}
+
+most_used_panes=$(
+  sort "$fzf_session_history" 2>/dev/null |
+  uniq -c |
+  sort -nr |
+  awk '{$1=""; sub(/^ /,""); print}' |
+  grep -F -f <(printf '%s\n' "$panes")
+)
+
+if [ -z "$most_used_panes" ]; then
+  lost_panes=$panes
+else
+  lost_panes=$(printf '%s\n' "$panes" | grep -F -v -f <(printf '%s\n' "$most_used_panes"))
+fi
+
+all_panes=$(printf '%s\n%s\n' "$most_used_panes" "$lost_panes")
+
+
+result=$(
+  printf '%s\n' "$all_panes" |
+  grep -F -v "$current_pane" |
+  fzf \
+  --delimiter=' ' \
+  --with-nth=1,2,3,4,5 \
   --preview "tmux capture-pane -t {1} -p -e -S -100 | tail -n 48" \
-  --bind "enter:execute(tmux switch-client -t {1})+abort" \
   --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload(tmux list-panes -a -F '#S:#I.#P - #W' | grep -v $(tmux display-message -p '#S:#I.#P'))" \
-  --bind "ctrl-r:refresh-preview"
+  --bind "ctrl-r:refresh-preview" \
+  --bind 'enter:become(echo {1} {2} {3} {4} {5})' \
+  --layout=reverse
+)
+
+[ -z "$result" ] && exit 0
+printf '%s\n' "$result" >> "$fzf_session_history"
+
+pane=$(awk '{print $1}' <<< "$result")
+tmux switch-client -t $pane
