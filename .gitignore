@@ -3,3 +3,4 @@ result
 atuin/.config/nvim/data/key
 atuin/.config/nvim/atuin-receipt.json
 hypr/.config/hypr/pc.conf
+fish/.config/fish/fish_variables
