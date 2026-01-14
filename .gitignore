@@ -6,3 +6,4 @@ hypr/.config/hypr/pc.conf
 fish/.config/fish/fish_variables
 kitty/.config/kitty/dank-tabs.conf
 kitty/.config/kitty/dank-theme.conf
+fish/.config/fish/conf.d
