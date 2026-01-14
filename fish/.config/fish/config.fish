@@ -1,6 +1,6 @@
 # Only execute this file once per shell.
 status is-login; and begin
-    # Login shell initialisation
+  # Login shell initialisation
 end
 
 status is-interactive; and begin
@@ -17,8 +17,9 @@ fish_vi_key_bindings
 set -Ux EDITOR nvim
 
 if status is-interactive
-		atuin init fish | source
-		zoxide init fish | source
+  atuin init fish | source
+  zoxide init fish | source
+  starship init fish | source
 end
 
 # uv
