@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+fzf_session_history=${FZF_SESSION_HISTORY:-~/.fzf_session_history}
+
+result=$(cat "$fzf_session_history" | grep -F -f <(tmux list-panes -a -F '#S:#I.#P - #W'))
+
+printf '%s' "$result" > "$fzf_session_history"

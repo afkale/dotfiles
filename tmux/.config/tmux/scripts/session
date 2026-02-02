@@ -1,39 +1,20 @@
 #!/usr/bin/env bash
 
-current_pane=$(tmux display-message -p '#S:#I.#P - #W')
-panes=$(tmux list-panes -a -F '#S:#I.#P - #W')
 fzf_session_history=${FZF_SESSION_HISTORY:-~/.fzf_session_history}
-previous_pane=$(tail -n2 "$fzf_session_history" | head -n1)
+tmux_scripts=${TMUX_SCRIPTS:-~/.config/tmux/scripts}
 
-most_used_panes=$(
-  sort "$fzf_session_history" 2>/dev/null |
-  uniq -c |
-  sort -nr |
-  awk '{$1=""; sub(/^ /,""); print}' |
-  grep -F -f <(printf '%s\n' "$panes")
-)
+touch "$fzf_session_history"
 
-if [ -z "$most_used_panes" ]; then
-  lost_panes=$panes
-else
-  if [ -n "$previous_pane" ]; then
-    most_used_panes=$(printf '%s\n' "$most_used_panes" | grep -v "$previous_pane")
-    most_used_panes=$(printf '%s\n%s\n' "$previous_pane" "$most_used_panes")
-  fi
-  lost_panes=$(printf '%s\n' "$panes" | grep -F -v -f <(printf '%s\n' "$most_used_panes"))
-fi
-
-all_panes=$(printf '%s\n%s\n' "$most_used_panes" "$lost_panes")
+all_panes=$($tmux_scripts/panes)
 
 result=$(
-  printf '%s\n' "$all_panes" |
-  grep -F -v "$current_pane" |
+  printf '%s' "$all_panes" |
   fzf \
   --with-nth=1,2,3,4,5 \
   --preview "tmux capture-pane -t {1} -p -e -S -100 | tail -n 48" \
-  --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload(tmux list-panes -a -F '#S:#I.#P - #W' | grep -v $(tmux display-message -p '#S:#I.#P'))" \
+  --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload($HOME/.config/tmux/scripts/panes)" \
   --bind "ctrl-r:refresh-preview" \
-  --bind 'enter:become(echo {1} {2} {3} {4} {5})' \
+  --bind "enter:become(echo {1} {2} {3} {4} {5})" \
   --layout=reverse
 )
 

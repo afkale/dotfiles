@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+fzf_session_history=${FZF_SESSION_HISTORY:-~/.fzf_session_history}
+tmux_scripts=${TMUX_SCRIPTS:-~/.config/tmux/scripts}
+
+tmux display-message -p '#S:#I.#P - #W' >> $fzf_session_history
+$tmux_scripts/clean_panes
