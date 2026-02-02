@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-fzf_session_history=${FZF_SESSION_HISTORY:-~/.fzf_session_history}
+tmux_env_script="$HOME/.config/tmux/scripts/utils/envs"
+source "$tmux_env_script"
 
 current_pane=$(tmux display-message -p '#S:#I.#P - #W')
 panes=$(tmux list-panes -a -F '#S:#I.#P - #W')

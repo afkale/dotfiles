@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-fzf_session_history=${FZF_SESSION_HISTORY:-~/.fzf_session_history}
-tmux_scripts=${TMUX_SCRIPTS:-~/.config/tmux/scripts}
+tmux_env_script="$HOME/.config/tmux/scripts/utils/envs"
+source "$tmux_env_script"
 
 touch "$fzf_session_history"
 
-all_panes=$($tmux_scripts/panes)
+all_panes=$("$tmux_utils_scripts/panes")
 
 result=$(
   printf '%s' "$all_panes" |

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+tmux_env_script="$HOME/.config/tmux/scripts/utils/envs"
+source "$tmux_env_script"
+
+"$tmux_scripts/clean_panes"
