@@ -1,0 +1,5 @@
+#!/bin/bash
+
+tmux set -g @recording ""
+killall asciinema
+kitty @ close-window

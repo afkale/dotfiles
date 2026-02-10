@@ -12,7 +12,7 @@ result=$(
   fzf \
   --with-nth=1,2,3,4,5 \
   --preview "tmux capture-pane -t {1} -p -e -S -100 | tail -n 48" \
-  --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload($HOME/.config/tmux/scripts/panes)" \
+  --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload($tmux_utils_scripts/panes)" \
   --bind "ctrl-r:refresh-preview" \
   --bind "enter:become(echo {1} {2} {3} {4} {5})" \
   --layout=reverse
