@@ -17,9 +17,9 @@ fish_vi_key_bindings
 set -Ux EDITOR nvim
 
 if status is-interactive
-  atuin init fish | source
   zoxide init fish | source
   starship init fish | source
+  fzf --fish | source
 end
 
 # uv
