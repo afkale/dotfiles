@@ -2,12 +2,6 @@
 status is-login; and begin
   # Login shell initialisation
 end
-
-status is-interactive; and begin
-
-end
-
-# Set greeting to empty
 set fish_greeting
 
 set -gx PATH $HOME/.cargo/bin $PATH
@@ -23,4 +17,4 @@ if status is-interactive
 end
 
 # uv
-fish_add_path "/home/afkale/.local/bin"
+fish_add_path "/home/$USER/.local/bin"
