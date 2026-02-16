@@ -11,5 +11,4 @@ case "$1" in
   prev-session) tmux switch-client -p ;;
 esac
 
-# Ejecutar hook al final
 tmux_save_current_pane
