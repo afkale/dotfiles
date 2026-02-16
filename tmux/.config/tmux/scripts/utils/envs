@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-fzf_session_history=${FZF_SESSION_HISTORY:-~/.fzf_session_history}
-
-tmux_scripts=${TMUX_SCRIPTS:-~/.config/tmux/scripts}
-tmux_utils_scripts=${TMUX_UTILS_SCRIPTS:-~/.config/tmux/scripts/utils}
-tmux_hooks_scripts=${TMUX_HOOKS_SCRIPTS:-~/.config/tmux/scripts/hooks}

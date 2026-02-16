@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-tmux_env_script="$HOME/.config/tmux/scripts/utils/envs"
-source "$tmux_env_script"
-
-result=$(cat "$fzf_session_history" | grep -F -f <(tmux list-panes -a -F '#S:#I.#P - #W'))
-
-printf '%s' "$result" > "$fzf_session_history"

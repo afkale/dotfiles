@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 tmux set -g @recording " #[fg=red]#[blink]󰑋"
 
