@@ -18,6 +18,6 @@ main() {
     panes=$(printf '%s\n' "$panes" | grep -v "$current_pane")
   fi
 
-  printf '%s\n' "$panes"
+  printf '%s' "$panes"
 }
 main
