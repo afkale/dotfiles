@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-tmux set -g @logofg "red"
+if [ ! $(pgrep -l asciinema) ]; then
+  tmux set -g @logofg "red"
 
-pane=$(tmux display-message -p '#S:#W')
-kitty asciinema stream -r -c "tmux attach -t $pane"
+  pane=$(tmux display-message -p '#S:#W')
+  ghostty -e asciinema stream -r -c "tmux attach -t $pane"
+fi

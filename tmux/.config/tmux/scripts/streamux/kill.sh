@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-tmux set -g @logofg "#e6d9ff"
+if pgrep -l asciinema; then
+  tmux set -g @logofg "#e6d9ff"
 
-killall asciinema
-kitty @ close-window
+  killall asciinema
+fi
