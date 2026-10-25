@@ -213,7 +213,7 @@ has() {
 pick() {
   touch "$HISTORY"
 
-  local filter="${1:-}" list_cmd="$SELF list" label=" panes "
+  local filter="${1:-}" list_cmd="$SELF list" label="  panes "
   if [ -n "$filter" ]; then
     list_cmd="$SELF list $filter"
     case "$filter" in
