@@ -1,5 +1,13 @@
 background-opacity = 0.8
+
+confirm-close-surface = false
+
 font-size = 16
 theme = noctalia
+
 command = tmux
-confirm-close-surface = false
+
+window-padding-x = 0
+window-padding-y = 0
+window-padding-balance = true
+window-padding-color = extend
