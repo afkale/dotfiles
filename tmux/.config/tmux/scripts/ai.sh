@@ -189,9 +189,23 @@ set_pane_title() {
   tmux select-pane -t "$TMUX_PANE" -T "$title" 2>/dev/null || true
 }
 
+# Set the window options from inside the job before the provider starts, so a
+# provider that exits immediately is still retained.
+prepare_job_window() {
+  local win
+
+  [ -n "${TMUX_PANE:-}" ] || return 0
+  win=$(tmux display-message -p -t "$TMUX_PANE" '#{window_id}' 2>/dev/null) || return 0
+  [ -n "$win" ] || return 0
+
+  tmux set-window-option -t "$win" automatic-rename off 2>/dev/null || true
+  tmux set-window-option -t "$win" remain-on-exit on 2>/dev/null || true
+}
+
 run_window() {
   local name="${1:-${AI_RUN_NAME:-}}" title rc
 
+  prepare_job_window
   title="ai run: $name · $PROVIDER"
   set_pane_title "$title"
 
@@ -206,7 +220,7 @@ run_window() {
 
 # Launch in the dedicated session. The current client is never switched.
 launch() {
-  local name="${1:-}" dir="$PWD" win cmd jobs_win
+  local name="${1:-}" dir="$PWD" win cmd
 
   [ -n "$name" ] || return 1
 
@@ -216,22 +230,25 @@ launch() {
     return
   fi
 
+  cmd=$(printf '%q run-window' "$SELF")
+
+  # Create the dedicated session directly with the first job window. A
+  # placeholder shell here would show up as an extra "jobs" window.
   if ! tmux has-session -t "=$RUN_SESSION" 2>/dev/null; then
-    if ! tmux new-session -d -s "$RUN_SESSION" -n jobs -c "$HOME"; then
+    if ! win=$(tmux new-session -d -P -F '#{window_id}' \
+      -s "$RUN_SESSION" \
+      -n "ai: $name" \
+      -c "$dir" \
+      -e "AI_RUN_COMMANDS=$COMMANDS" \
+      -e "AI_RUN_NAME=$name" \
+      -e "AI_RUN_PROVIDER=$PROVIDER" \
+      -e "AI_RUN_PROVIDER_ARGS=$PROVIDER_ARGS_STR" \
+      "$cmd"); then
       printf 'failed to create tmux session: %s\n' "$RUN_SESSION"
       hold
       return 1
     fi
-
-    jobs_win=$(tmux list-windows -t "=$RUN_SESSION" -F '#{window_id}' 2>/dev/null | head -1)
-    if [ -n "$jobs_win" ]; then
-      tmux set-window-option -t "$jobs_win" automatic-rename off 2>/dev/null || true
-      tmux rename-window -t "$jobs_win" jobs 2>/dev/null || true
-    fi
-  fi
-
-  cmd=$(printf '%q run-window' "$SELF")
-  if ! win=$(tmux new-window -d -P -F '#{window_id}' \
+  elif ! win=$(tmux new-window -d -P -F '#{window_id}' \
     -t "=$RUN_SESSION:" \
     -n "ai: $name" \
     -c "$dir" \
