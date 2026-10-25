@@ -3,9 +3,10 @@
 #
 #   pane.sh save [PANE_ID]       remember a pane as the most recently used
 #   pane.sh prune                forget panes that no longer exist
-#   pane.sh list                 MRU-ordered "<pane_id><TAB><label>" for fzf
+#   pane.sh list [FILTER]        MRU-ordered "<pane_id><TAB><label>" for fzf
 #   pane.sh last                 jump to the previous pane (M-`)
-#   pane.sh pick                 fzf pane picker (M-d popup)
+#   pane.sh pick [FILTER]        fzf pane picker (M-d, M-o for opencode panes)
+#   pane.sh has [PANE] [FILTER]  true when the picker would have entries
 #   pane.sh open-window PANE_ID  open that pane's directory in a new window
 #   pane.sh close-session PANE_ID    close that pane's session (pane if current)
 #
@@ -91,6 +92,13 @@ prune() {
   mv -f "$tmp" "$HISTORY"
 }
 
+# Pane ids whose foreground command or title matches $1 (case-insensitive).
+matching_ids() {
+  tmux list-panes -a -F "#{pane_id}"$'\t'"#{pane_current_command}"$'\t'"#{pane_title}" 2>/dev/null |
+    awk -F'\t' -v pat="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" \
+      'tolower($2) ~ pat || tolower($3) ~ pat { print $1 }'
+}
+
 print_entry() {
   local mark="  "
   [ "${3:-0}" = 1 ] && mark="↩ "
@@ -98,14 +106,21 @@ print_entry() {
 }
 
 list() {
-  local current="" pane label first=1
-  declare -A label_of=() listed=()
+  local filter="${1:-}" current="" pane label first=1
+  declare -A label_of=() listed=() allowed=()
   local order=()
 
   current=$(current_pane)
 
+  if [ -n "$filter" ]; then
+    while IFS= read -r pane; do
+      [ -n "$pane" ] && allowed[$pane]=1
+    done < <(matching_ids "$filter")
+  fi
+
   while IFS=$'\t' read -r pane label; do
     [ -n "$pane" ] || continue
+    [ -n "$filter" ] && [ -z "${allowed[$pane]+x}" ] && continue
     label_of[$pane]=$label
     order+=("$pane")
   done < <(tmux list-panes -a -F "$FIELDS" 2>/dev/null)
@@ -171,29 +186,58 @@ last() {
   tmux last-pane 2>/dev/null || true
 }
 
+# True when there is at least one other pane to show. The key bindings use
+# this before opening a popup, so an empty picker never flashes the screen.
+has() {
+  local pane="${1:-}" filter="${2:-}" out
+
+  if [ -n "$pane" ]; then
+    out=$(TMUX_PANE="$pane" list "$filter")
+  else
+    out=$(list "$filter")
+  fi
+
+  [ -n "$out" ]
+}
+
 pick() {
   touch "$HISTORY"
 
+  local filter="${1:-}" list_cmd="$SELF list" label=" panes "
+  if [ -n "$filter" ]; then
+    list_cmd="$SELF list $filter"
+    case "$filter" in
+      opencode) label=" 󰚩 opencode " ;;
+      nvim) label="  nvim " ;;
+      *)        label=" $filter " ;;
+    esac
+  fi
+
+  if [ -n "$filter" ] && [ -z "$(list "$filter")" ]; then
+    tmux display-message -d 1500 "no $filter panes"
+    return 0
+  fi
+
   local selection
   selection=$(
-    list | fzf \
+    list "$filter" | fzf \
       --delimiter=$'\t' \
       --with-nth=2.. \
       --no-sort \
       --cycle \
       --info=inline \
       --border=rounded \
-      --border-label=' panes ' \
+      --border-label="$label" \
       --color='fg:#908caa,bg:#191724,hl:#eb6f92,fg+:#e0def4,bg+:#26233a,hl+:#eb6f92' \
       --color='info:#c4a7e7,prompt:#c4a7e7,pointer:#ebbcba,marker:#9ccfd8,spinner:#f6c177' \
       --color='header:#6e6a86,border:#403d52,label:#c4a7e7,selected-bg:#26233a' \
       --header='enter: go · Ctrl-x: kill pane · Ctrl-d: close session · Ctrl-o: new window · Ctrl-r: reload' \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \
-      --bind "ctrl-x:execute-silent(tmux kill-pane -t {1})+reload($SELF list)" \
-      --bind "ctrl-d:execute-silent($SELF close-session {1})+reload($SELF list)" \
+      --bind "ctrl-x:execute-silent(tmux kill-pane -t {1})+reload($list_cmd)" \
+      --bind "ctrl-d:execute-silent($SELF close-session {1})+reload($list_cmd)" \
       --bind "ctrl-o:execute-silent($SELF open-window {1})+abort" \
-      --bind "ctrl-r:reload($SELF list)" \
+      --bind "ctrl-r:reload($list_cmd)" \
       --bind 'enter:become(echo {1})'
   )
 
@@ -226,13 +270,14 @@ close_session() {
 case "${1:-}" in
   save) shift; save "${1:-}" ;;
   prune) prune ;;
-  list) list ;;
+  list) shift; list "${1:-}" ;;
   last) last ;;
-  pick) pick ;;
+  pick) shift; pick "${1:-}" ;;
+  has) shift; has "${1:-}" "${2:-}" ;;
   open-window) shift; open_window "${1:-}" ;;
   close-session) shift; close_session "${1:-}" ;;
   *)
-    printf 'usage: %s {save [pane_id]|prune|list|last|pick|open-window <pane_id>|close-session <pane_id>}\n' "${0##*/}" >&2
+    printf 'usage: %s {save [pane_id]|prune|list [filter]|last|pick [filter]|has [pane] [filter]|open-window <pane_id>|close-session <pane_id>}\n' "${0##*/}" >&2
     exit 2
     ;;
 esac

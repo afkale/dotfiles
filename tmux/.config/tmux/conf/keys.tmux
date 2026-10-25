@@ -37,17 +37,17 @@ bind -n M-s run-shell -b "$STREAMUX_SCRIPT start"
 bind -n M-C-s run-shell -b "$STREAMUX_SCRIPT stop"
 
 # ---------------------------------------------------------------------------
-# Lock mode: only M-o keeps working until it is pressed again.
+# Lock mode: only M-L keeps working until it is pressed again.
 # ---------------------------------------------------------------------------
 set -g @locked 0
 
-bind -n M-o \
+bind -n M-L \
   set -g @locked 1 \; \
   set -g @logo " " \; \
   set prefix None \; \
   set key-table off
 
-bind -T off M-o \
+bind -T off M-L \
   set -g @locked 0 \; \
   set -g @logo " " \; \
   set -u prefix \; \
