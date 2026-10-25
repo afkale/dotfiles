@@ -36,8 +36,8 @@ runtime_dir() {
 RUNTIME_DIR=$(runtime_dir)
 LOCK="$RUNTIME_DIR/lock"
 
-# field 1 = pane id, field 2 = human label
-FIELDS="#{pane_id}"$'\t'"#{session_name}:#{window_index}.#{pane_index} - #{window_name}"
+# field 1 = pane id, field 2 = human label, field 3 = window bell flag
+FIELDS="#{pane_id}"$'\t'"#{session_name}:#{window_index}.#{pane_index} - #{window_name}"$'\t'"#{window_bell_flag}"
 
 current_pane() {
   # Hooks and popups know their pane through TMUX_PANE; fall back to tmux.
@@ -99,15 +99,24 @@ matching_ids() {
       'tolower($2) ~ pat || tolower($3) ~ pat { print $1 }'
 }
 
+# Notified rows are drawn in rose-pine gold with a bell (fzf --ansi).
+NOTIFY_COLOR=$'\033[38;2;246;193;119m'
+RESET_COLOR=$'\033[0m'
+
 print_entry() {
-  local mark="  "
+  local mark="  " notify="${4:-0}" color="" reset=""
   [ "${3:-0}" = 1 ] && mark="↩ "
-  printf '%s\t%s%s\n' "$1" "$mark" "$2"
+  if [ "$notify" = 1 ]; then
+    color=$NOTIFY_COLOR
+    reset=$RESET_COLOR
+    mark="$mark "
+  fi
+  printf '%s\t%s%s%s%s\n' "$1" "$color" "$mark" "$2" "$reset"
 }
 
 list() {
-  local filter="${1:-}" current="" pane label first=1
-  declare -A label_of=() listed=() allowed=()
+  local filter="${1:-}" current="" pane label bell first=1
+  declare -A label_of=() listed=() allowed=() notified=()
   local order=()
 
   current=$(current_pane)
@@ -118,10 +127,11 @@ list() {
     done < <(matching_ids "$filter")
   fi
 
-  while IFS=$'\t' read -r pane label; do
+  while IFS=$'\t' read -r pane label bell; do
     [ -n "$pane" ] || continue
     [ -n "$filter" ] && [ -z "${allowed[$pane]+x}" ] && continue
     label_of[$pane]=$label
+    [ "${bell:-0}" = 1 ] && notified[$pane]=1
     order+=("$pane")
   done < <(tmux list-panes -a -F "$FIELDS" 2>/dev/null)
 
@@ -132,7 +142,7 @@ list() {
       [ "$pane" = "$current" ] && continue
       [ -n "${label_of[$pane]+x}" ] || continue
       [ -n "${listed[$pane]+x}" ] && continue
-      print_entry "$pane" "${label_of[$pane]}" "$first"
+      print_entry "$pane" "${label_of[$pane]}" "$first" "${notified[$pane]:-0}"
       listed[$pane]=1
       first=0
     done <"$HISTORY"
@@ -142,7 +152,7 @@ list() {
   for pane in "${order[@]}"; do
     [ "$pane" = "$current" ] && continue
     [ -n "${listed[$pane]+x}" ] && continue
-    print_entry "$pane" "${label_of[$pane]}" 0
+    print_entry "$pane" "${label_of[$pane]}" 0 "${notified[$pane]:-0}"
   done
 }
 
@@ -226,6 +236,7 @@ pick() {
       --no-sort \
       --cycle \
       --info=inline \
+      --ansi \
       --border=rounded \
       --border-label="$label" \
       --color='fg:#908caa,bg:#191724,hl:#eb6f92,fg+:#e0def4,bg+:#26233a,hl+:#eb6f92' \

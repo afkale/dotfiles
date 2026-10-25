@@ -1,0 +1,39 @@
+{
+  "commands": [
+    {
+      "name": "commit",
+      "description": "Review and commit the current changes",
+      "prompt": "Inspect git status and diff in the current directory. Stage the relevant changes, write a clear commit message in the repository's existing style, and create the commit. Do not push and do not touch unrelated files.",
+      "args": ["--auto"]
+    },
+    {
+      "name": "review",
+      "description": "Review uncommitted changes for bugs and risks",
+      "prompt": "Review the uncommitted changes in this directory. Look for correctness issues, regressions, security problems, and missing tests. Report findings with file and line references. Do not modify files.",
+      "args": ["--auto"]
+    },
+    {
+      "name": "tests",
+      "description": "Run tests and explain failures",
+      "prompt": "Detect the project's test command and run the tests relevant to the current changes. Summarize failures and their likely causes. Do not modify files.",
+      "args": ["--auto"]
+    },
+    {
+      "name": "fix",
+      "description": "Fix the current build or test failures",
+      "prompt": "Run the build and tests, identify the failure, implement the smallest correct fix, and re-run the checks. Do not commit.",
+      "args": ["--auto"]
+    },
+    {
+      "name": "explain",
+      "description": "Explain the project and its entry points",
+      "prompt": "Explain the structure and purpose of the project in the current directory. Cover the main entry points, important modules, and how to run it. Be concise and use file references."
+    },
+    {
+      "name": "pr",
+      "description": "Draft a pull request description for this branch",
+      "prompt": "Inspect the commits on the current branch relative to the default branch. Write a concise pull request title and description with a summary and a test plan. Do not push or open a pull request.",
+      "args": ["--auto"]
+    }
+  ]
+}

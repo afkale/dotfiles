@@ -10,6 +10,9 @@ set -g base-index 1
 setw -g pane-base-index 1
 set -g renumber-windows on
 
+# Keep bells silent; the flag is still set for the pane picker.
+set -g bell-action none
+
 set -g history-file ~/.tmux_history
 set -g mode-keys vi
 set -g focus-events on
