@@ -1,3 +1,3 @@
 function l --description="alias l=lsd" --wraps="lsd"
-    lsd $argv
+  lsd $argv
 end
