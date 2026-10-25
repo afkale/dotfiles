@@ -4,7 +4,6 @@ status is-login; and begin
 end
 set fish_greeting
 
-set -gx PATH $HOME/.cargo/bin $PATH
 
 fish_vi_key_bindings
 
@@ -13,7 +12,6 @@ set -gx FZF_DEFAULT_OPTS "--reverse --color=bg+:#313244,bg:,spinner:#F5E0DC,hl:#
 
 if type -q pass-cli
   set -gx SSH_AUTH_SOCK "/home/afkale/.ssh/proton-pass-agent.sock"
-
 end
 
 
@@ -22,5 +20,7 @@ if status is-interactive
   fzf --fish | source
 end
 
-# uv
-fish_add_path "/home/$USER/.local/bin"
+fish_add_path "$HOME/.cargo/bin"
+fish_add_path "$HOME/.local/bin"
+fish_add_path "$HOME/.local/opt/go/bin"
+fish_add_path "$HOME/go/bin"
