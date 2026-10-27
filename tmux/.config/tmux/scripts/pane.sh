@@ -230,7 +230,7 @@ pick() {
 
   local selection
   selection=$(
-    list "$filter" | fzf \
+    list "$filter" | fzf  ${FZF_DEFAULT_OPTIONS:-} \
       --delimiter=$'\t' \
       --with-nth=2.. \
       --no-sort \
@@ -239,9 +239,6 @@ pick() {
       --ansi \
       --border=rounded \
       --border-label="$label" \
-      --color='fg:#908caa,bg:#191724,hl:#eb6f92,fg+:#e0def4,bg+:#26233a,hl+:#eb6f92' \
-      --color='info:#c4a7e7,prompt:#c4a7e7,pointer:#ebbcba,marker:#9ccfd8,spinner:#f6c177' \
-      --color='header:#6e6a86,border:#403d52,label:#c4a7e7,selected-bg:#26233a' \
       --header='enter: go · Ctrl-x: kill pane · Ctrl-d: close session · Ctrl-o: new window · Ctrl-v: toggle preview · Ctrl-r: reload' \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \

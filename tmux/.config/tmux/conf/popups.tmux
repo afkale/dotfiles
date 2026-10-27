@@ -1,7 +1,11 @@
 # Popups. -E closes the popup when the command exits.
 
-# Terminal in the current directory
-bind -n M-1 popup -d '#{pane_current_path}' -E -w 90% -h 90%
+# In ~/.tmux.conf
+bind-key -n M-1 if-shell -F '#{==:#{session_name},_hidden_popup}' {
+    detach-client
+} {
+    display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 75% -E "tmux attach -t _hidden_popup || tmux new-session -s _hidden_popup"
+}
 
 # Lazygit
 bind -n M-g popup -B -d '#{pane_current_path}' -E -w 100% -h 100% lazygit
