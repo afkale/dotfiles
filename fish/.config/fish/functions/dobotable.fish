@@ -13,5 +13,5 @@ function dobotable --wraps="sudo dd if=iso of=device bs=4M status=progress conv=
     return 1
   end
 
-  sudo dd bs=4M if="$_flag_iso" of="$_flag_device" status=progress oflag=sync
+  sudo dd bs=4M if="$_flag_iso" of="$_flag_device" status=progress conv=fdatasync
 end

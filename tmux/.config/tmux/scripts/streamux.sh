@@ -6,14 +6,16 @@ set -u
 case "${1:-}" in
   start)
     if ! pgrep -x asciinema >/dev/null 2>&1; then
-      tmux set -g @logofg red
+      tmux set -g @logofg "#eb6f92"
       session=$(tmux display-message -p '#{session_name}')
-      ghostty -e asciinema stream -r -c "tmux attach -t '$session'"
+      # The new terminal inherits TMUX, so drop it before attaching.
+      ghostty -e asciinema stream -r -c "env -u TMUX tmux attach -t '$session'"
     fi
     ;;
   stop)
+    # Reset the logo even if the recorder already exited.
+    tmux set -g @logofg "#c4a7e7"
     if pgrep -x asciinema >/dev/null 2>&1; then
-      tmux set -g @logofg "#e6d9ff"
       killall asciinema
     fi
     ;;

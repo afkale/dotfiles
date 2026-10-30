@@ -1,3 +1,5 @@
+.PHONY: setup link-dotfiles
+
 CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers
 
 setup:
