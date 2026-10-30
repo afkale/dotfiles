@@ -12,6 +12,8 @@
 #
 # History is a plain list of pane ids ("%12"), newest first. Pane ids are
 # stable across renames and contain no spaces, so names can never break it.
+# Panes in sessions whose name starts with "_hidden" (such as the M-1
+# "_hidden_popup") are ignored everywhere.
 
 set -u
 
@@ -38,8 +40,24 @@ runtime_dir() {
 RUNTIME_DIR=$(runtime_dir)
 LOCK="$RUNTIME_DIR/lock"
 
-# field 1 = pane id, field 2 = human label, field 3 = window bell flag
-FIELDS="#{pane_id}"$'\t'"#{session_name}:#{window_index}.#{pane_index} - #{window_name}"$'\t'"#{window_bell_flag}"
+# field 1 = pane id, field 2 = human label, field 3 = window bell flag,
+# field 4 = session name (used to hide "_hidden*" sessions)
+FIELDS="#{pane_id}"$'\t'"#{session_name}:#{window_index}.#{pane_index} - #{window_name}"$'\t'"#{window_bell_flag}"$'\t'"#{session_name}"
+
+# Sessions used for popups start with "_hidden" and stay out of pane searches.
+is_hidden_session() {
+  case "${1:-}" in
+    _hidden*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_hidden_pane() {
+  local session
+  [ -n "${1:-}" ] || return 1
+  session=$(tmux display-message -p -t "$1" '#{session_name}' 2>/dev/null) || return 1
+  is_hidden_session "$session"
+}
 
 current_pane() {
   # Hooks and popups know their pane through TMUX_PANE; fall back to tmux.
@@ -68,6 +86,10 @@ save() {
   [ -n "$pane" ] || pane=$(current_pane)
   [ -n "$pane" ] || return 0
 
+  if is_hidden_pane "$pane"; then
+    return 0
+  fi
+
   mkdir -p "$(dirname "$HISTORY")" 2>/dev/null || true
   lock
 
@@ -85,14 +107,16 @@ prune() {
   [ -s "$HISTORY" ] || return 0
 
   local panes tmp
-  panes=$(tmux list-panes -a -F '#{pane_id}' 2>/dev/null) || return 0
+  panes=$(tmux list-panes -a -F "#{pane_id}"$'\t'"#{session_name}" 2>/dev/null) || return 0
   [ -n "$panes" ] || return 0
 
   mkdir -p "$(dirname "$HISTORY")" 2>/dev/null || true
   lock
 
   tmp=$(mktemp "$RUNTIME_DIR/history.XXXXXX") || return 0
-  printf '%s\n' "$panes" | grep -Fxf - "$HISTORY" >"$tmp" 2>/dev/null
+  printf '%s\n' "$panes" |
+    awk -F'\t' '$2 !~ /^_hidden/ { print $1 }' |
+    grep -Fxf - "$HISTORY" >"$tmp" 2>/dev/null
   mv -f "$tmp" "$HISTORY"
 }
 
@@ -131,8 +155,9 @@ list() {
     done < <(matching_ids "$filter")
   fi
 
-  while IFS=$'\t' read -r pane label bell; do
+  while IFS=$'\t' read -r pane label bell session; do
     [ -n "$pane" ] || continue
+    is_hidden_session "$session" && continue
     [ -n "$filter" ] && [ -z "${allowed[$pane]+x}" ] && continue
     label_of[$pane]=$label
     [ "${bell:-0}" = 1 ] && notified[$pane]=1
@@ -192,6 +217,7 @@ last() {
       [ -n "$pane" ] || continue
       [ "$pane" = "$current" ] && continue
       pane_exists "$pane" || continue
+      is_hidden_pane "$pane" && continue
       focus_pane "$pane" && return 0
     done <"$HISTORY"
   fi
