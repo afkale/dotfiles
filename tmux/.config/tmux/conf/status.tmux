@@ -30,7 +30,7 @@ set -g @icon_clock ""
 # ---------------------------------------------------------------------------
 # Status bar
 # ---------------------------------------------------------------------------
-set -g status-interval 1
+set -g status-interval 5
 set -g status-style "bg=default,fg=#{@thm_subtle}"
 set -g status-left-length 60
 set -g status-right-length 85
@@ -40,7 +40,7 @@ set -g status-right-length 85
 # follows the session name.
 set -g status-left " #[fg=#{?client_prefix,#{@thm_gold},#{?#{==:#{@locked},1},#{@thm_love},#{@logofg}}},bold]#{@logo} #[fg=#{@thm_text},bold]#S #[fg=#{@thm_hl_high}]│ #[fg=#{@thm_muted}]#{window_index}:#[fg=#{@thm_iris}]#{window_name}#{?window_zoomed_flag, ,} "
 
-set -g status-right "#[fg=#{@thm_foam}]#($TMUX_SCRIPTS/status.sh battery)#[fg=#{@thm_hl_high}] │ #[fg=#{@thm_gold}]#{@icon_calendar} %a %d %b #[fg=#{@thm_hl_high}]│ #[fg=#{@thm_iris}]#{@icon_clock} %H:%M:%S "
+set -g status-right "#[fg=#{@thm_foam}]#($TMUX_SCRIPTS/status.sh battery)#[fg=#{@thm_hl_high}] │ #[fg=#{@thm_gold}]#{@icon_calendar} %a %d %b #[fg=#{@thm_hl_high}]│ #[fg=#{@thm_iris}]#{@icon_clock} %H:%M "
 
 # ---------------------------------------------------------------------------
 # Windows

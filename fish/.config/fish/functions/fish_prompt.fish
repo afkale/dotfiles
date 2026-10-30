@@ -60,9 +60,19 @@ set -q __fish_git_prompt_char_upstream_prefix; or set -g __fish_git_prompt_char_
 set -q __fish_git_prompt_char_stateseparator; or set -g __fish_git_prompt_char_stateseparator ''
 
 # Extract the first dotted version number from a command's output.
+# Versions are cached for the life of the shell so the prompt probes each
+# toolchain at most once. Invalidate with `set -e __rp_version_<cmd>` after
+# switching toolchains inside the same shell.
 function __rp_version
-    set -l out ($argv 2>/dev/null | head -1)
-    string match -r '\d+\.\d+(\.\d+)?' -- $out | head -1
+    set -l cmd $argv[1]
+    set -l cache __rp_version_$cmd
+
+    if not set -q $cache
+        set -l out ($argv 2>/dev/null | head -1)
+        set -g $cache (string match -r '\d+\.\d+(\.\d+)?' -- $out | head -1)
+    end
+
+    echo $$cache
 end
 
 # Human-readable command duration from $CMD_DURATION (milliseconds).

@@ -1,14 +1,34 @@
-.PHONY: setup link-dotfiles
+.PHONY: setup link-dotfiles restow unlink update shell check-deps
 
 CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers
+STOW_OPTS := -t ~
 
-setup:
-	@git submodule init
-	@git submodule update --remote --recursive
-	@git -C nvim/.config/nvim checkout main
-	@chsh -s /usr/bin/fish
-	@${MAKE} -s link-dotfiles
+# setup keeps the pinned submodule commit; use `make update` to move it.
+setup: check-deps
+	@git submodule update --init --recursive
+	@$(MAKE) -s link-dotfiles
+	@echo "Run 'make shell' to set fish as your login shell."
 
 link-dotfiles:
-	@stow -t ~ $(CFG_DIRS)
-	@stow --no-folding -t ~ opencode
+	@stow $(STOW_OPTS) $(CFG_DIRS)
+	@stow --no-folding $(STOW_OPTS) opencode
+
+restow:
+	@stow -R $(STOW_OPTS) $(CFG_DIRS)
+	@stow -R --no-folding $(STOW_OPTS) opencode
+
+unlink:
+	@stow -D $(STOW_OPTS) $(CFG_DIRS)
+	@stow -D --no-folding $(STOW_OPTS) opencode
+
+update:
+	@git submodule update --init --remote --recursive
+
+shell:
+	@chsh -s "$$(command -v fish)"
+
+check-deps:
+	@for cmd in git stow fish; do \
+		command -v $$cmd >/dev/null 2>&1 \
+			|| { echo "missing dependency: $$cmd" >&2; exit 1; }; \
+	done

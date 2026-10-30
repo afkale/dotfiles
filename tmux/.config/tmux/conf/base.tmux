@@ -13,7 +13,8 @@ set -g renumber-windows on
 # Keep bells silent; the flag is still set for the pane picker.
 set -g bell-action none
 
-set -g history-file ~/.tmux_history
+run-shell -b 'mkdir -p "$HOME/.local/state/tmux"'
+set -g history-file ~/.local/state/tmux/history
 set -g mode-keys vi
 set -g focus-events on
 set -sg escape-time 10

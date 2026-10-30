@@ -16,14 +16,16 @@
 set -u
 
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
-HISTORY="${FZF_SESSION_HISTORY:-$HOME/.fzf_session_history}"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/tmux"
+HISTORY="${FZF_SESSION_HISTORY:-$STATE_DIR/panes}"
 LIMIT="${FZF_SESSION_HISTORY_LIMIT:-100}"
 
 # Private per-user scratch dir for the lock and atomic-write temp files.
 # XDG_RUNTIME_DIR is already user-private; /tmp is only a fallback.
 runtime_dir() {
   local root="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}"
-  local dir="$root/tmux-pane-$(id -u)"
+  local dir
+  dir="$root/tmux-pane-$(id -u)"
 
   if mkdir -p "$dir" 2>/dev/null && [ -O "$dir" ]; then
     chmod 700 "$dir" 2>/dev/null || true
@@ -82,13 +84,15 @@ save() {
 prune() {
   [ -s "$HISTORY" ] || return 0
 
+  local panes tmp
+  panes=$(tmux list-panes -a -F '#{pane_id}' 2>/dev/null) || return 0
+  [ -n "$panes" ] || return 0
+
   mkdir -p "$(dirname "$HISTORY")" 2>/dev/null || true
   lock
 
-  local tmp
   tmp=$(mktemp "$RUNTIME_DIR/history.XXXXXX") || return 0
-  grep -Fxf <(tmux list-panes -a -F '#{pane_id}' 2>/dev/null) \
-    "$HISTORY" >"$tmp" 2>/dev/null
+  printf '%s\n' "$panes" | grep -Fxf - "$HISTORY" >"$tmp" 2>/dev/null
   mv -f "$tmp" "$HISTORY"
 }
 
@@ -211,6 +215,7 @@ has() {
 }
 
 pick() {
+  mkdir -p "$(dirname "$HISTORY")" 2>/dev/null || true
   touch "$HISTORY"
 
   local filter="${1:-}" list_cmd="$SELF list" label="  panes "
@@ -230,7 +235,7 @@ pick() {
 
   local selection
   selection=$(
-    list "$filter" | fzf  ${FZF_DEFAULT_OPTIONS:-} \
+    list "$filter" | fzf \
       --delimiter=$'\t' \
       --with-nth=2.. \
       --no-sort \

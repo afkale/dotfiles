@@ -3,12 +3,11 @@ background-opacity = 0.8
 confirm-close-surface = false
 
 font-size = 16
-theme = noctalia
+theme = "Rose Pine"
 
 command = tmux
 
 window-padding-x = 0
 window-padding-y = 0
-window-padding-balance = true
 window-padding-color = extend
 window-decoration = false

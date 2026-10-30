@@ -2,6 +2,10 @@ function dobotable --wraps="sudo dd if=iso of=device bs=4M status=progress conv=
   argparse "i/iso=" "d/device=" -- $argv
   or return
 
+  if not set -q _flag_iso; or not set -q _flag_device
+    echo "usage: dobotable -i <iso> -d <device>" >&2
+    return 2
+  end
 
   if not test -f "$_flag_iso"
     echo "Error: ISO file '$_flag_iso' does not exist." >&2
