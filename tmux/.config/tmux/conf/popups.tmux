@@ -17,6 +17,9 @@ bind -n M-s display-popup -B -E -w 90% -h 80% "$SESSIONS_SCRIPT pick"
 # Key cheatsheet: everything tmux knows, searchable.
 bind -n M-? display-popup -B -E -w 90% -h 80% "tmux list-keys | fzf --reverse --header='type to filter · esc: close'"
 
+# Yazi
+bind -n M-y popup -B -d '#{pane_current_path}' -E -w 100% -h 100% yazi
+
 # Lazygit
 bind -n M-g popup -B -d '#{pane_current_path}' -E -w 100% -h 100% lazygit
 
