@@ -9,6 +9,11 @@ set -u
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 1
 
+# deps.sh links fdfind/batcat (Debian names) into ~/.local/bin. Fish adds that
+# directory to PATH, but doctor may run from bash, so add it here as well.
+PATH="$HOME/.local/bin:$PATH"
+export PATH
+
 fail=0
 ok()      { printf '  \033[32mok\033[0m   %s\n' "$*"; }
 warn()    { printf '  \033[33mwarn\033[0m %s\n' "$*"; }
@@ -38,6 +43,40 @@ if command -v opencode >/dev/null 2>&1; then
 else
   warn "opencode missing (install separately)"
 fi
+
+section "versions"
+
+version_ge() {
+  [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -1)" = "$1" ]
+}
+
+# Print the first dotted version found in the tool's banner. The banners differ
+# ("NVIM v0.12.6", "0.74.5 (abcdef)", "tmux 3.8"), so extract instead of parsing.
+check_version() {
+  local cmd=$1 min=$2 raw have
+  command -v "$cmd" >/dev/null 2>&1 || return 0
+
+  case "$cmd" in
+    nvim)      raw=$(nvim --version 2>/dev/null | head -1) ;;
+    fzf)       raw=$(fzf --version 2>/dev/null) ;;
+    asciinema) raw=$(asciinema --version 2>/dev/null) ;;
+    tmux)      raw=$(tmux -V 2>/dev/null) ;;
+  esac
+
+  have=$(printf '%s\n' "$raw" | grep -oE '[0-9]+(\.[0-9]+)+' | head -1)
+  if [ -z "$have" ]; then
+    warn "$cmd version unknown (want >= $min)"
+  elif version_ge "$min" "$have"; then
+    ok "$cmd $have"
+  else
+    bad "$cmd $have is too old (want >= $min; see packages/extra.txt)"
+  fi
+}
+
+check_version nvim 0.12
+check_version fzf 0.48
+check_version asciinema 3.0
+check_version tmux 3.3
 
 section "submodules"
 if [ ! -f .gitmodules ]; then

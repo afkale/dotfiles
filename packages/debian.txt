@@ -1,0 +1,14 @@
+bat
+btop
+curl
+fd-find
+fish
+git
+jq
+less
+lsd
+python3
+ripgrep
+stow
+tmux
+zoxide

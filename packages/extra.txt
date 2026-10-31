@@ -1,0 +1,9 @@
+# Tools that are not packaged, or whose distro version is too old for these
+# configs. Missing entries are printed by `make deps`.
+asciinema|>= 3.0 (stream support): https://docs.asciinema.org/manual/cli/installation/
+fzf|>= 0.48 (--fish support): https://github.com/junegunn/fzf#installation
+ghostty|https://ghostty.org/download
+lazygit|https://github.com/jesseduffield/lazygit#installation
+nvim|>= 0.12 (vim.pack): https://github.com/neovim/neovim/blob/master/INSTALL.md
+opencode|https://opencode.ai/docs
+yazi|https://yazi-rs.github.io/docs/installation
