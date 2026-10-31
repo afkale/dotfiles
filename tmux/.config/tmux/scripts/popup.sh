@@ -2,8 +2,8 @@
 # popup.sh — attach to the isolated popup session used by M-1.
 #
 # The popup runs on its own tmux socket, so the main config's keybindings and
-# status bar do not leak into it. Only M-1 is bound (it detaches, which closes
-# the popup), and the status bar is off.
+# status bar do not leak into it. Only M-1 (detach/close) and M-v (copy-mode)
+# are bound. The status bar is off.
 
 set -u
 
@@ -23,6 +23,7 @@ tmux -L "$SOCKET" set -g status off
 tmux -L "$SOCKET" set -g mouse on
 tmux -L "$SOCKET" unbind -a -T root
 tmux -L "$SOCKET" unbind -a -T prefix
+tmux -L "$SOCKET" bind -n M-v copy-mode
 tmux -L "$SOCKET" bind -n M-1 detach-client
 
 exec tmux -L "$SOCKET" attach -t "=$SESSION"
