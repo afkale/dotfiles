@@ -21,3 +21,9 @@ set -sg escape-time 10
 
 set -a terminal-features "tmux-256color:RGB"
 set -a terminal-overrides "tmux-256color:Tc"
+
+# Let programs (yazi) query the real terminal through tmux. Without this tmux
+# swallows the query, so yazi waits out its 5s probe timeout on every quit.
+set -g allow-passthrough on
+set -ga update-environment TERM
+set -ga update-environment TERM_PROGRAM

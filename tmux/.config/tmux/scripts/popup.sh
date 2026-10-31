@@ -21,6 +21,12 @@ fi
 # Idempotent: also fixes a session left over from an older run.
 tmux -L "$SOCKET" set -g status off
 tmux -L "$SOCKET" set -g mouse on
+# No prefix at all, so nothing can get stuck waiting for the second key of a
+# keybinding inside the popup.
+tmux -L "$SOCKET" set -g prefix None
+tmux -L "$SOCKET" set -g prefix2 None
+tmux -L "$SOCKET" set -sg escape-time 10
+tmux -L "$SOCKET" set -g allow-passthrough on
 tmux -L "$SOCKET" unbind -a -T root
 tmux -L "$SOCKET" unbind -a -T prefix
 tmux -L "$SOCKET" bind -n M-v copy-mode

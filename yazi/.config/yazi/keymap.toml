@@ -1,8 +1,0 @@
-# keymap.toml — yazi keybindings
-# Appended to the default keymap.
-
-[mgr]
-prepend_keymap = [
-  # Quit without confirmation prompt
-  { on = "q", run = "quit", desc = "Quit" },
-]
