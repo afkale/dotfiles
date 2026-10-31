@@ -31,6 +31,15 @@ if status is-interactive
   fzf --fish | source
 end
 
+# Homebrew on Linux (installed by `make deps` on Debian/Ubuntu).
+if test -x /home/linuxbrew/.linuxbrew/bin/brew
+  fish_add_path /home/linuxbrew/.linuxbrew/bin /home/linuxbrew/.linuxbrew/sbin
+else if test -x /opt/homebrew/bin/brew
+  fish_add_path /opt/homebrew/bin /opt/homebrew/sbin
+else if test -x $HOME/.linuxbrew/bin/brew
+  fish_add_path $HOME/.linuxbrew/bin $HOME/.linuxbrew/sbin
+end
+
 fish_add_path "$HOME/.cargo/bin"
 fish_add_path "$HOME/.local/bin"
 fish_add_path "$HOME/.local/opt/go/bin"

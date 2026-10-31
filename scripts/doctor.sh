@@ -9,8 +9,17 @@ set -u
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 1
 
+# Homebrew on Linux is how deps.sh installs newer tools on Debian/Ubuntu.
+for brew_bin in /home/linuxbrew/.linuxbrew/bin/brew /opt/homebrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+  if [ -x "$brew_bin" ]; then
+    eval "$("$brew_bin" shellenv)"
+    break
+  fi
+done
+
 # deps.sh links fdfind/batcat (Debian names) into ~/.local/bin. Fish adds that
 # directory to PATH, but doctor may run from bash, so add it here as well.
+# Keep it ahead of Homebrew so the Debian compatibility links win.
 PATH="$HOME/.local/bin:$PATH"
 export PATH
 

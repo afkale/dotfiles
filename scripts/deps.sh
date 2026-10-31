@@ -2,9 +2,8 @@
 # deps.sh — install the packages the configs expect on Arch or Debian/Ubuntu.
 #
 # Arch-family systems use packages/arch.txt (pacman). Debian-family systems
-# use packages/debian.txt (apt) for stable basics, then install the
-# version-sensitive tools from their official upstream releases into
-# ~/.local/bin because distro packages are often too old.
+# use apt for stable basics and Homebrew for the tools whose distro versions
+# are too old (neovim, fzf, asciinema, tmux, ...) or that are not packaged.
 #
 #   scripts/deps.sh             install for this machine
 #   scripts/deps.sh --dry-run   print what would be installed
@@ -13,9 +12,10 @@ set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BIN_DIR="$HOME/.local/bin"
-UPSTREAM_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles/upstream"
+BREW=''
+BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux opencode'
 
-# Prefer tools we installed over distro copies.
+# Prefer our own links for now; brew is prepended once it is located.
 PATH="$BIN_DIR:$PATH"
 export PATH
 
@@ -100,388 +100,78 @@ install_debian() {
   run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y "${pkgs[@]}"
 }
 
-version_ge() {
-  [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -1)" = "$1" ]
-}
-
-tool_version() {
-  local raw=''
-  case "$1" in
-    nvim)      raw=$(nvim --version 2>/dev/null | head -1) ;;
-    fzf)       raw=$(fzf --version 2>/dev/null) ;;
-    asciinema) raw=$(asciinema --version 2>/dev/null) ;;
-    tmux)      raw=$(tmux -V 2>/dev/null) ;;
-    lsd)       raw=$(lsd --version 2>/dev/null) ;;
-  esac
-  printf '%s\n' "$raw" | grep -oE '[0-9]+(\.[0-9]+)+' | head -1
-}
-
-# True when the command is missing or older than the required version.
-needs_tool() {
-  local cmd=$1 min=$2 have
-  command -v "$cmd" >/dev/null 2>&1 || return 0
-  have=$(tool_version "$cmd")
-  [ -n "$have" ] || return 0
-  ! version_ge "$min" "$have"
-}
-
-rel_tag=''
-rel_url=''
-release_lookup() {
-  local repo=$1 asset=$2 json
-  rel_tag=''
-  rel_url=''
-
-  json=$(curl -fsSL --retry 3 "https://api.github.com/repos/$repo/releases/latest") || return 1
-  rel_tag=$(printf '%s' "$json" | jq -r '.tag_name // empty')
-  rel_url=$(printf '%s' "$json" | jq -r --arg n "$asset" \
-    '.assets[] | select(.name == $n) | .browser_download_url' | head -1)
-
-  [ -n "$rel_tag" ] && [ -n "$rel_url" ]
-}
-
-fetch_archive() {
-  local url=$1 dir=$2 file
-  file="$dir/$(basename "$url")"
-
-  curl -fsSL --retry 3 -o "$file" "$url" || return 1
-  case "$file" in
-    *.tar.gz|*.tgz) tar -xzf "$file" -C "$dir" ;;
-    *.zip)          unzip -q "$file" -d "$dir" ;;
-    *)              return 1 ;;
-  esac
-}
-
-install_bin() {
-  local dir=$1 bin=$2 found
-  found=$(find "$dir" -type f -name "$bin" | head -1)
-  [ -n "$found" ] || {
-    warn "could not find $bin in the archive"
-    return 1
-  }
-
-  mkdir -p "$BIN_DIR"
-  install -m 755 "$found" "$BIN_DIR/$bin"
-}
-
-install_nvim() {
-  local tag asset tmp root
-  if ! needs_tool nvim 0.12; then
-    say "nvim $(tool_version nvim) already installed"
+find_brew() {
+  if command -v brew >/dev/null 2>&1; then
+    command -v brew
     return 0
   fi
 
-  case "$(uname -m)" in
-    x86_64|amd64)  asset='nvim-linux-x86_64.tar.gz' ;;
-    aarch64|arm64) asset='nvim-linux-arm64.tar.gz' ;;
-    *) warn "unsupported architecture for nvim: $(uname -m)"; return 1 ;;
-  esac
-
-  release_lookup neovim/neovim "$asset" || {
-    warn 'could not find the nvim release'
-    return 1
-  }
-  tag=$rel_tag
-
-  if [ "$dry" -eq 1 ]; then
-    say "would install nvim $tag to $UPSTREAM_DIR/nvim"
-    return 0
-  fi
-
-  tmp=$(mktemp -d) || return 1
-  if ! fetch_archive "$rel_url" "$tmp"; then
-    rm -rf "$tmp"
-    return 1
-  fi
-
-  root=$(find "$tmp" -type f -path '*/bin/nvim' | head -1)
-  if [ -z "$root" ]; then
-    rm -rf "$tmp"
-    warn 'could not find the nvim tree in the archive'
-    return 1
-  fi
-  root=$(dirname "$(dirname "$root")")
-
-  mkdir -p "$UPSTREAM_DIR" "$BIN_DIR"
-  rm -rf "$UPSTREAM_DIR/nvim"
-  cp -a "$root" "$UPSTREAM_DIR/nvim"
-  ln -sfn "$UPSTREAM_DIR/nvim/bin/nvim" "$BIN_DIR/nvim"
-  rm -rf "$tmp"
-
-  say "installed nvim $tag"
-}
-
-install_fzf() {
-  local tag ver asset tmp
-  if ! needs_tool fzf 0.48; then
-    say "fzf $(tool_version fzf) already installed"
-    return 0
-  fi
-
-  tag=$(curl -fsSL --retry 3 "https://api.github.com/repos/junegunn/fzf/releases/latest" |
-    jq -r '.tag_name // empty') || tag=''
-  [ -n "$tag" ] || {
-    warn 'could not find the fzf release'
-    return 1
-  }
-  ver=${tag#v}
-
-  case "$(uname -m)" in
-    x86_64|amd64)  asset="fzf-${ver}-linux_amd64.tar.gz" ;;
-    aarch64|arm64) asset="fzf-${ver}-linux_arm64.tar.gz" ;;
-    *) warn "unsupported architecture for fzf: $(uname -m)"; return 1 ;;
-  esac
-
-  release_lookup junegunn/fzf "$asset" || {
-    warn "could not find the fzf asset: $asset"
-    return 1
-  }
-
-  if [ "$dry" -eq 1 ]; then
-    say "would install fzf $tag"
-    return 0
-  fi
-
-  tmp=$(mktemp -d) || return 1
-  if ! fetch_archive "$rel_url" "$tmp" || ! install_bin "$tmp" fzf; then
-    rm -rf "$tmp"
-    return 1
-  fi
-  rm -rf "$tmp"
-
-  say "installed fzf $tag"
-}
-
-install_asciinema() {
-  local tag asset url
-  if ! needs_tool asciinema 3.0; then
-    say "asciinema $(tool_version asciinema) already installed"
-    return 0
-  fi
-
-  case "$(uname -m)" in
-    x86_64|amd64)  asset='asciinema-x86_64-unknown-linux-gnu' ;;
-    aarch64|arm64) asset='asciinema-aarch64-unknown-linux-gnu' ;;
-    *) warn "unsupported architecture for asciinema: $(uname -m)"; return 1 ;;
-  esac
-
-  release_lookup asciinema/asciinema "$asset" || {
-    warn 'could not find the asciinema release'
-    return 1
-  }
-  tag=$rel_tag
-  url=$rel_url
-
-  if [ "$dry" -eq 1 ]; then
-    say "would install asciinema $tag"
-    return 0
-  fi
-
-  mkdir -p "$BIN_DIR"
-  if ! curl -fsSL --retry 3 -o "$BIN_DIR/asciinema" "$url"; then
-    return 1
-  fi
-  chmod 755 "$BIN_DIR/asciinema"
-
-  say "installed asciinema $tag"
-}
-
-install_lazygit() {
-  local tag ver asset tmp
-  if command -v lazygit >/dev/null 2>&1; then
-    say 'lazygit already installed'
-    return 0
-  fi
-
-  tag=$(curl -fsSL --retry 3 "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" |
-    jq -r '.tag_name // empty') || tag=''
-  [ -n "$tag" ] || {
-    warn 'could not find the lazygit release'
-    return 1
-  }
-  ver=${tag#v}
-
-  case "$(uname -m)" in
-    x86_64|amd64)  asset="lazygit_${ver}_linux_x86_64.tar.gz" ;;
-    aarch64|arm64) asset="lazygit_${ver}_linux_arm64.tar.gz" ;;
-    *) warn "unsupported architecture for lazygit: $(uname -m)"; return 1 ;;
-  esac
-
-  release_lookup jesseduffield/lazygit "$asset" || {
-    warn "could not find the lazygit asset: $asset"
-    return 1
-  }
-
-  if [ "$dry" -eq 1 ]; then
-    say "would install lazygit $tag"
-    return 0
-  fi
-
-  tmp=$(mktemp -d) || return 1
-  if ! fetch_archive "$rel_url" "$tmp" || ! install_bin "$tmp" lazygit; then
-    rm -rf "$tmp"
-    return 1
-  fi
-  rm -rf "$tmp"
-
-  say "installed lazygit $tag"
-}
-
-install_yazi() {
-  local tag asset tmp
-  if command -v yazi >/dev/null 2>&1 && command -v ya >/dev/null 2>&1; then
-    say 'yazi already installed'
-    return 0
-  fi
-
-  case "$(uname -m)" in
-    x86_64|amd64)  asset='yazi-x86_64-unknown-linux-gnu.zip' ;;
-    aarch64|arm64) asset='yazi-aarch64-unknown-linux-gnu.zip' ;;
-    *) warn "unsupported architecture for yazi: $(uname -m)"; return 1 ;;
-  esac
-
-  release_lookup sxyazi/yazi "$asset" || {
-    warn 'could not find the yazi release'
-    return 1
-  }
-  tag=$rel_tag
-
-  if [ "$dry" -eq 1 ]; then
-    say "would install yazi $tag"
-    return 0
-  fi
-
-  tmp=$(mktemp -d) || return 1
-  if ! fetch_archive "$rel_url" "$tmp" || ! install_bin "$tmp" yazi || ! install_bin "$tmp" ya; then
-    rm -rf "$tmp"
-    return 1
-  fi
-  rm -rf "$tmp"
-
-  say "installed yazi $tag"
-}
-
-install_lsd() {
-  local tag ver asset tmp
-  if ! needs_tool lsd 1.1; then
-    say "lsd $(tool_version lsd) already installed"
-    return 0
-  fi
-
-  tag=$(curl -fsSL --retry 3 "https://api.github.com/repos/lsd-rs/lsd/releases/latest" |
-    jq -r '.tag_name // empty') || tag=''
-  [ -n "$tag" ] || {
-    warn 'could not find the lsd release'
-    return 1
-  }
-  ver=${tag#v}
-
-  case "$(uname -m)" in
-    x86_64|amd64)  asset="lsd-v${ver}-x86_64-unknown-linux-gnu.tar.gz" ;;
-    aarch64|arm64) asset="lsd-v${ver}-aarch64-unknown-linux-gnu.tar.gz" ;;
-    *) warn "unsupported architecture for lsd: $(uname -m)"; return 1 ;;
-  esac
-
-  release_lookup lsd-rs/lsd "$asset" || {
-    warn "could not find the lsd asset: $asset"
-    return 1
-  }
-
-  if [ "$dry" -eq 1 ]; then
-    say "would install lsd $tag"
-    return 0
-  fi
-
-  tmp=$(mktemp -d) || return 1
-  if ! fetch_archive "$rel_url" "$tmp" || ! install_bin "$tmp" lsd; then
-    rm -rf "$tmp"
-    return 1
-  fi
-  rm -rf "$tmp"
-
-  say "installed lsd $tag"
-}
-
-install_opencode() {
-  local tag asset tmp
-  if command -v opencode >/dev/null 2>&1; then
-    say 'opencode already installed'
-    return 0
-  fi
-
-  case "$(uname -m)" in
-    x86_64|amd64)  asset='opencode-linux-x64.tar.gz' ;;
-    aarch64|arm64) asset='opencode-linux-arm64.tar.gz' ;;
-    *) warn "unsupported architecture for opencode: $(uname -m)"; return 1 ;;
-  esac
-
-  release_lookup sst/opencode "$asset" || {
-    warn 'could not find the opencode release'
-    return 1
-  }
-  tag=$rel_tag
-
-  if [ "$dry" -eq 1 ]; then
-    say "would install opencode $tag"
-    return 0
-  fi
-
-  tmp=$(mktemp -d) || return 1
-  if ! fetch_archive "$rel_url" "$tmp" || ! install_bin "$tmp" opencode; then
-    rm -rf "$tmp"
-    return 1
-  fi
-  rm -rf "$tmp"
-
-  say "installed opencode $tag"
-}
-
-# tmux has no official binary release, so build it only when apt is too old.
-install_tmux() {
-  local tag ver tmp
-  if ! needs_tool tmux 3.3; then
-    say "tmux $(tool_version tmux) already installed"
-    return 0
-  fi
-
-  if [ "$dry" -eq 1 ]; then
-    say 'would build tmux >= 3.3 from source (needs build-essential, libevent-dev, libncurses-dev)'
-    return 0
-  fi
-
-  run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    build-essential libevent-dev libncurses-dev bison pkg-config || return 1
-
-  tag=$(curl -fsSL --retry 3 "https://api.github.com/repos/tmux/tmux/releases/latest" |
-    jq -r '.tag_name // empty') || tag=''
-  [ -n "$tag" ] || {
-    warn 'could not find the tmux release'
-    return 1
-  }
-  ver=${tag#v}
-
-  tmp=$(mktemp -d) || return 1
-  if ! curl -fsSL --retry 3 -o "$tmp/tmux.tar.gz" \
-    "https://github.com/tmux/tmux/releases/download/${tag}/tmux-${ver}.tar.gz" ||
-    ! tar -xzf "$tmp/tmux.tar.gz" -C "$tmp" ||
-    ! (cd "$tmp/tmux-$ver" && ./configure --prefix="$UPSTREAM_DIR/tmux" &&
-      make -j"$(nproc)" && make install); then
-    rm -rf "$tmp"
-    warn 'tmux build failed'
-    return 1
-  fi
-  rm -rf "$tmp"
-
-  ln -sfn "$UPSTREAM_DIR/tmux/bin/tmux" "$BIN_DIR/tmux"
-  say "installed tmux $tag"
-}
-
-install_upstream() {
-  local fail=0
-  for tool in nvim fzf asciinema lazygit yazi lsd opencode tmux; do
-    "install_$tool" || fail=1
+  local path
+  for path in /home/linuxbrew/.linuxbrew/bin/brew /opt/homebrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+    if [ -x "$path" ]; then
+      printf '%s\n' "$path"
+      return 0
+    fi
   done
-  return "$fail"
+
+  return 1
+}
+
+install_homebrew() {
+  local brew
+  if brew=$(find_brew); then
+    BREW=$brew
+  else
+    if [ "$dry" -eq 1 ]; then
+      say 'would install Homebrew (official installer, uses sudo)'
+      return 0
+    fi
+
+    say 'Installing Homebrew...'
+    NONINTERACTIVE=1 /bin/bash -c \
+      "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || return 1
+
+    brew=$(find_brew) || {
+      warn 'brew not found after installing Homebrew'
+      return 1
+    }
+    BREW=$brew
+  fi
+
+  eval "$("$BREW" shellenv)"
+  PATH="$BIN_DIR:$PATH"
+  export PATH
+
+  say "Homebrew: $("$BREW" --version | head -1)"
+}
+
+install_brew_tools() {
+  local tool outdated_list upgrades=()
+
+  if [ "$dry" -eq 1 ]; then
+    say "would run: brew install $BREW_TOOLS"
+    return 0
+  fi
+  [ -n "$BREW" ] || {
+    warn 'brew is not available'
+    return 1
+  }
+
+  # brew install is idempotent: it only fetches formulae that are missing.
+  # shellcheck disable=SC2086 # BREW_TOOLS is a space-separated list
+  "$BREW" install $BREW_TOOLS || return 1
+
+  outdated_list=$("$BREW" outdated --quiet --formula 2>/dev/null || true)
+  for tool in $BREW_TOOLS; do
+    if printf '%s\n' "$outdated_list" | grep -qx "$tool"; then
+      upgrades+=("$tool")
+    fi
+  done
+
+  if [ "${#upgrades[@]}" -gt 0 ]; then
+    say "Upgrading: ${upgrades[*]}"
+    "$BREW" upgrade "${upgrades[@]}" || return 1
+  fi
 }
 
 # Debian installs fd as fdfind and bat as batcat. Link the names the configs
@@ -504,8 +194,8 @@ link_compat() {
 print_extra() {
   local file="$ROOT/packages/extra.txt" cmd hint missing=0
 
-  # On Debian the upstream installers above handle these; only list what is
-  # still missing after a real run.
+  # On Debian the brew formulas above handle these; only list what is still
+  # missing after a real run.
   if [ "$dry" -eq 1 ] && [ "${family:-}" = debian ]; then
     return 0
   fi
@@ -556,13 +246,8 @@ case "$family" in
     ;;
   debian)
     install_debian || exit 1
-    for cmd in curl jq tar unzip; do
-      if ! command -v "$cmd" >/dev/null 2>&1; then
-        warn "missing $cmd; install it before upstream tools"
-        exit 1
-      fi
-    done
-    install_upstream || exit 1
+    install_homebrew || exit 1
+    install_brew_tools || exit 1
     link_compat fdfind fd
     link_compat batcat bat
     ;;

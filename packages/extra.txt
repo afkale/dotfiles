@@ -1,6 +1,6 @@
 # Tools that are not packaged, or whose distro version is too old for these
-# configs. `make deps` installs most of these from upstream releases into
-# ~/.local/bin on Debian/Ubuntu; entries still missing afterwards are printed.
+# configs. `make deps` installs version-sensitive ones with Homebrew on
+# Debian/Ubuntu; entries still missing afterwards are printed.
 asciinema|>= 3.0 (stream support): https://docs.asciinema.org/manual/cli/installation/
 fzf|>= 0.48 (--fish support): https://github.com/junegunn/fzf#installation
 ghostty|https://ghostty.org/download
