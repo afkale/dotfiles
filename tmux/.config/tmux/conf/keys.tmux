@@ -30,6 +30,9 @@ bind -n M-` run-shell "$PANE_SCRIPT last"
 bind -n M-v copy-mode
 bind -n M-b set status
 
+# Snapshot the current layout (restore with sessions.sh after a reboot).
+bind -n M-C-f run-shell "$SESSIONS_SCRIPT save"
+
 # ---------------------------------------------------------------------------
 # Session recording (streamux)
 # ---------------------------------------------------------------------------

@@ -7,6 +7,19 @@ bind-key -n M-1 if-shell -F '#{==:#{session_name},_hidden_popup}' {
     display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 75% -E "env -u TMUX tmux attach -t _hidden_popup || env -u TMUX tmux new-session -s _hidden_popup"
 }
 
+# Scratch shell. The session is hidden from pane/session searches.
+bind -n M-t if-shell -F '#{==:#{session_name},_hidden_scratch}' {
+    detach-client
+} {
+    display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 60% -E "env -u TMUX tmux attach -t _hidden_scratch || env -u TMUX tmux new-session -s _hidden_scratch"
+}
+
+# Session picker
+bind -n M-f display-popup -B -E -w 90% -h 80% "$SESSIONS_SCRIPT pick"
+
+# Key cheatsheet: everything tmux knows, searchable.
+bind -n M-? display-popup -B -E -w 90% -h 80% "tmux list-keys | fzf --reverse --header='type to filter · esc: close'"
+
 # Lazygit
 bind -n M-g popup -B -d '#{pane_current_path}' -E -w 100% -h 100% lazygit
 

@@ -13,3 +13,12 @@ set-hook -g client-session-changed "run-shell -b '$PANE_SCRIPT save #{pane_id}'"
 set-hook -g after-kill-pane "run-shell -b '$PANE_SCRIPT prune'"
 set-hook -g window-unlinked "run-shell -b '$PANE_SCRIPT prune'"
 set-hook -g session-closed "run-shell -b '$PANE_SCRIPT prune'"
+
+# Keep the session layout snapshot close to the live state. Appending keeps
+# the pane-history hooks above intact.
+set-hook -ag after-new-window "run-shell -b '$SESSIONS_SCRIPT save --quiet'"
+set-hook -ag after-split-window "run-shell -b '$SESSIONS_SCRIPT save --quiet'"
+set-hook -ag after-kill-pane "run-shell -b '$SESSIONS_SCRIPT save --quiet'"
+set-hook -ag session-renamed "run-shell -b '$SESSIONS_SCRIPT save --quiet'"
+set-hook -ag session-closed "run-shell -b '$SESSIONS_SCRIPT save --quiet'"
+set-hook -g client-detached "run-shell -b '$SESSIONS_SCRIPT save --quiet'"
