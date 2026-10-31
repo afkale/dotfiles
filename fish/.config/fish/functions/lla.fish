@@ -1,3 +1,7 @@
 function lla --description="alias lla=lsd -la" --wraps="lsd -la"
-  lsd -la $argv
+  if command -q lsd
+    lsd -la $argv
+  else
+    command ls -la $argv
+  end
 end

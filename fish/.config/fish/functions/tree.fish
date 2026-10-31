@@ -1,3 +1,7 @@
 function tree --description="alias tree=lsd --tree" --wraps="lsd --tree"
-  lsd --tree $argv
+  if command -q lsd
+    lsd --tree $argv
+  else
+    command tree $argv
+  end
 end
