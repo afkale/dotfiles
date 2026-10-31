@@ -1,3 +1,5 @@
 function ff --wraps=fastfetch --description 'alias ff fastfetch'
-  fastfetch $argv
+  if command -q fastfetch
+    fastfetch $argv
+  end
 end
