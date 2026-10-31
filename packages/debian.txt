@@ -3,7 +3,6 @@ btop
 build-essential
 ca-certificates
 curl
-fd-find
 file
 fish
 git

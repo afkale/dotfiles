@@ -30,7 +30,7 @@ bad()     { printf '  \033[31mfail\033[0m %s\n' "$*"; fail=1; }
 section() { printf '\n%s\n' "$*"; }
 
 section "tools"
-required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3"
+required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty"
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd"
@@ -39,7 +39,7 @@ for cmd in $required; do
   fi
 done
 
-for cmd in ghostty shellcheck delta fastfetch; do
+for cmd in shellcheck delta fastfetch; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd"
   else

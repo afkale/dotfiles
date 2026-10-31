@@ -13,7 +13,7 @@ set -u
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BIN_DIR="$HOME/.local/bin"
 BREW=''
-BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux opencode'
+BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux bat btop fd fish jq ripgrep zoxide'
 
 # Prefer our own links for now; brew is prepended once it is located.
 PATH="$BIN_DIR:$PATH"
@@ -248,8 +248,6 @@ case "$family" in
     install_debian || exit 1
     install_homebrew || exit 1
     install_brew_tools || exit 1
-    link_compat fdfind fd
-    link_compat batcat bat
     ;;
   *)
     warn 'unsupported distribution; install from packages/arch.txt (pacman) or packages/debian.txt (apt)'
