@@ -1,4 +1,4 @@
-.PHONY: setup link-dotfiles restow unlink update shell check-deps deps doctor push
+.PHONY: setup stow restow unlink update shell check-deps deps doctor push
 
 CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers
 STOW_OPTS := -t ~
@@ -6,10 +6,10 @@ STOW_OPTS := -t ~
 # setup keeps the pinned submodule commit; use `make update` to move it.
 setup: check-deps
 	@git submodule update --init --recursive
-	@$(MAKE) -s link-dotfiles
+	@$(MAKE) -s stow
 	@echo "Run 'make shell' to set fish as your login shell."
 
-link-dotfiles:
+stow:
 	@stow $(STOW_OPTS) $(CFG_DIRS)
 	@stow --no-folding $(STOW_OPTS) opencode
 
