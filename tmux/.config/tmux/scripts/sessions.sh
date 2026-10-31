@@ -81,7 +81,7 @@ pick() {
       --no-sort \
       --cycle \
       --border=rounded \
-      --border-label=' sessions ' \
+      --border-label='  sessions ' \
       --header='enter: switch · ctrl-s: save layout · ctrl-x: kill · ctrl-r: reload' \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \
