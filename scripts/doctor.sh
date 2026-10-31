@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # doctor.sh — check that this machine can run the dotfiles as configured.
 #
+#   scripts/doctor.sh              desktop check (includes ghostty + opencode)
+#   scripts/doctor.sh --server     server check (no ghostty/opencode required)
+#
 # Checks tools, stow links, the nvim submodule and config syntax. Exits non-zero
 # when something is actually broken; optional tools only produce a warning.
 
@@ -8,6 +11,21 @@ set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 1
+
+mode=desktop
+for arg in "$@"; do
+  case "$arg" in
+    --server) mode=server ;;
+    -h|--help)
+      printf 'usage: %s [--server]\n' "${0##*/}"
+      exit 0
+      ;;
+    *)
+      printf 'unknown argument: %s\n' "$arg" >&2
+      exit 2
+      ;;
+  esac
+done
 
 # Homebrew on Linux is how deps.sh installs newer tools on Debian/Ubuntu.
 for brew_bin in /home/linuxbrew/.linuxbrew/bin/brew /opt/homebrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
@@ -17,9 +35,6 @@ for brew_bin in /home/linuxbrew/.linuxbrew/bin/brew /opt/homebrew/bin/brew "$HOM
   fi
 done
 
-# deps.sh links fdfind/batcat (Debian names) into ~/.local/bin. Fish adds that
-# directory to PATH, but doctor may run from bash, so add it here as well.
-# Keep it ahead of Homebrew so the Debian compatibility links win.
 PATH="$HOME/.local/bin:$PATH"
 export PATH
 
@@ -30,7 +45,18 @@ bad()     { printf '  \033[31mfail\033[0m %s\n' "$*"; fail=1; }
 section() { printf '\n%s\n' "$*"; }
 
 section "tools"
-required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty"
+if [ "$mode" = server ]; then
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3"
+  for cmd in ghostty opencode; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+      ok "$cmd"
+    else
+      warn "$cmd not expected on server"
+    fi
+  done
+else
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty"
+fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd"
@@ -49,6 +75,8 @@ done
 
 if command -v opencode >/dev/null 2>&1; then
   ok "opencode"
+elif [ "$mode" = server ]; then
+  warn "opencode not expected on server"
 else
   warn "opencode missing (install separately)"
 fi
@@ -128,9 +156,22 @@ link_pkg() {
   fi
 }
 
-for pkg in fish ghostty lazygit tmux wallpapers opencode; do
-  link_pkg "$pkg"
-done
+if [ "$mode" = server ]; then
+  for pkg in fish lazygit tmux wallpapers; do
+    link_pkg "$pkg"
+  done
+  for pkg in ghostty opencode; do
+    if [ -e "$HOME/.config/$pkg" ]; then
+      ok "$pkg (found, not required on server)"
+    else
+      ok "$pkg (not configured on server)"
+    fi
+  done
+else
+  for pkg in fish ghostty lazygit tmux wallpapers opencode; do
+    link_pkg "$pkg"
+  done
+fi
 
 # nvim is a submodule, so the parent only tracks the gitlink.
 if [ -e "$HOME/.config/nvim/init.lua" ] &&

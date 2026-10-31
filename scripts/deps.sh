@@ -19,12 +19,14 @@ BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux bat btop fd fish jq ripgr
 PATH="$BIN_DIR:$PATH"
 export PATH
 
+MODE="${DEPS_MODE:-desktop}"
 dry=0
 for arg in "$@"; do
   case "$arg" in
     -n|--dry-run) dry=1 ;;
     -h|--help)
       printf 'usage: %s [--dry-run]\n' "${0##*/}"
+      printf '  DEPS_MODE=server  install only what a server needs (no ghostty/opencode)\n' >&2
       exit 0
       ;;
     *)
@@ -67,10 +69,16 @@ install_arch() {
     return 1
   }
 
-  mapfile -t pkgs < <(read_pkgs "$list")
+  while IFS= read -r p; do
+    [ -n "$p" ] || continue
+    case "$MODE" in
+      server) case "$p" in ghostty|opencode) continue ;; esac ;;
+    esac
+    pkgs+=("$p")
+  done < <(read_pkgs "$list")
   [ "${#pkgs[@]}" -gt 0 ] || return 0
 
-  say "Arch packages: ${pkgs[*]}"
+  say "Arch packages (${MODE}): ${pkgs[*]}"
   run_root pacman -S --needed "${pkgs[@]}"
 }
 
@@ -98,6 +106,34 @@ install_debian() {
 
   say "Debian packages: ${pkgs[*]}"
   run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y "${pkgs[@]}"
+}
+
+install_brew_tools() {
+  local tool outdated_list upgrades=() brew_tools="$BREW_TOOLS"
+
+  if [ "$dry" -eq 1 ]; then
+    say "would run: brew install $brew_tools"
+    return 0
+  fi
+  [ -n "$BREW" ] || {
+    warn 'brew is not available'
+    return 1
+  }
+
+  # shellcheck disable=SC2086 # word splitting is intended
+  "$BREW" install $brew_tools || return 1
+
+  outdated_list=$("$BREW" outdated --quiet --formula 2>/dev/null || true)
+  for tool in $brew_tools; do
+    if printf '%s\n' "$outdated_list" | grep -qx "$tool"; then
+      upgrades+=("$tool")
+    fi
+  done
+
+  if [ "${#upgrades[@]}" -gt 0 ]; then
+    say "Upgrading: ${upgrades[*]}"
+    "$BREW" upgrade "${upgrades[@]}" || return 1
+  fi
 }
 
 find_brew() {
@@ -143,35 +179,6 @@ install_homebrew() {
   export PATH
 
   say "Homebrew: $("$BREW" --version | head -1)"
-}
-
-install_brew_tools() {
-  local tool outdated_list upgrades=()
-
-  if [ "$dry" -eq 1 ]; then
-    say "would run: brew install $BREW_TOOLS"
-    return 0
-  fi
-  [ -n "$BREW" ] || {
-    warn 'brew is not available'
-    return 1
-  }
-
-  # brew install is idempotent: it only fetches formulae that are missing.
-  # shellcheck disable=SC2086 # BREW_TOOLS is a space-separated list
-  "$BREW" install $BREW_TOOLS || return 1
-
-  outdated_list=$("$BREW" outdated --quiet --formula 2>/dev/null || true)
-  for tool in $BREW_TOOLS; do
-    if printf '%s\n' "$outdated_list" | grep -qx "$tool"; then
-      upgrades+=("$tool")
-    fi
-  done
-
-  if [ "${#upgrades[@]}" -gt 0 ]; then
-    say "Upgrading: ${upgrades[*]}"
-    "$BREW" upgrade "${upgrades[@]}" || return 1
-  fi
 }
 
 # Debian installs fd as fdfind and bat as batcat. Link the names the configs
