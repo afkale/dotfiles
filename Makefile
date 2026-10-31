@@ -1,4 +1,4 @@
-.PHONY: setup link-dotfiles restow unlink update shell check-deps
+.PHONY: setup link-dotfiles restow unlink update shell check-deps deps doctor push
 
 CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers
 STOW_OPTS := -t ~
@@ -32,3 +32,12 @@ check-deps:
 		command -v $$cmd >/dev/null 2>&1 \
 			|| { echo "missing dependency: $$cmd" >&2; exit 1; }; \
 	done
+
+deps:
+	@scripts/deps.sh
+
+doctor:
+	@scripts/doctor.sh
+
+push:
+	@scripts/push.sh
