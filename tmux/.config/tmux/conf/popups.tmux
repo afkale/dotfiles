@@ -1,11 +1,8 @@
 # Popups. -E closes the popup when the command exits.
 
-# In ~/.tmux.conf
-bind-key -n M-1 if-shell -F '#{==:#{session_name},_hidden_popup}' {
-    detach-client
-} {
-    display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 75% -E "env -u TMUX tmux attach -t _hidden_popup || env -u TMUX tmux new-session -s _hidden_popup"
-}
+# Isolated popup. It has its own tmux socket, so only M-1 is bound there and
+# the status bar is hidden (see scripts/popup.sh).
+bind -n M-1 display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 75% -E "$POPUP_SCRIPT"
 
 # Scratch shell. The session is hidden from pane/session searches.
 bind -n M-t if-shell -F '#{==:#{session_name},_hidden_scratch}' {
