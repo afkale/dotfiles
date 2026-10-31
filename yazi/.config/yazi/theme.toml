@@ -1,0 +1,158 @@
+# theme.toml — Rosé Pine Moon color scheme
+# Overrides from theme-dark.toml / theme-light.toml.
+# Applied to both dark and light terminals for consistency.
+
+# Manager
+[mgr]
+cwd = { fg = "#9ccfd8" }
+
+find_keyword  = { fg = "#f6c177", bold = true, italic = true, underline = true }
+find_position = { fg = "#c4a7e7", bold = true, italic = true }
+
+symlink_target = { italic = true }
+
+marker_copied   = { fg = "#3e8fb0", bg = "#3e8fb0" }
+marker_cut      = { fg = "#eb6f92", bg = "#eb6f92" }
+marker_marked   = { fg = "#c4a7e7", bg = "#c4a7e7" }
+marker_selected = { fg = "#f6c177", bg = "#f6c177" }
+marker_symbol   = "│"
+
+count_copied   = { fg = "#e0def4", bg = "#3e8fb0" }
+count_cut      = { fg = "#e0def4", bg = "#eb6f92" }
+count_selected = { fg = "#232136", bg = "#f6c177" }
+
+border_symbol = "│"
+border_style  = { fg = "#393552" }
+
+# Tabs
+[tabs]
+active   = { bg = "#c4a7e7", bold = true }
+inactive = { fg = "#c4a7e7", bg = "#2a273f" }
+
+sep_inner = { open = "", close = "" }
+sep_outer = { open = "", close = "" }
+
+# Mode indicators
+[mode]
+normal_main = { bg = "#c4a7e7", bold = true }
+normal_alt  = { fg = "#c4a7e7", bg = "#2a273f" }
+
+select_main = { bg = "#eb6f92", bold = true }
+select_alt  = { fg = "#eb6f92", bg = "#2a273f" }
+
+unset_main = { bg = "#eb6f92", bold = true }
+unset_alt  = { fg = "#eb6f92", bg = "#2a273f" }
+
+# Hovered file indicator
+[indicator]
+parent  = { reversed = true }
+current = { reversed = true }
+preview = { underline = true }
+padding = { open = "", close = "" }
+
+# Status bar
+[status]
+overall   = {}
+sep_left  = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+
+perm_sep   = { fg = "#44415a" }
+perm_type  = { fg = "#3e8fb0" }
+perm_read  = { fg = "#f6c177" }
+perm_write = { fg = "#eb6f92" }
+perm_exec  = { fg = "#9ccfd8" }
+
+progress_label  = { bold = true }
+progress_normal = { fg = "#3e8fb0", bg = "#232136" }
+progress_error  = { fg = "#f6c177", bg = "#eb6f92" }
+
+# Which-key
+[which]
+border          = { fg = "#c4a7e7" }
+cols            = 3
+mask            = {}
+cand            = { fg = "#9ccfd8" }
+rest            = { fg = "#44415a" }
+desc            = { fg = "#ea9a97" }
+separator       = "  "
+separator_style = { fg = "#44415a" }
+
+# Confirmation dialogs
+[confirm]
+border     = { fg = "#c4a7e7" }
+title      = { fg = "#c4a7e7" }
+body       = {}
+list       = {}
+btn_yes    = { reversed = true }
+btn_no     = {}
+btn_labels = [ "  [Y]es  ", "  (N)o  " ]
+
+# Spot
+[spot]
+border = { fg = "#c4a7e7" }
+title  = { fg = "#c4a7e7" }
+
+tbl_col  = { fg = "#c4a7e7" }
+tbl_cell = { fg = "#f6c177", reversed = true }
+
+# Notifications
+[notify]
+title_info  = { fg = "#3e8fb0" }
+title_warn  = { fg = "#f6c177" }
+title_error = { fg = "#eb6f92" }
+
+icon_info  = ""
+icon_warn  = ""
+icon_error = ""
+
+# Picker
+[pick]
+border   = { fg = "#c4a7e7" }
+active   = { fg = "#ea9a97", bold = true }
+inactive = {}
+
+# Input
+[input]
+border   = { fg = "#c4a7e7" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+# Completion
+[cmp]
+border   = { fg = "#c4a7e7" }
+active   = { reversed = true }
+inactive = {}
+
+icon_file    = ""
+icon_folder  = ""
+icon_command = ""
+
+# Tasks
+[tasks]
+border  = { fg = "#c4a7e7" }
+title   = {}
+hovered = { fg = "#ea9a97", bold = true }
+
+# Help
+[help]
+border  = { fg = "#c4a7e7" }
+chord   = { fg = "#9ccfd8" }
+action  = {}
+hovered = { reversed = true, bold = true }
+
+# File-type colours
+[filetype]
+rules = [
+  { mime = "**/image/*",                    fg = "#f6c177" },
+  { mime = "**/{audio,video}/*",            fg = "#ea9a97" },
+  { mime = "**/application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}",
+                                            fg = "#eb6f92" },
+  { mime = "**/application/{pdf,doc,rtf}",  fg = "#9ccfd8" },
+  { mime = "vfs/{absent,stale}",            fg = "#44415a" },
+  { url = "*", is = "orphan",               bg = "#eb6f92" },
+  { url = "*", is = "exec",                 fg = "#3e8fb0" },
+  { url = "*", is = "dummy",                bg = "#eb6f92" },
+  { url = "*/", is = "dummy",               bg = "#eb6f92" },
+  { url = "*/",                              fg = "#c4a7e7" },
+]

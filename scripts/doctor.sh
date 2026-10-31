@@ -157,7 +157,7 @@ link_pkg() {
 }
 
 if [ "$mode" = server ]; then
-  for pkg in fish lazygit tmux wallpapers; do
+  for pkg in fish lazygit tmux wallpapers yazi; do
     link_pkg "$pkg"
   done
   for pkg in ghostty opencode; do
@@ -168,9 +168,10 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  for pkg in fish ghostty lazygit tmux wallpapers opencode; do
+  for pkg in fish ghostty lazygit tmux wallpapers yazi; do
     link_pkg "$pkg"
   done
+  link_pkg opencode
 fi
 
 # nvim is a submodule, so the parent only tracks the gitlink.

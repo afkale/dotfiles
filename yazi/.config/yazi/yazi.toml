@@ -1,0 +1,22 @@
+# yazi.toml — general configuration
+# Overrides from yazi-default.toml; settings not listed use defaults.
+
+[mgr]
+show_hidden = false
+sort_dir_first = true
+sort_sensitive = false
+sort_reverse = false
+scrolloff = 5
+mouse_events = [ "click", "scroll", "drag" ]
+
+[preview]
+wrap = "no"
+tab_size = 2
+max_width = 600
+max_height = 900
+
+[tasks]
+image_alloc = 536870912  # 512MB
+
+[input]
+cursor_blink = false

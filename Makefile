@@ -1,6 +1,6 @@
 .PHONY: setup stow restow unlink update shell check-deps deps doctor push server-serverent server-doc
 
-CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers
+CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers yazi
 STOW_OPTS := -t ~
 
 # Full setup (desktop: includes ghostty and opencode).
