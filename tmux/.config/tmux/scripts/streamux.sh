@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# streamux.sh — toggle the asciinema session recording used by M-s / M-C-s.
+# streamux.sh — toggle the asciinema session recording used by M-a / M-C-a.
 #
 # The recorder runs in a new terminal window. A pid file in the runtime
 # directory keeps stop scoped to this session instead of killing every

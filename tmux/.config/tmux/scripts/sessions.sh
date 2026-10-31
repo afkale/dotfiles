@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# sessions.sh — fuzzy session switcher and layout snapshots (M-f).
+# sessions.sh — fuzzy session switcher and layout snapshots (M-s).
 #
 #   sessions.sh list              "<session_id><TAB><label>" for fzf
-#   sessions.sh pick              switch to the selected session (M-f)
+#   sessions.sh pick              switch to the selected session (M-s)
 #   sessions.sh save [--quiet]    snapshot live sessions under $XDG_STATE_HOME
 #   sessions.sh restore           recreate sessions missing from the snapshot
 #   sessions.sh kill SESSION_ID   kill a session (picker Ctrl-x)
 #
 # Hidden popup sessions ("_hidden*") are excluded everywhere, like pane.sh.
 # Snapshots are written when a client detaches and after window/pane changes.
-# After a reboot run `sessions.sh restore`, then use M-f to switch sessions.
+# After a reboot run `sessions.sh restore`, then use M-s to switch sessions.
 
 set -u
 

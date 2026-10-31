@@ -15,7 +15,7 @@ bind -n M-t if-shell -F '#{==:#{session_name},_hidden_scratch}' {
 }
 
 # Session picker
-bind -n M-f display-popup -B -E -w 90% -h 80% "$SESSIONS_SCRIPT pick"
+bind -n M-s display-popup -B -E -w 90% -h 80% "$SESSIONS_SCRIPT pick"
 
 # Key cheatsheet: everything tmux knows, searchable.
 bind -n M-? display-popup -B -E -w 90% -h 80% "tmux list-keys | fzf --reverse --header='type to filter · esc: close'"

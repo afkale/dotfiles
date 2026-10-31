@@ -36,8 +36,8 @@ bind -n M-C-f run-shell "$SESSIONS_SCRIPT save"
 # ---------------------------------------------------------------------------
 # Session recording (streamux)
 # ---------------------------------------------------------------------------
-bind -n M-s run-shell -b "$STREAMUX_SCRIPT start"
-bind -n M-C-s run-shell -b "$STREAMUX_SCRIPT stop"
+bind -n M-a run-shell -b "$STREAMUX_SCRIPT start"
+bind -n M-C-a run-shell -b "$STREAMUX_SCRIPT stop"
 
 # ---------------------------------------------------------------------------
 # Lock mode: only M-L keeps working until it is pressed again.
