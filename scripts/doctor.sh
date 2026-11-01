@@ -46,7 +46,7 @@ section() { printf '\n%s\n' "$*"; }
 
 section "tools"
 if [ "$mode" = server ]; then
-  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 tree-sitter node npm"
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 tree-sitter node npm go"
   for cmd in ghostty opencode; do
     if command -v "$cmd" >/dev/null 2>&1; then
       ok "$cmd"
@@ -55,7 +55,7 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm"
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm go"
 fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then

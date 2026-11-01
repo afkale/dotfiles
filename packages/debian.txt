@@ -13,6 +13,7 @@ jq
 less
 npm
 procps
+go
 python3
 ripgrep
 stow

@@ -13,6 +13,7 @@ lsd
 neovim
 npm
 python
+go
 ripgrep
 stow
 tmux
