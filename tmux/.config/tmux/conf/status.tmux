@@ -44,6 +44,9 @@ set -g status-right "#[fg=#{@thm_foam}]#($TMUX_SCRIPTS/status.sh battery)#[fg=#{
 
 # ---------------------------------------------------------------------------
 # Windows
+
+# ---------------------------------------------------------------------------
+# Windows
 # ---------------------------------------------------------------------------
 # Only the current window is shown (in status-left), so the window list itself
 # is empty. This keeps the bar symmetric instead of relying on centring.
@@ -52,10 +55,13 @@ set -g window-status-format ""
 set -g window-status-current-format ""
 
 # ---------------------------------------------------------------------------
-# Messages, copy mode and pane borders
+# Messages, command prompts and copy mode
 # ---------------------------------------------------------------------------
-set -g message-style "bg=#26233a,fg=#e0def4"
-set -g message-command-style "bg=#26233a,fg=#c4a7e7"
+# Draw the command prompt on the same line as the status bar but only use 50%
+# of the width (centred), so the status bar content remains visible on both
+# sides.
+set -g message-style "bg=#26233a,fg=#e0def4,align=centre,width=50%"
+set -g message-command-style "bg=#26233a,fg=#c4a7e7,align=centre,width=50%"
 set -g mode-style "bg=#524f67,fg=#e0def4"
 
 set -g pane-border-style "fg=#403d52"
