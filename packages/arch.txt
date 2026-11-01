@@ -11,6 +11,7 @@ lazygit
 less
 lsd
 neovim
+npm
 python
 ripgrep
 stow

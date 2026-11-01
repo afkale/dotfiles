@@ -11,6 +11,7 @@ fish
 git
 jq
 less
+npm
 procps
 python3
 ripgrep
