@@ -7,20 +7,19 @@
 
 set -u
 
-RUNTIME_DIR="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/tmux-streamux-$(id -u)"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source-path=SCRIPTDIR source=lib.sh
+. "$SCRIPT_DIR/lib.sh"
 
-message() {
-  tmux display-message -d 1500 "$*" 2>/dev/null || true
-}
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/tmux-streamux-$(id -u)"
 
 session_name() {
   tmux display-message -p '#{session_name}' 2>/dev/null
 }
 
 pid_path() {
-  local session=$1 safe
-  safe=$(printf '%s' "$session" | tr -c 'A-Za-z0-9_.-' '_')
-  printf '%s/%s.pid\n' "$RUNTIME_DIR" "$safe"
+  local session=$1
+  printf '%s/%s.pid\n' "$RUNTIME_DIR" "${session//[^A-Za-z0-9_.-]/_}"
 }
 
 runtime_dir() {

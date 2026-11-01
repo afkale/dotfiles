@@ -14,34 +14,13 @@
 set -u
 
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_DIR=${SELF%/*}
+# shellcheck source-path=SCRIPTDIR source=lib.sh
+. "$SCRIPT_DIR/lib.sh"
+
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/tmux"
 SNAPSHOT="${TMUX_SESSION_STATE:-$STATE_DIR/sessions}"
 SEP=$'\x1f'
-
-is_hidden_session() {
-  case "${1:-}" in
-    _hidden*) return 0 ;;
-    *) return 1 ;;
-  esac
-}
-
-current_session_id() {
-  tmux display-message -p '#{session_id}' 2>/dev/null
-}
-
-# Client attached to a given session (needed when several terminals are open).
-client_for_session() {
-  tmux list-clients -F '#{session_id}'$'\t''#{client_name}' 2>/dev/null |
-    awk -F'\t' -v session="${1:-}" '$1 == session { print $2; exit }'
-}
-
-message() {
-  if [ -n "${TMUX:-}" ]; then
-    tmux display-message -d 1500 "$*" 2>/dev/null || true
-  else
-    printf '%s\n' "$*"
-  fi
-}
 
 list() {
   tmux list-sessions -F \
@@ -121,7 +100,7 @@ restore() {
   declare -A session_state=() window_ids=() window_layout=() active_windows=()
   declare -A first_pane=() pane_ids=() active_pane_index=()
   local session win_idx win_name pane_idx cwd pane_active win_active layout
-  local key win_id pane_id created=0 skipped=0
+  local key win_id pane_id out created=0 skipped=0
 
   # Pass 1: create sessions and windows with their first pane. Existing
   # sessions are left alone so restore is safe to run more than once.
@@ -137,17 +116,18 @@ restore() {
       fi
 
       [ -d "$cwd" ] || cwd="$HOME"
-      if ! win_id=$(tmux new-session -d -P -F '#{window_id}' -s "$session" -n "$win_name" -c "$cwd" 2>/dev/null); then
+      if ! out=$(tmux new-session -d -P -F '#{window_id}|#{pane_id}' -s "$session" -n "$win_name" -c "$cwd" 2>/dev/null); then
         session_state[$session]=failed
         continue
       fi
+      win_id=${out%%|*}
+      pane_id=${out#*|}
 
       session_state[$session]=new
       created=$((created + 1))
       window_ids[$session:$win_idx]=$win_id
       window_layout[$win_id]=$layout
       active_windows[$session]=$win_id
-      pane_id=$(tmux list-panes -t "$win_id" -F '#{pane_id}' 2>/dev/null | head -1)
       first_pane[$win_id]=$pane_idx
       pane_ids[$win_id:$pane_idx]=$pane_id
     else
@@ -156,12 +136,13 @@ restore() {
       key="$session:$win_idx"
       if [ -z "${window_ids[$key]+x}" ]; then
         [ -d "$cwd" ] || cwd="$HOME"
-        if ! win_id=$(tmux new-window -d -P -F '#{window_id}' -t "$session:$win_idx" -n "$win_name" -c "$cwd" 2>/dev/null); then
+        if ! out=$(tmux new-window -d -P -F '#{window_id}|#{pane_id}' -t "$session:$win_idx" -n "$win_name" -c "$cwd" 2>/dev/null); then
           continue
         fi
+        win_id=${out%%|*}
+        pane_id=${out#*|}
         window_ids[$key]=$win_id
         window_layout[$win_id]=$layout
-        pane_id=$(tmux list-panes -t "$win_id" -F '#{pane_id}' 2>/dev/null | head -1)
         first_pane[$win_id]=$pane_idx
         pane_ids[$win_id:$pane_idx]=$pane_id
       else

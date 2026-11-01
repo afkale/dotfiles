@@ -17,7 +17,11 @@
 
 set -u
 
-SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SELF="$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"
+# shellcheck source-path=SCRIPTDIR source=lib.sh
+. "$SCRIPT_DIR/lib.sh"
+
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/tmux"
 HISTORY="${FZF_SESSION_HISTORY:-$STATE_DIR/panes}"
 LIMIT="${FZF_SESSION_HISTORY_LIMIT:-100}"
@@ -45,33 +49,11 @@ LOCK="$RUNTIME_DIR/lock"
 FIELDS="#{pane_id}"$'\t'"#{session_name}:#{window_index}.#{pane_index} - #{window_name}"$'\t'"#{window_bell_flag}"$'\t'"#{session_name}"
 
 # Sessions used for popups start with "_hidden" and stay out of pane searches.
-is_hidden_session() {
-  case "${1:-}" in
-    _hidden*) return 0 ;;
-    *) return 1 ;;
-  esac
-}
-
 is_hidden_pane() {
   local session
   [ -n "${1:-}" ] || return 1
   session=$(tmux display-message -p -t "$1" '#{session_name}' 2>/dev/null) || return 1
   is_hidden_session "$session"
-}
-
-current_pane() {
-  # Hooks and popups know their pane through TMUX_PANE; fall back to tmux.
-  if [ -n "${TMUX_PANE:-}" ]; then
-    printf '%s\n' "$TMUX_PANE"
-  else
-    tmux display-message -p '#{pane_id}' 2>/dev/null
-  fi
-}
-
-# Client attached to a given session (needed when several terminals are open).
-client_for_session() {
-  tmux list-clients -F '#{session_id}'$'\t''#{client_name}' 2>/dev/null |
-    awk -F'\t' -v session="${1:-}" '$1 == session { print $2; exit }'
 }
 
 # Serialize writers: several hooks can fire for a single movement.
@@ -120,11 +102,13 @@ prune() {
   mv -f "$tmp" "$HISTORY"
 }
 
-# Pane ids whose foreground command or title matches $1 (case-insensitive).
+# Pane ids whose foreground command or title contains $1 (case-insensitive).
 matching_ids() {
   tmux list-panes -a -F "#{pane_id}"$'\t'"#{pane_current_command}"$'\t'"#{pane_title}" 2>/dev/null |
-    awk -F'\t' -v pat="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" \
-      'tolower($2) ~ pat || tolower($3) ~ pat { print $1 }'
+    awk -F'\t' -v pat="$1" '
+      BEGIN { pat = tolower(pat) }
+      index(tolower($2), pat) || index(tolower($3), pat) { print $1 }
+    '
 }
 
 # Notified rows are drawn in rose-pine gold with a bell (fzf --ansi).
@@ -254,14 +238,16 @@ pick() {
     esac
   fi
 
-  if [ -n "$filter" ] && [ -z "$(list "$filter")" ]; then
-    tmux display-message -d 1500 "no $filter panes"
+  # Build the list once: it is both the emptiness check and fzf's input.
+  local entries selection
+  entries=$(list "$filter")
+  if [ -z "$entries" ]; then
+    [ -n "$filter" ] && tmux display-message -d 1500 "no $filter panes"
     return 0
   fi
 
-  local selection
   selection=$(
-    list "$filter" | fzf \
+    printf '%s\n' "$entries" | fzf \
       --delimiter=$'\t' \
       --with-nth=2.. \
       --no-sort \
