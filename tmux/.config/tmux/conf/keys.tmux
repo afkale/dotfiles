@@ -61,5 +61,6 @@ bind -T off M-L \
 # ---------------------------------------------------------------------------
 bind-key -T copy-mode-vi v send-keys -X begin-selection
 bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
-bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel \
+  "wl-copy 2>/dev/null || xclip -selection clipboard 2>/dev/null || cat >/dev/null"
 bind-key -T copy-mode-vi Escape send-keys -X cancel

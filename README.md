@@ -23,7 +23,7 @@ make doctor
 
 | Config | Tool | Notes |
 |--------|------|-------|
-| `tmux/` | tmux | Session picker (`M-s`), pane pickers (`M-d`, `M-o`, `M-n`), layout snapshots, isolated popup (`M-1`), asciinema recording (`M-a`/`M-C-a`), scratch shell (`M-t`) |
+| `tmux/` | tmux | Session picker (`M-s`), pane pickers (`M-d`, `M-o`, `M-n`), layout snapshots, isolated popup (`M-1`), asciinema recording (`M-a`/`M-C-a`) |
 | `fish/` | fish | Fzf integration (fd, bat previews), zoxide, Homebrew PATH on Linux |
 | `nvim/` | neovim (submodule) | Mini.pick for files/grep/help, lazygit integration, spell for markdown/gitcommit, cursor restore |
 | `ghostty/` | ghostty | Minimal terminal config |
@@ -42,7 +42,6 @@ Inside tmux (`prefix` = `M-space`):
 | `M-o` | Opencode pane picker |
 | `M-n` | Nvim pane picker |
 | `M-1` | Isolated popup shell |
-| `M-t` | Scratch shell |
 | `M-` `` | Last pane jump |
 | `M-g` | LazyGit |
 | `M-p` | Btop |
@@ -51,17 +50,6 @@ Inside tmux (`prefix` = `M-space`):
 | `M-C-s` | Save layout snapshot |
 | `M-?` | Searchable keybinding cheatsheet |
 | `M-b` | Toggle status bar |
-
-Inside nvim:
-
-| Key | Action |
-|-----|--------|
-| `<leader>ff` | Find files (including hidden paths) |
-| `<leader>fg` | Live grep |
-| `<leader>fh` | Help tags |
-| `<leader>fr` | Resume last picker |
-| `<leader>e`/`<leader>E` | Toggle file tree |
-| `<leader>cc` | Toggle quickfix |
 
 ## Dependencies
 

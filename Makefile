@@ -1,4 +1,4 @@
-.PHONY: setup stow restow unlink update shell check-deps deps doctor push server-serverent server-doc
+.PHONY: setup stow restow unlink update shell check-deps deps doctor push server-doc
 
 CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers yazi
 STOW_OPTS := -t ~

@@ -21,6 +21,8 @@ fi
 # Idempotent: also fixes a session left over from an older run.
 tmux -L "$SOCKET" set -g status off
 tmux -L "$SOCKET" set -g mouse on
+# The popup server starts from /dev/null, so vi copy-mode is not inherited.
+tmux -L "$SOCKET" set -g mode-keys vi
 # No prefix at all, so nothing can get stuck waiting for the second key of a
 # keybinding inside the popup.
 tmux -L "$SOCKET" set -g prefix None
@@ -31,5 +33,12 @@ tmux -L "$SOCKET" unbind -a -T root
 tmux -L "$SOCKET" unbind -a -T prefix
 tmux -L "$SOCKET" bind -n M-v copy-mode
 tmux -L "$SOCKET" bind -n M-1 detach-client
+# Same vi copy-mode keys as conf/keys.tmux. y pipes to the system clipboard
+# because the popup server has its own paste buffer.
+tmux -L "$SOCKET" bind -T copy-mode-vi v send-keys -X begin-selection
+tmux -L "$SOCKET" bind -T copy-mode-vi C-v send-keys -X rectangle-toggle
+tmux -L "$SOCKET" bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel \
+  "wl-copy 2>/dev/null || xclip -selection clipboard 2>/dev/null || cat >/dev/null"
+tmux -L "$SOCKET" bind -T copy-mode-vi Escape send-keys -X cancel
 
 exec tmux -L "$SOCKET" attach -t "=$SESSION"

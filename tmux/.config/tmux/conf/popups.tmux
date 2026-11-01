@@ -4,13 +4,6 @@
 # the status bar is hidden (see scripts/popup.sh).
 bind -n M-1 display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 75% -E "$POPUP_SCRIPT"
 
-# Scratch shell. The session is hidden from pane/session searches.
-bind -n M-t if-shell -F '#{==:#{session_name},_hidden_scratch}' {
-    detach-client
-} {
-    display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 60% -E "env -u TMUX tmux attach -t _hidden_scratch || env -u TMUX tmux new-session -s _hidden_scratch"
-}
-
 # Session picker
 bind -n M-s display-popup -B -E -w 90% -h 80% "$SESSIONS_SCRIPT pick"
 
