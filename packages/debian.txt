@@ -9,11 +9,11 @@ curl
 file
 fish
 git
+golang-go
 jq
 less
 npm
 procps
-go
 python3
 ripgrep
 stow
