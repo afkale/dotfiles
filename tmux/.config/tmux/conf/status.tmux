@@ -44,9 +44,6 @@ set -g status-right "#[fg=#{@thm_foam}]#($TMUX_SCRIPTS/status.sh battery)#[fg=#{
 
 # ---------------------------------------------------------------------------
 # Windows
-
-# ---------------------------------------------------------------------------
-# Windows
 # ---------------------------------------------------------------------------
 # Only the current window is shown (in status-left), so the window list itself
 # is empty. This keeps the bar symmetric instead of relying on centring.

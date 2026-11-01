@@ -14,10 +14,10 @@ bind -n M-? display-popup -B -E -w 90% -h 80% "tmux list-keys | fzf --reverse --
 bind -n M-y display-popup -B -d '#{pane_current_path}' -E -w 100% -h 100% yazi
 
 # Lazygit
-bind -n M-g popup -B -d '#{pane_current_path}' -E -w 100% -h 100% lazygit
+bind -n M-g display-popup -B -d '#{pane_current_path}' -E -w 100% -h 100% lazygit
 
 # Btop
-bind -n M-p popup -B -d '#{pane_current_path}' -E -w 100% -h 100% btop
+bind -n M-p display-popup -B -d '#{pane_current_path}' -E -w 100% -h 100% btop
 
 bind -n M-d if-shell "$PANE_SCRIPT has '#{pane_id}'" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick'" \

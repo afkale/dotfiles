@@ -154,7 +154,7 @@ link_pkg() {
   if [ "$missing" -eq 0 ]; then
     ok "$pkg ($count files)"
   else
-    bad "$pkg: $missing file(s) not linked (make link-dotfiles)"
+    bad "$pkg: $missing file(s) not linked (make setup)"
   fi
 }
 
@@ -182,7 +182,7 @@ if [ -e "$HOME/.config/nvim/init.lua" ] &&
   ok "nvim (submodule)"
 else
   # shellcheck disable=SC2088 # ~ is shown for readability, not expanded
-  bad "~/.config/nvim is not linked (make link-dotfiles)"
+  bad "~/.config/nvim is not linked (make setup)"
 fi
 
 section "syntax"

@@ -1,6 +1,6 @@
 # dotfiles
 
-My personal dotfiles — tmux, fish, neovim, ghostty, lazygit and opencode configs, plus helpers to set them up on a fresh machine.
+My personal dotfiles — tmux, fish, neovim, ghostty, lazygit, yazi and opencode configs, plus wallpapers and helpers to set them up on a fresh machine.
 
 ## Quick start
 
@@ -28,6 +28,8 @@ make doctor
 | `nvim/` | neovim (submodule) | Mini.pick for files/grep/help, lazygit integration, spell for markdown/gitcommit, cursor restore |
 | `ghostty/` | ghostty | Minimal terminal config |
 | `lazygit/` | lazygit | Custom keybindings and theme |
+| `yazi/` | yazi | Manager settings and Rosé Pine theme |
+| `wallpapers/` | — | Wallpaper images |
 | `opencode/` | opencode | Run commands |
 | `scripts/` | — | `deps.sh`, `doctor.sh`, `push.sh` |
 
@@ -41,15 +43,22 @@ Inside tmux (`prefix` = `M-space`):
 | `M-d` | Pane picker |
 | `M-o` | Opencode pane picker |
 | `M-n` | Nvim pane picker |
+| `M-c` | Opencode run-prompt picker |
 | `M-1` | Isolated popup shell |
-| `M-` `` | Last pane jump |
+| ``M-` `` | Last pane jump |
 | `M-g` | LazyGit |
 | `M-p` | Btop |
+| `M-y` | Yazi |
+| `M-v` | Copy mode |
 | `M-a` | Start asciinema recording |
 | `M-C-a` | Stop recording |
 | `M-C-s` | Save layout snapshot |
-| `M-?` | Searchable keybinding cheatsheet |
 | `M-b` | Toggle status bar |
+| `M-L` | Lock mode (only `M-L` works until pressed again) |
+| `M-r` / `M-C-r` | Rename window / session |
+| `M-w` / `M-C-w` | New window / session |
+| `M-?` | Searchable keybinding cheatsheet |
+| `prefix r` | Reload tmux config |
 
 ## Dependencies
 
