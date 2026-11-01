@@ -46,7 +46,7 @@ section() { printf '\n%s\n' "$*"; }
 
 section "tools"
 if [ "$mode" = server ]; then
-  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3"
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 tree-sitter"
   for cmd in ghostty opencode; do
     if command -v "$cmd" >/dev/null 2>&1; then
       ok "$cmd"
@@ -55,7 +55,7 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty"
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter"
 fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
@@ -94,10 +94,11 @@ check_version() {
   command -v "$cmd" >/dev/null 2>&1 || return 0
 
   case "$cmd" in
-    nvim)      raw=$(nvim --version 2>/dev/null | head -1) ;;
-    fzf)       raw=$(fzf --version 2>/dev/null) ;;
-    asciinema) raw=$(asciinema --version 2>/dev/null) ;;
-    tmux)      raw=$(tmux -V 2>/dev/null) ;;
+    nvim)        raw=$(nvim --version 2>/dev/null | head -1) ;;
+    fzf)         raw=$(fzf --version 2>/dev/null) ;;
+    asciinema)   raw=$(asciinema --version 2>/dev/null) ;;
+    tmux)        raw=$(tmux -V 2>/dev/null) ;;
+    tree-sitter) raw=$(tree-sitter --version 2>/dev/null) ;;
   esac
 
   have=$(printf '%s\n' "$raw" | grep -oE '[0-9]+(\.[0-9]+)+' | head -1)
@@ -114,6 +115,7 @@ check_version nvim 0.12
 check_version fzf 0.48
 check_version asciinema 3.0
 check_version tmux 3.3
+check_version tree-sitter 0.26.1
 
 section "submodules"
 if [ ! -f .gitmodules ]; then

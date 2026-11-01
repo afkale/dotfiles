@@ -53,12 +53,17 @@ Inside tmux (`prefix` = `M-space`):
 
 ## Dependencies
 
-**Arch Linux**: `make deps` installs everything with pacman.
+**Arch Linux**: `make deps` installs everything with pacman, including
+`tree-sitter-cli` (used by `nvim-treesitter` to build parsers).
 
 **Debian / Ubuntu**: `make deps` installs:
 1. Build dependencies with `apt-get`.
 2. Homebrew if missing.
-3. All config tools with `brew install`.
+3. All config tools with `brew install`, including `tree-sitter-cli`.
+
+`tree-sitter-cli` comes from Homebrew on Debian/Ubuntu because the apt version
+is too old for `nvim-treesitter` (0.20.8 on 24.04, 0.25.9 on 26.04; it needs
+0.26.1 or newer).
 
 Tools that Homebrew can't provide (`ghostty`, `opencode`) are printed at the end with install hints.
 

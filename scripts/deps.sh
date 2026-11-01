@@ -3,7 +3,7 @@
 #
 # Arch-family systems use packages/arch.txt (pacman). Debian-family systems
 # use apt for stable basics and Homebrew for the tools whose distro versions
-# are too old (neovim, fzf, asciinema, tmux, ...) or that are not packaged.
+# are too old or missing (neovim, fzf, asciinema, tmux, tree-sitter-cli, ...).
 #
 #   scripts/deps.sh             install for this machine
 #   scripts/deps.sh --dry-run   print what would be installed
@@ -13,7 +13,7 @@ set -u
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BIN_DIR="$HOME/.local/bin"
 BREW=''
-BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux bat btop fd fish jq ripgrep zoxide'
+BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux bat btop fd fish jq ripgrep zoxide tree-sitter-cli'
 
 # Prefer our own links for now; brew is prepended once it is located.
 PATH="$BIN_DIR:$PATH"
