@@ -15,6 +15,7 @@ less
 npm
 procps
 python3
+python3-venv
 ripgrep
 stow
 unzip
