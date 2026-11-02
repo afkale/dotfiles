@@ -11,13 +11,13 @@ bind -n M-s display-popup -B -E -w 90% -h 80% "$SESSIONS_SCRIPT pick"
 bind -n M-? display-popup -B -E -w 90% -h 80% "tmux list-keys | fzf --reverse --header='type to filter · esc: close'"
 
 # Yazi
-bind -n M-y display-popup -B -d '#{pane_current_path}' -E -w 100% -h 100% yazi
+bind -n M-y display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  yazi ' yazi
 
 # Lazygit
-bind -n M-g display-popup -B -d '#{pane_current_path}' -E -w 100% -h 100% lazygit
+bind -n M-g display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  lazygit ' lazygit
 
 # Btop
-bind -n M-p display-popup -B -d '#{pane_current_path}' -E -w 100% -h 100% btop
+bind -n M-p display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  btop ' btop
 
 bind -n M-d if-shell "$PANE_SCRIPT has '#{pane_id}'" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick'" \

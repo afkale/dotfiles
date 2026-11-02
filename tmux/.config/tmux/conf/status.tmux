@@ -72,4 +72,5 @@ set -g clock-mode-colour "#c4a7e7"
 # ---------------------------------------------------------------------------
 set -g popup-border-style "fg=#524f67"
 set -g popup-border-lines "rounded"
+set -g popup-border-title-style "fg=#c4a7e7,bold"
 set -g popup-style "bg=#191724,fg=#e0def4"
