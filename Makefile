@@ -1,16 +1,14 @@
 .PHONY: setup server stow server-stow restow server-restow unlink server-unlink \
 	update shell check-deps deps server-deps doctor server-doc push
 
-CFG_DIRS := fish ghostty lazygit nvim tmux wallpapers yazi
+CFG_DIRS := ai fish ghostty lazygit nvim tmux wallpapers yazi
 STOW_OPTS := -t ~
 
-# Full setup (desktop: includes ghostty and opencode).
 setup: check-deps
 	@git submodule update --init --recursive
 	@$(MAKE) -s stow
 	@echo "Run 'make shell' to set fish as your login shell."
 
-# Server setup (no ghostty, no opencode).
 server: check-deps
 	@git submodule update --init --recursive
 	@stow $(STOW_OPTS) $(filter-out ghostty,$(CFG_DIRS))
@@ -18,26 +16,24 @@ server: check-deps
 
 stow:
 	@stow $(STOW_OPTS) $(CFG_DIRS)
-	@stow --no-folding $(STOW_OPTS) opencode
 
 server-stow:
 	@stow $(STOW_OPTS) $(filter-out ghostty,$(CFG_DIRS))
 
 restow:
 	@stow -R $(STOW_OPTS) $(CFG_DIRS)
-	@stow -R --no-folding $(STOW_OPTS) opencode
 
 server-restow:
 	@stow -R $(STOW_OPTS) $(filter-out ghostty,$(CFG_DIRS))
 
 unlink:
 	@stow -D $(STOW_OPTS) $(CFG_DIRS)
-	@stow -D --no-folding $(STOW_OPTS) opencode
 
 server-unlink:
 	@stow -D $(STOW_OPTS) $(filter-out ghostty,$(CFG_DIRS))
 
 update:
+	@git pull
 	@git submodule update --init --remote --recursive
 
 shell:

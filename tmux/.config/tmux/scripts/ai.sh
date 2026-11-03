@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# opencode.sh — fuzzy picker for daily `opencode run` prompts (M-c).
+# ai.sh — fuzzy picker for daily `opencode run` prompts (M-c).
 #
-# Commands live in ${XDG_CONFIG_HOME:-$HOME/.config}/opencode/run-commands.json:
+# Commands live in ${XDG_CONFIG_HOME:-$HOME/.config}/ai/run-commands.json:
 #
 #   {
 #     "commands": [
@@ -14,11 +14,11 @@
 #     ]
 #   }
 #
-#   opencode.sh has             true when the file has valid commands
-#   opencode.sh list            TSV "name<TAB>name  description" for fzf
-#   opencode.sh preview NAME    show one command's full prompt
-#   opencode.sh pick            fzf picker, then run the selected command
-#   opencode.sh run NAME        run one command directly
+#   ai.sh has             true when the file has valid commands
+#   ai.sh list            TSV "name<TAB>name  description" for fzf
+#   ai.sh preview NAME    show one command's full prompt
+#   ai.sh pick            fzf picker, then run the selected command
+#   ai.sh run NAME        run one command directly
 #
 # `args` is optional. Add "--auto" when the prompt needs tool permissions;
 # there is no TUI in the popup to answer permission prompts. Each invocation
@@ -27,7 +27,7 @@
 set -u
 
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
-COMMANDS="${OPENCODE_RUN_COMMANDS:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode/run-commands.json}"
+COMMANDS="${AI_RUN_COMMANDS:-${XDG_CONFIG_HOME:-$HOME/.config}/ai/run-commands.json}"
 
 valid() {
   command -v jq >/dev/null 2>&1 || return 1
@@ -115,7 +115,7 @@ run() {
   ' "$COMMANDS")
 
   if [ -z "$prompt" ]; then
-    printf 'unknown opencode command: %s\n' "$name"
+    printf 'unknown ai command: %s\n' "$name"
     hold
     return 1
   fi
@@ -168,7 +168,7 @@ pick() {
       --ansi \
       --info=inline \
       --border=rounded \
-      --border-label=' opencode run ' \
+      --border-label=' ai run ' \
       --color='fg:#908caa,bg:#191724,hl:#eb6f92,fg+:#e0def4,bg+:#26233a,hl+:#eb6f92' \
       --color='info:#c4a7e7,prompt:#c4a7e7,pointer:#ebbcba,marker:#9ccfd8,spinner:#f6c177' \
       --color='header:#6e6a86,border:#403d52,label:#c4a7e7,selected-bg:#26233a' \

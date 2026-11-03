@@ -31,7 +31,7 @@ bind -n M-n if-shell "$PANE_SCRIPT has '#{pane_id}' nvim" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick nvim'" \
   "display-message -d 1500 'no nvim panes'"
 
-# opencode run prompt picker (commands from run-commands.json)
-bind -n M-c if-shell "$OPENCODE_SCRIPT has" \
-  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$OPENCODE_SCRIPT pick'" \
-  "display-message -d 1500 'no run commands'"
+# ai run prompt picker (commands from run-commands.json)
+bind -n M-c if-shell "$AI_SCRIPT has" \
+  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$AI_SCRIPT pick'" \
+  "display-message -d 1500 'no ai commands'"
