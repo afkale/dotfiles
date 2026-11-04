@@ -37,7 +37,9 @@ bind -n M-n if-shell "$PANE_SCRIPT has all nvim" \
 
 # Task worktrees. M-t picks an existing worktree; M-C-t creates one for the
 # current repo and opens OpenCode in it. M-T reopens every worktree at once.
-bind -n M-t display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% "$WORKTREE_SCRIPT pick"
+bind -n M-t if-shell "$WORKTREE_SCRIPT has" \
+  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$WORKTREE_SCRIPT pick'" \
+  "display-message -d 1500 'no other worktrees'"
 bind -n M-C-t display-popup -d '#{pane_current_path}' -E -w 60% -h 25% -T '  worktree ' "$WORKTREE_SCRIPT prompt"
 bind -n M-T run-shell -b "$WORKTREE_SCRIPT open-all"
 

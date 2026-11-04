@@ -262,6 +262,11 @@ list_mru() {
   mru_merge "$MRU" "$current" _mru_order _mru_row _mru_listed
 }
 
+# True when there is at least one worktree to show (aside from the current one).
+has() {
+  list_mru >/dev/null 2>&1
+}
+
 preview_worktree() {
   local path=${1:-}
   [ -n "$path" ] && [ -d "$path" ] || return 0
@@ -427,6 +432,7 @@ case "${1:-}" in
   prompt) prompt_new ;;
   new) shift; new_worktree "${1:-}" ;;
   pick) pick_worktree ;;
+  has) has ;;
   list-mru) list_mru ;;
   open-all) open_all_worktrees ;;
   list) list_worktrees ;;
@@ -434,7 +440,7 @@ case "${1:-}" in
   open|focus) shift; open_worktree "${1:-}" ;;
   remove) shift; remove_worktree "${1:-}" ;;
   *)
-    printf 'usage: %s {prompt|new NAME|pick|list-mru|open-all|list|preview PATH|open PATH|remove PATH}\n' "${0##*/}" >&2
+    printf 'usage: %s {prompt|new NAME|pick|has|list-mru|open-all|list|preview PATH|open PATH|remove PATH}\n' "${0##*/}" >&2
     exit 2
     ;;
 esac
