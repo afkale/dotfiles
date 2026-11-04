@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # worktree.sh — create and manage task worktrees from tmux.
 #
-#   worktree.sh prompt        ask for a task name, then create and open it (M-t)
+#   worktree.sh prompt        ask for a task name, then create and open it (M-C-t)
+#   worktree.sh pick          fzf picker for existing worktrees (M-t)
+#   worktree.sh open-all      open a window for every worktree (M-T)
 #   worktree.sh new NAME      create a worktree and open it
-#   worktree.sh pick          fzf picker for existing worktrees (M-C-t)
 #   worktree.sh list          TSV "path<TAB>branch<TAB>dirty" for fzf
+#   worktree.sh list-mru      same rows, MRU order, current worktree omitted
 #   worktree.sh preview PATH   show one worktree's status
 #   worktree.sh open PATH      open (or focus) a tmux window for a worktree
 #   worktree.sh remove PATH    remove a clean worktree, keeping its branch
@@ -26,17 +28,50 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT_SETTING=$(tmux show-option -gqv @worktree_root 2>/dev/null || true)
 WORKTREE_ROOT="${WORKTREE_ROOT:-${ROOT_SETTING:-$HOME/worktrees}}"
 
+STATE_DIR=$(tmux_state_dir)
+MRU="${TMUX_WORKTREE_HISTORY:-$STATE_DIR/worktrees}"
+LIMIT="${TMUX_WORKTREE_HISTORY_LIMIT:-100}"
+
 # Print the canonical checkout for the current directory. Using the first
 # worktree entry means this also works when called from a linked worktree.
+# Popups normally start in the pane directory via -d; the TMUX_PANE fallback
+# keeps the script working if it is invoked from somewhere else.
+pane_path() {
+  local pane=${TMUX_PANE:-}
+  [ -n "$pane" ] || return 1
+  tmux display-message -p -t "$pane" '#{pane_current_path}' 2>/dev/null
+}
+
 repo_root() {
-  git rev-parse --git-dir >/dev/null 2>&1 || return 1
-  git worktree list --porcelain 2>/dev/null |
+  local dir=$PWD
+  if ! git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
+    dir=$(pane_path) || return 1
+    [ -n "$dir" ] || return 1
+  fi
+  git -C "$dir" worktree list --porcelain 2>/dev/null |
     sed -n 's/^worktree //p' |
     head -n 1
 }
 
 current_session() {
   tmux display-message -p '#{session_id}' 2>/dev/null
+}
+
+# Checkout the picker was opened from, used to skip the current worktree so
+# Enter jumps to the worktree visited before this one.
+current_worktree() {
+  local dir=${1:-$PWD}
+  if git -C "$dir" rev-parse --show-toplevel >/dev/null 2>&1; then
+    git -C "$dir" rev-parse --show-toplevel 2>/dev/null
+    return 0
+  fi
+  dir=$(pane_path) || return 1
+  git -C "$dir" rev-parse --show-toplevel 2>/dev/null
+}
+
+record_worktree() {
+  [ -n "${1:-}" ] || return 0
+  mru_push "$MRU" "$1" "$LIMIT"
 }
 
 hold() {
@@ -76,18 +111,23 @@ open_worktree() {
   local path=${1:-} session name repo wid pane
   [ -n "$path" ] && [ -d "$path" ] || fail "not a directory: ${path:-}"
 
+  record_worktree "$path"
+
   session=$(current_session) || fail "not running inside tmux"
   [ -n "$session" ] || fail "not running inside tmux"
 
   # Namespace the window by repository so two repos with the same branch name
   # do not fight over one window.
-  repo=$(basename "$(dirname "$path")")
-  name=$(slug "$(basename "$path")")
-  name=${name//:/_}
   case "$path" in
-    "$WORKTREE_ROOT"/*) name="$repo/$name" ;;
-    *) name="$repo" ;;
+    "$WORKTREE_ROOT"/*)
+      repo=$(basename "$(dirname "$path")")
+      name="$repo/$(slug "$(basename "$path")")"
+      ;;
+    *)
+      name=$(basename "$path")
+      ;;
   esac
+  name=${name//:/_}
 
   wid=$(tmux list-windows -t "$session" -F $'#{window_name}\t#{window_id}' 2>/dev/null |
     awk -F '\t' -v name="$name" '$1 == name { print $2; exit }')
@@ -134,10 +174,14 @@ new_worktree() {
       message "warning: submodule init failed in $dir"
   fi
 
-  # Worktrees do not carry ignored files, so copy the common local env files.
+  # Worktrees do not carry ignored files, so copy common local env files.
+  # Use restricted perms (u=rw only) and skip envrc (it may execute on cd).
   local file
-  for file in .env .env.local .env.development.local .envrc; do
-    [ -f "$root/$file" ] && cp -p "$root/$file" "$dir/$file"
+  for file in .env .env.local .env.development.local; do
+    [ -f "$root/$file" ] || continue
+    [ -L "$dir/$file" ] && continue  # never overwrite a tracked symlink
+    install -m 600 -- "$root/$file" "$dir/$file" 2>/dev/null ||
+      cp -p "$root/$file" "$dir/$file"
   done
 
   message "created $branch in $dir"
@@ -200,6 +244,40 @@ list_worktrees() {
   emit
 }
 
+list_mru() {
+  local path branch dirty current
+  declare -A row_of=() listed=()
+  local order=()
+
+  while IFS=$'\t' read -r path branch dirty; do
+    [ -n "$path" ] || continue
+    row_of[$path]="$path"$'\t'"$branch"$'\t'"$dirty"
+    order+=("$path")
+  done < <(list_worktrees)
+
+  current=$(current_worktree 2>/dev/null || true)
+
+  # 1. MRU: worktrees opened before, most recent first, skipping the one the
+  # picker was opened from.
+  if [ -f "$MRU" ]; then
+    while IFS= read -r path; do
+      [ -n "$path" ] || continue
+      [ "$path" = "$current" ] && continue
+      [ -n "${row_of[$path]+x}" ] || continue
+      [ -n "${listed[$path]+x}" ] && continue
+      printf '%s\n' "${row_of[$path]}"
+      listed[$path]=1
+    done <"$MRU"
+  fi
+
+  # 2. Never opened from this menu: plain git worktree order.
+  for path in "${order[@]}"; do
+    [ "$path" = "$current" ] && continue
+    [ -n "${listed[$path]+x}" ] && continue
+    printf '%s\n' "${row_of[$path]}"
+  done
+}
+
 preview_worktree() {
   local path=${1:-}
   [ -n "$path" ] && [ -d "$path" ] || return 0
@@ -210,70 +288,142 @@ preview_worktree() {
   git -C "$path" status --short 2>/dev/null | head -n 40
 }
 
+# Open or focus a window for every worktree in the repo, then return focus to
+# the window that was active when the command started.
+open_all_worktrees() {
+  local path branch current count=0
+  list_worktrees >/dev/null 2>&1 || fail "not inside a git repository"
+
+  current=$(tmux display-message -p '#{window_id}' 2>/dev/null || true)
+  while IFS=$'\t' read -r path branch _; do
+    [ -n "$path" ] || continue
+    open_worktree "$path"
+    count=$((count + 1))
+  done < <(list_worktrees)
+
+  [ -n "$current" ] && tmux select-window -t "$current" 2>/dev/null
+  message "opened $count worktrees"
+}
+
+# Focus a specific worktree window (create if needed) and record it in MRU.
+focus_worktree() {
+  local path=${1:-}
+  [ -n "$path" ] && [ -d "$path" ] || { message "not a directory: ${path:-}"; return 1; }
+  record_worktree "$path"
+  open_worktree "$path"
+}
+
 pick_worktree() {
-  local selection path
+  local selection entries path
   list_worktrees >/dev/null 2>&1 || {
     printf 'not inside a git repository\n'
     hold
     return 1
   }
 
+  entries=$(list_mru)
+  if [ -z "$entries" ]; then
+    message "no other worktrees"
+    return 0
+  fi
+
   selection=$(
-    list_worktrees | fzf \
+    printf '%s\n' "$entries" | fzf \
       --delimiter=$'\t' \
       --with-nth=2,3 \
-      --cycle \
-      --ansi \
-      --info=inline \
-      --border=rounded \
-      --border-label=' worktrees ' \
-      --color='fg:#908caa,bg:#191724,hl:#eb6f92,fg+:#e0def4,bg+:#26233a,hl+:#eb6f92' \
-      --color='info:#c4a7e7,prompt:#c4a7e7,pointer:#ebbcba,marker:#9ccfd8,spinner:#f6c177' \
-      --color='header:#6e6a86,border:#403d52,label:#c4a7e7,selected-bg:#26233a' \
-      --header='enter: open · ctrl-x: remove · ctrl-r: reload · * = dirty · esc: cancel' \
+      --no-sort \
+      "${FZF_STYLE[@]}" \
+      --border-label='  worktrees ' \
+      --header='enter: open · ctrl-x: remove · ctrl-v: preview · ctrl-r: reload · * = dirty' \
       --preview "$SELF preview {1}" \
-      --preview-window='right,55%,border-left,wrap' \
-      --bind "ctrl-r:reload($SELF list)" \
-      --bind "ctrl-x:execute-silent($SELF remove {1})+reload($SELF list)"
+      --preview-window='right,60%,border-left,wrap' \
+      --bind 'ctrl-v:toggle-preview' \
+      --bind "ctrl-r:reload($SELF list-mru)" \
+      --bind "ctrl-x:execute-silent($SELF remove {1})+reload($SELF list-mru)"
   )
 
   [ -n "$selection" ] || return 0
   path=${selection%%$'\t'*}
-  open_worktree "$path"
+  focus_worktree "$path"
 }
 
 remove_worktree() {
-  local path=${1:-} root
+  local path=${1:-} root known=0 p
   [ -n "$path" ] && [ -d "$path" ] || { message "not a directory: ${path:-}"; return 1; }
   root=$(repo_root) || { message "not inside a git repository"; return 1; }
 
-  if [ "$(realpath "$path")" = "$(realpath "$root")" ]; then
+  if [ "$(realpath "$path" 2>/dev/null)" = "$(realpath "$root" 2>/dev/null)" ]; then
     message "refusing to remove the main worktree"
     return 1
   fi
 
-  if [ -n "$(git -C "$path" status --porcelain 2>/dev/null | head -n 1)" ]; then
+  while IFS= read -r p; do
+    if [ "$(realpath "$p" 2>/dev/null)" = "$(realpath "$path" 2>/dev/null)" ]; then
+      known=1
+      break
+    fi
+  done < <(git -C "$root" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
+  if [ "$known" != 1 ]; then
+    message "not a worktree of this repository: $path"
+    return 1
+  fi
+
+  # Reject paths outside WORKTREE_ROOT so we never delete arbitrary dirs.
+  case "$(realpath "$path" 2>/dev/null || echo "$path")" in
+    "$(realpath "$WORKTREE_ROOT" 2>/dev/null || echo "$WORKTREE_ROOT")"/*) ;;
+    *) message "refusing path outside $WORKTREE_ROOT"; return 1 ;;
+  esac
+
+  # Verify the worktree is clean. Abort if git status fails.
+  local status
+  status=$(git -C "$path" status --porcelain 2>/dev/null) || {
+    message "cannot verify clean status: $path"
+    return 1
+  }
+  if [ -n "$status" ]; then
     message "worktree has uncommitted changes: $path"
     return 1
   fi
 
-  if ! git -C "$root" worktree remove "$path"; then
-    message "could not remove $path"
+  # Fast path: git removes it cleanly.
+  if git -C "$root" worktree remove "$path" 2>/dev/null; then
+    message "removed $path (branch kept)"
+    return 0
+  fi
+
+  # git refuses to remove any worktree that contains submodules, even when the
+  # checkout is clean. Only take the fallback when .gitmodules exists so a
+  # permission/lock failure does not silently delete everything.
+  if [ ! -e "$path/.gitmodules" ]; then
+    message "could not remove $path (maybe locked?)"
     return 1
   fi
-  message "removed $path (branch kept)"
+
+  git -C "$path" submodule deinit --all --force >/dev/null 2>&1 || {
+    message "could not deinit submodules in $path"
+    return 1
+  }
+  if rm -rf -- "$path"; then
+    message "removed $path (branch kept)"
+    return 0
+  fi
+
+  message "could not remove $path"
+  return 1
 }
 
 case "${1:-}" in
   prompt) prompt_new ;;
   new) shift; new_worktree "${1:-}" ;;
   pick) pick_worktree ;;
+  list-mru) list_mru ;;
+  open-all) open_all_worktrees ;;
   list) list_worktrees ;;
   preview) shift; preview_worktree "${1:-}" ;;
-  open) shift; open_worktree "${1:-}" ;;
+  open|focus) shift; open_worktree "${1:-}" ;;
   remove) shift; remove_worktree "${1:-}" ;;
   *)
-    printf 'usage: %s {prompt|new NAME|pick|list|preview PATH|open PATH|remove PATH}\n' "${0##*/}" >&2
+    printf 'usage: %s {prompt|new NAME|pick|list-mru|open-all|list|preview PATH|open PATH|remove PATH}\n' "${0##*/}" >&2
     exit 2
     ;;
 esac

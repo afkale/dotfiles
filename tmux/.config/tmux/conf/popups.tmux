@@ -8,7 +8,7 @@ bind -n M-1 display-popup -d '#{pane_current_path}' -xC -yC -w 80% -h 75% -E "$P
 bind -n M-s display-popup -B -E -w 90% -h 80% "$SESSIONS_SCRIPT pick"
 
 # Key cheatsheet: everything tmux knows, searchable.
-bind -n M-? display-popup -B -E -w 90% -h 80% "tmux list-keys | fzf --reverse --header='type to filter · esc: close'"
+bind -n M-? display-popup -B -E -w 90% -h 80% "tmux list-keys | fzf --reverse"
 
 # Yazi
 bind -n M-y display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  yazi ' yazi
@@ -19,22 +19,27 @@ bind -n M-g display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  
 # Btop
 bind -n M-p display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  btop ' btop
 
-bind -n M-d if-shell "$PANE_SCRIPT has '#{pane_id}'" \
-  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick'" \
-  "display-message -d 1500 'no other panes'"
+bind -n M-d if-shell "$PANE_SCRIPT has current" \
+  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick current'" \
+  "display-message -d 1500 'no panes in this session'"
 
-bind -n M-o if-shell "$PANE_SCRIPT has '#{pane_id}' opencode" \
-  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick opencode'" \
+bind -n M-f if-shell "$PANE_SCRIPT has all" \
+  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick all'" \
+  "display-message -d 1500 'no panes'"
+
+bind -n M-o if-shell "$PANE_SCRIPT has all opencode" \
+  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick all opencode'" \
   "display-message -d 1500 'no opencode panes'"
 
-bind -n M-n if-shell "$PANE_SCRIPT has '#{pane_id}' nvim" \
-  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick nvim'" \
+bind -n M-n if-shell "$PANE_SCRIPT has all nvim" \
+  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick all nvim'" \
   "display-message -d 1500 'no nvim panes'"
 
-# Task worktrees. M-t creates one for the current repo and opens OpenCode in
-# it; M-C-t opens the picker for existing worktrees.
-bind -n M-t display-popup -d '#{pane_current_path}' -E -w 60% -h 25% -T '  worktree ' "$WORKTREE_SCRIPT prompt"
-bind -n M-C-t display-popup -B -E -w 90% -h 80% "$WORKTREE_SCRIPT pick"
+# Task worktrees. M-t picks an existing worktree; M-C-t creates one for the
+# current repo and opens OpenCode in it. M-T reopens every worktree at once.
+bind -n M-t display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% "$WORKTREE_SCRIPT pick"
+bind -n M-C-t display-popup -d '#{pane_current_path}' -E -w 60% -h 25% -T '  worktree ' "$WORKTREE_SCRIPT prompt"
+bind -n M-T run-shell -b "$WORKTREE_SCRIPT open-all"
 
 # ai run prompt picker (commands from run-commands.json)
 bind -n M-c if-shell "$AI_SCRIPT has" \

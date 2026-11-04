@@ -1,6 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "openrouter/deepseek/deepseek-v4-flash",
+  "default_agent": "build",
+  "experimental": {
+    "subagent_depth": 2
+  },
   "provider": {
     "openrouter": {
       "models": {
@@ -19,6 +23,88 @@
         }
       }
     }
+  },
+
+  // ── Agents ────────────────────────────────────────────────────────────────
+  "agents": {
+    // Read-only code reviewer — audits changes for bugs, regressions, style.
+    "reviewer": {
+      "description": "Reviews changes for bugs, regressions, and style issues",
+      "mode": "subagent",
+      "system": "You are a thorough code reviewer. Inspect the current changes and the surrounding code. List findings in severity order with file and line references. Do not edit any files. Report correctness issues, potential regressions, style problems, and missing tests. Be constructive and specific.",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "write", "resource": "*", "effect": "deny" },
+        { "action": "external_directory", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "git status *", "effect": "allow" },
+        { "action": "shell", "resource": "git diff *", "effect": "allow" },
+        { "action": "shell", "resource": "git log *", "effect": "allow" },
+        { "action": "shell", "resource": "git show *", "effect": "allow" },
+        { "action": "shell", "resource": "git branch *", "effect": "allow" },
+        { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
+        { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+        { "action": "shell", "resource": "rg *", "effect": "allow" },
+        { "action": "shell", "resource": "fd *", "effect": "allow" },
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+      ],
+      "color": "#4ade80",
+    },
+
+    // Documentation & research agent — researches and writes docs.
+    "writer": {
+      "description": "Researches topics and writes documentation",
+      "mode": "subagent",
+      "system": "You are a skilled technical writer. Research the requested topic or codebase and produce clear, well-structured documentation in the project's existing style. Write Markdown, README files, doc comments, or API docs as needed. Focus on clarity, accuracy, and completeness.",
+      "permissions": [
+        { "action": "external_directory", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "git status *", "effect": "allow" },
+        { "action": "shell", "resource": "git diff *", "effect": "allow" },
+        { "action": "shell", "resource": "git log *", "effect": "allow" },
+        { "action": "shell", "resource": "git show *", "effect": "allow" },
+        { "action": "shell", "resource": "git branch *", "effect": "allow" },
+        { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
+        { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+        { "action": "shell", "resource": "rg *", "effect": "allow" },
+        { "action": "shell", "resource": "fd *", "effect": "allow" },
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+        { "action": "webfetch", "resource": "*", "effect": "allow" },
+        { "action": "websearch", "resource": "*", "effect": "allow" },
+      ],
+      "color": "#60a5fa",
+    },
+
+    // Security auditor — checks for vulnerabilities, secret leaks, hardening.
+    "auditor": {
+      "description": "Audits code for security vulnerabilities and hardening issues",
+      "mode": "subagent",
+      "system": "You are a security expert. Audit the codebase or current changes for: OWASP Top 10 issues, secret/key leaks, injection vulnerabilities, unsafe deserialization, authorization flaws, dependency vulnerabilities, and insecure defaults. Report findings with severity, file/line references, and remediation advice. Do not edit files.",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "write", "resource": "*", "effect": "deny" },
+        { "action": "external_directory", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "git status *", "effect": "allow" },
+        { "action": "shell", "resource": "git diff *", "effect": "allow" },
+        { "action": "shell", "resource": "git log *", "effect": "allow" },
+        { "action": "shell", "resource": "git show *", "effect": "allow" },
+        { "action": "shell", "resource": "git branch *", "effect": "allow" },
+        { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
+        { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+        { "action": "shell", "resource": "rg *", "effect": "allow" },
+        { "action": "shell", "resource": "fd *", "effect": "allow" },
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+      ],
+      "color": "#f87171",
+    },
+
+    // Extend the default build agent with subagent permissions.
+    "build": {
+      "permissions": [
+        { "action": "subagent", "resource": "*", "effect": "allow" },
+      ],
+    },
   },
 
   // Ordered rules; the last matching rule wins. Broad defaults first, narrow
@@ -42,12 +128,19 @@
     // Destructive or remote-changing commands always need a human, even with
     // --auto. Keep these last so they win over the broad rules above.
     { "action": "shell", "resource": "git push *", "effect": "deny" },
+    { "action": "shell", "resource": "git * push *", "effect": "deny" },
     { "action": "shell", "resource": "git reset --hard *", "effect": "deny" },
+    { "action": "shell", "resource": "git * reset --hard *", "effect": "deny" },
     { "action": "shell", "resource": "git clean *", "effect": "deny" },
+    { "action": "shell", "resource": "git * clean *", "effect": "deny" },
     { "action": "shell", "resource": "gh pr merge *", "effect": "deny" },
     { "action": "shell", "resource": "sudo *", "effect": "deny" },
+    { "action": "shell", "resource": "doas *", "effect": "deny" },
+    { "action": "shell", "resource": "pkexec *", "effect": "deny" },
     { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
     { "action": "shell", "resource": "rm -fr *", "effect": "deny" },
+    { "action": "shell", "resource": "rm -r *", "effect": "deny" },
+    { "action": "shell", "resource": "rm --recursive *", "effect": "deny" },
     { "action": "shell", "resource": "shutdown *", "effect": "deny" },
     { "action": "shell", "resource": "reboot *", "effect": "deny" },
 

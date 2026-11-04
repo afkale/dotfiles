@@ -3,12 +3,16 @@
 #
 #   pane.sh save [PANE_ID]       remember a pane as the most recently used
 #   pane.sh prune                forget panes that no longer exist
-#   pane.sh list [FILTER]        MRU-ordered "<pane_id><TAB><label>" for fzf
-#   pane.sh last                 jump to the previous pane (M-`)
-#   pane.sh pick [FILTER]        fzf pane picker (M-d, M-o for opencode panes)
-#   pane.sh has [PANE] [FILTER]  true when the picker would have entries
-#   pane.sh open-window PANE_ID  open that pane's directory in a new window
-#   pane.sh close-session PANE_ID    close that pane's session (pane if current)
+#   pane.sh list [SCOPE] [FILTER]   MRU-ordered "<pane_id><TAB><label>" for fzf
+#   pane.sh last                    jump to the previous pane (M-`)
+#   pane.sh pick [SCOPE] [FILTER]   fzf pane picker: M-d current, M-f all,
+#                                   M-o/M-n global filters
+#   pane.sh has [SCOPE] [FILTER]    true when the picker would have entries
+#   pane.sh open-window PANE_ID     open that pane's directory in a new window
+#   pane.sh close-session PANE_ID   close that pane's session (pane if current)
+#
+# SCOPE is "current" (default) or "all". The current scope follows the pane
+# that opened the picker, so it still works from popups.
 #
 # History is a plain list of pane ids ("%12"), newest first. Pane ids are
 # stable across renames and contain no spaces, so names can never break it.
@@ -45,8 +49,8 @@ RUNTIME_DIR=$(runtime_dir)
 LOCK="$RUNTIME_DIR/lock"
 
 # field 1 = pane id, field 2 = human label, field 3 = window bell flag,
-# field 4 = session name (used to hide "_hidden*" sessions)
-FIELDS="#{pane_id}"$'\t'"#{session_name}:#{window_index}.#{pane_index} - #{window_name}"$'\t'"#{window_bell_flag}"$'\t'"#{session_name}"
+# field 4 = session name (used to hide "_hidden*" sessions), field 5 = session id
+FIELDS="#{pane_id}"$'\t'"#{session_name}:#{window_index}.#{pane_index} - #{window_name}"$'\t'"#{window_bell_flag}"$'\t'"#{session_name}"$'\t'"#{session_id}"
 
 # Sessions used for popups start with "_hidden" and stay out of pane searches.
 is_hidden_pane() {
@@ -111,27 +115,30 @@ matching_ids() {
     '
 }
 
-# Notified rows are drawn in rose-pine gold with a bell (fzf --ansi).
+# Notified rows are plain gold text: no bell, no marker, no extra icon.
 NOTIFY_COLOR=$'\033[38;2;246;193;119m'
 RESET_COLOR=$'\033[0m'
 
 print_entry() {
-  local mark="  " notify="${4:-0}" color="" reset=""
-  [ "${3:-0}" = 1 ] && mark="↩ "
+  local notify="${3:-0}" color="" reset=""
   if [ "$notify" = 1 ]; then
     color=$NOTIFY_COLOR
     reset=$RESET_COLOR
-    mark="$mark "
   fi
-  printf '%s\t%s%s%s%s\n' "$1" "$color" "$mark" "$2" "$reset"
+  printf '%s\t%s%s%s\n' "$1" "$color" "$2" "$reset"
 }
 
 list() {
-  local filter="${1:-}" current="" pane label bell first=1
+  local scope="${1:-current}" filter="${2:-}" current="" pane label bell session session_id
   declare -A label_of=() listed=() allowed=() notified=()
   local order=()
+  local current_session
 
   current=$(current_pane)
+  if [ -n "$current" ]; then
+    current_session=$(tmux display-message -p -t "$current" '#{session_id}' 2>/dev/null || true)
+  fi
+  [ -n "${current_session:-}" ] || current_session=$(current_session_id 2>/dev/null || true)
 
   if [ -n "$filter" ]; then
     while IFS= read -r pane; do
@@ -139,9 +146,12 @@ list() {
     done < <(matching_ids "$filter")
   fi
 
-  while IFS=$'\t' read -r pane label bell session; do
+  while IFS=$'\t' read -r pane label bell session session_id; do
     [ -n "$pane" ] || continue
     is_hidden_session "$session" && continue
+    if [ "$scope" = current ] && [ -n "$current_session" ] && [ "$session_id" != "$current_session" ]; then
+      continue
+    fi
     [ -n "$filter" ] && [ -z "${allowed[$pane]+x}" ] && continue
     label_of[$pane]=$label
     [ "${bell:-0}" = 1 ] && notified[$pane]=1
@@ -155,9 +165,8 @@ list() {
       [ "$pane" = "$current" ] && continue
       [ -n "${label_of[$pane]+x}" ] || continue
       [ -n "${listed[$pane]+x}" ] && continue
-      print_entry "$pane" "${label_of[$pane]}" "$first" "${notified[$pane]:-0}"
+      print_entry "$pane" "${label_of[$pane]}" "${notified[$pane]:-0}"
       listed[$pane]=1
-      first=0
     done <"$HISTORY"
   fi
 
@@ -165,7 +174,7 @@ list() {
   for pane in "${order[@]}"; do
     [ "$pane" = "$current" ] && continue
     [ -n "${listed[$pane]+x}" ] && continue
-    print_entry "$pane" "${label_of[$pane]}" 0 "${notified[$pane]:-0}"
+    print_entry "$pane" "${label_of[$pane]}" "${notified[$pane]:-0}"
   done
 }
 
@@ -213,13 +222,9 @@ last() {
 # True when there is at least one other pane to show. The key bindings use
 # this before opening a popup, so an empty picker never flashes the screen.
 has() {
-  local pane="${1:-}" filter="${2:-}" out
+  local scope="${1:-current}" filter="${2:-}" out
 
-  if [ -n "$pane" ]; then
-    out=$(TMUX_PANE="$pane" list "$filter")
-  else
-    out=$(list "$filter")
-  fi
+  out=$(list "$scope" "$filter")
 
   [ -n "$out" ]
 }
@@ -228,21 +233,39 @@ pick() {
   mkdir -p "$(dirname "$HISTORY")" 2>/dev/null || true
   touch "$HISTORY"
 
-  local filter="${1:-}" list_cmd="$SELF list" label="  panes "
+  local scope="${1:-current}" filter="${2:-}" list_cmd label scope_name pane
+  list_cmd="$SELF list $scope"
+  [ -n "$filter" ] && list_cmd="$list_cmd $filter"
+
+  pane=$(current_pane)
+  if [ -n "$pane" ]; then
+    scope_name=$(tmux display-message -p -t "$pane" '#{session_name}' 2>/dev/null || true)
+  fi
+  [ -n "${scope_name:-}" ] || scope_name=$(tmux display-message -p '#{session_name}' 2>/dev/null || true)
+  if [ "$scope" = all ]; then
+    scope_name="all sessions"
+  fi
+  [ -n "$scope_name" ] || scope_name="session"
+
   if [ -n "$filter" ]; then
-    list_cmd="$SELF list $filter"
     case "$filter" in
-      opencode) label=" 󰚩 opencode " ;;
-      nvim) label="  nvim " ;;
-      *)        label=" $filter " ;;
+      opencode) label=" 󰚩 opencode · $scope_name " ;;
+      nvim)     label="  nvim · $scope_name " ;;
+      *)        label=" $filter · $scope_name " ;;
     esac
+  else
+    label="  panes · $scope_name "
   fi
 
   # Build the list once: it is both the emptiness check and fzf's input.
   local entries selection
-  entries=$(list "$filter")
+  entries=$(list "$scope" "$filter")
   if [ -z "$entries" ]; then
-    [ -n "$filter" ] && tmux display-message -d 1500 "no $filter panes"
+    if [ -n "$filter" ]; then
+      tmux display-message -d 1500 "no $filter panes"
+    else
+      tmux display-message -d 1500 "no panes"
+    fi
     return 0
   fi
 
@@ -251,12 +274,9 @@ pick() {
       --delimiter=$'\t' \
       --with-nth=2.. \
       --no-sort \
-      --cycle \
-      --info=inline \
-      --ansi \
-      --border=rounded \
+      "${FZF_STYLE[@]}" \
       --border-label="$label" \
-      --header='enter: go · Ctrl-x: kill pane · Ctrl-d: close session · Ctrl-o: new window · Ctrl-v: toggle preview · Ctrl-r: reload' \
+      --header="enter: go · ctrl-x: kill · ctrl-d: close session · ctrl-o: new window · ctrl-v: preview · ctrl-r: reload" \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \
       --bind "ctrl-x:execute-silent(tmux kill-pane -t {1})+reload($list_cmd)" \
@@ -296,14 +316,14 @@ close_session() {
 case "${1:-}" in
   save) shift; save "${1:-}" ;;
   prune) prune ;;
-  list) shift; list "${1:-}" ;;
+  list) shift; list "${1:-current}" "${2:-}" ;;
   last) last ;;
-  pick) shift; pick "${1:-}" ;;
-  has) shift; has "${1:-}" "${2:-}" ;;
+  pick) shift; pick "${1:-current}" "${2:-}" ;;
+  has) shift; has "${1:-current}" "${2:-}" ;;
   open-window) shift; open_window "${1:-}" ;;
   close-session) shift; close_session "${1:-}" ;;
   *)
-    printf 'usage: %s {save [pane_id]|prune|list [filter]|last|pick [filter]|has [pane] [filter]|open-window <pane_id>|close-session <pane_id>}\n' "${0##*/}" >&2
+    printf 'usage: %s {save [pane_id]|prune|list [SCOPE] [FILTER]|last|pick [SCOPE] [FILTER]|has [SCOPE] [FILTER]|open-window <pane_id>|close-session <pane_id>}\n' "${0##*/}" >&2
     exit 2
     ;;
 esac

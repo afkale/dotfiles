@@ -9,12 +9,15 @@ bind -n M-C-r command-prompt "rename-session '%%'"
 # ---------------------------------------------------------------------------
 # Create
 # ---------------------------------------------------------------------------
-bind -n M-C-w \
-  new-session \; \
+# Creation follows the picker letters: M-s/M-d/M-t pick one, and Ctrl creates
+# a new one. This setup uses full windows rather than splits, so M-C-d opens a
+# new window.
+bind -n M-C-s \
+  new-session -c "#{pane_current_path}" \; \
   command-prompt "rename-session '%%'" \; \
   command-prompt "rename-window '%%'"
 
-bind -n M-w \
+bind -n M-C-d \
   new-window -c "#{pane_current_path}" \; \
   command-prompt "rename-window '%%'"
 
@@ -31,7 +34,7 @@ bind -n M-v copy-mode
 bind -n M-b set status
 
 # Snapshot the current layout (restore with sessions.sh after a reboot).
-bind -n M-C-s run-shell "$SESSIONS_SCRIPT save"
+bind -n M-C-l run-shell "$SESSIONS_SCRIPT save"
 
 # ---------------------------------------------------------------------------
 # Session recording (streamux)

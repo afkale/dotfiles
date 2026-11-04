@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # sessions.sh — fuzzy session switcher and layout snapshots (M-s).
 #
-#   sessions.sh list              "<session_id><TAB><label>" for fzf
+#   sessions.sh list              "<session_id><TAB><label>", MRU order, fzf input
 #   sessions.sh pick              switch to the selected session (M-s)
+#   sessions.sh record [NAME]     remember a session as most recently used
 #   sessions.sh save [--quiet]    snapshot live sessions under $XDG_STATE_HOME
 #   sessions.sh restore           recreate sessions missing from the snapshot
 #   sessions.sh kill SESSION_ID   kill a session (picker Ctrl-x)
@@ -20,15 +21,75 @@ SCRIPT_DIR=${SELF%/*}
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/tmux"
 SNAPSHOT="${TMUX_SESSION_STATE:-$STATE_DIR/sessions}"
+MRU="${TMUX_SESSION_HISTORY:-$STATE_DIR/session-history}"
+LIMIT="${TMUX_SESSION_HISTORY_LIMIT:-50}"
 SEP=$'\x1f'
 
+# Name of the session the picker was opened from. Popups know their pane via
+# TMUX_PANE, so this also works from display-popup.
+current_session_name() {
+  local pane=${TMUX_PANE:-}
+  if [ -z "$pane" ]; then
+    pane=$(tmux display-message -p '#{pane_id}' 2>/dev/null) || pane=''
+  fi
+  if [ -n "$pane" ]; then
+    tmux display-message -p -t "$pane" '#{session_name}' 2>/dev/null && return 0
+  fi
+  tmux display-message -p '#{session_name}' 2>/dev/null
+}
+
+record() {
+  local name=${1:-}
+  [ -n "$name" ] || name=$(current_session_name)
+  [ -n "$name" ] || return 0
+  is_hidden_session "$name" && return 0
+  mru_push "$MRU" "$name" "$LIMIT"
+}
+
+# Resolve a session id to a name and record it. Safer than #{session_name} in
+# hooks (session IDs are "$N", which cannot break shell quoting).
+record_id() {
+  local id=${1:-} name
+  [ -n "$id" ] || return 0
+  name=$(tmux display-message -p -t "$id" '#{session_name}' 2>/dev/null) || return 0
+  record "$name"
+}
+
+# Sessions ordered like the pane picker: the session visited before this one
+# first (MRU history), then sessions never visited in plain tmux order. The
+# current session is omitted, so Enter goes back to where you came from.
 list() {
-  tmux list-sessions -F \
+  local sid name windows attached current
+  declare -A label_of=() listed=()
+  local order=()
+
+  current=$(current_session_name)
+
+  while IFS=$'\t' read -r sid name windows attached; do
+    [ -n "$name" ] || continue
+    is_hidden_session "$name" && continue
+    label_of[$name]="$sid"$'\t'"$name  $([ "$attached" = attached ] && printf '●' || printf '○')  ${windows}w"
+    order+=("$name")
+  done < <(tmux list-sessions -F \
     "#{session_id}"$'\t'"#{session_name}"$'\t'"#{session_windows}"$'\t'"#{?session_attached,attached,detached}" \
-    2>/dev/null |
-    awk -F'\t' '$2 !~ /^_hidden/ {
-      printf "%s\t%s  %s  %sw\n", $1, ($4 == "attached" ? "●" : "○"), $2, $3
-    }'
+    2>/dev/null)
+
+  if [ -f "$MRU" ]; then
+    while IFS= read -r name; do
+      [ -n "$name" ] || continue
+      [ "$name" = "$current" ] && continue
+      [ -n "${label_of[$name]+x}" ] || continue
+      [ -n "${listed[$name]+x}" ] && continue
+      printf '%s\n' "${label_of[$name]}"
+      listed[$name]=1
+    done <"$MRU"
+  fi
+
+  for name in "${order[@]}"; do
+    [ "$name" = "$current" ] && continue
+    [ -n "${listed[$name]+x}" ] && continue
+    printf '%s\n' "${label_of[$name]}"
+  done
 }
 
 focus_session() {
@@ -41,6 +102,7 @@ focus_session() {
   else
     tmux switch-client -t "$sid"
   fi
+  record "$(tmux display-message -p -t "$sid" '#{session_name}' 2>/dev/null)"
 }
 
 kill_session() {
@@ -52,20 +114,26 @@ kill_session() {
 }
 
 pick() {
-  local selection
+  local selection entries
+  entries=$(list)
+  if [ -z "$entries" ]; then
+    message "no other sessions"
+    return 0
+  fi
+
   selection=$(
-    list | fzf \
+    printf '%s\n' "$entries" | fzf \
       --delimiter=$'\t' \
       --with-nth=2.. \
       --no-sort \
-      --cycle \
-      --border=rounded \
+      "${FZF_STYLE[@]}" \
       --border-label='  sessions ' \
-      --header='enter: switch · ctrl-s: save layout · ctrl-x: kill · ctrl-r: reload' \
+      --header='enter: switch · ctrl-s: save layout · ctrl-x: kill · ctrl-v: preview · ctrl-r: reload' \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \
       --bind "ctrl-s:execute-silent($SELF save)+reload($SELF list)" \
       --bind "ctrl-x:execute-silent($SELF kill {1})+reload($SELF list)" \
+      --bind 'ctrl-v:toggle-preview' \
       --bind "ctrl-r:reload($SELF list)" \
       --bind 'enter:become(echo {1})'
   )
@@ -200,11 +268,13 @@ restore() {
 case "${1:-}" in
   list) list ;;
   pick) pick ;;
+  record) shift; record "${1:-}" ;;
+  record-id) shift; record_id "${1:-}" ;;
   save) shift; save "${1:-}" ;;
   restore) restore ;;
   kill) shift; kill_session "${1:-}" ;;
   *)
-    printf 'usage: %s {list|pick|save|restore|kill SESSION_ID}\n' "${0##*/}" >&2
+    printf 'usage: %s {list|pick|record [SESSION_NAME]|record-id SESSION_ID|save|restore|kill SESSION_ID}\n' "${0##*/}" >&2
     exit 2
     ;;
 esac

@@ -16,6 +16,7 @@
 #
 #   ai.sh has             true when the file has valid commands
 #   ai.sh list            TSV "name<TAB>name  description" for fzf
+#   ai.sh list-mru        same rows, most recently run first
 #   ai.sh preview NAME    show one command's full prompt
 #   ai.sh pick            fzf picker, then run the selected command
 #   ai.sh run NAME        run one command directly
@@ -26,8 +27,21 @@
 
 set -u
 
-SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SELF="$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"
+# shellcheck source-path=SCRIPTDIR source=lib.sh
+. "$SCRIPT_DIR/lib.sh"
+
 COMMANDS="${AI_RUN_COMMANDS:-${XDG_CONFIG_HOME:-$HOME/.config}/ai/run-commands.json}"
+
+STATE_DIR=$(tmux_state_dir)
+MRU="${AI_COMMAND_HISTORY:-$STATE_DIR/ai-commands}"
+LIMIT="${AI_COMMAND_HISTORY_LIMIT:-50}"
+
+record() {
+  [ -n "${1:-}" ] || return 0
+  mru_push "$MRU" "$1" "$LIMIT"
+}
 
 valid() {
   command -v jq >/dev/null 2>&1 || return 1
@@ -97,6 +111,34 @@ list() {
   ' "$COMMANDS"
 }
 
+# Same rows, but ordered like the other pickers: most recently run first.
+list_mru() {
+  local name rest
+  declare -A row_of=() listed=()
+  local order=()
+
+  while IFS=$'\t' read -r name rest; do
+    [ -n "$name" ] || continue
+    row_of[$name]="$name"$'\t'"$rest"
+    order+=("$name")
+  done < <(list)
+
+  if [ -f "$MRU" ]; then
+    while IFS= read -r name; do
+      [ -n "$name" ] || continue
+      [ -n "${row_of[$name]+x}" ] || continue
+      [ -n "${listed[$name]+x}" ] && continue
+      printf '%s\n' "${row_of[$name]}"
+      listed[$name]=1
+    done <"$MRU"
+  fi
+
+  for name in "${order[@]}"; do
+    [ -n "${listed[$name]+x}" ] && continue
+    printf '%s\n' "${row_of[$name]}"
+  done
+}
+
 hold() {
   [ -t 0 ] || return 0
   printf '\npress any key to close'
@@ -119,6 +161,8 @@ run() {
     hold
     return 1
   fi
+
+  record "$name"
 
   mapfile -t extra < <(jq -r --arg name "$name" '
     (if type == "array" then . else .commands // [] end)[]
@@ -161,23 +205,19 @@ pick() {
 
   local selection name
   selection=$(
-    list | fzf \
+    list_mru | fzf \
       --delimiter=$'\t' \
       --with-nth=2.. \
-      --cycle \
-      --ansi \
-      --info=inline \
-      --border=rounded \
+      --no-sort \
+      "${FZF_STYLE[@]}" \
       --border-label=' ai run ' \
-      --color='fg:#908caa,bg:#191724,hl:#eb6f92,fg+:#e0def4,bg+:#26233a,hl+:#eb6f92' \
-      --color='info:#c4a7e7,prompt:#c4a7e7,pointer:#ebbcba,marker:#9ccfd8,spinner:#f6c177' \
-      --color='header:#6e6a86,border:#403d52,label:#c4a7e7,selected-bg:#26233a' \
-      --header='enter: run · ctrl-h: details · ctrl-r: reload · esc: cancel' \
+      --header='enter: run · ctrl-h: details · ctrl-v: preview · ctrl-r: reload' \
       --preview "$SELF preview {1}" \
-      --preview-window='right,55%,border-left,wrap,hidden' \
+      --preview-window='right,60%,border-left,wrap,hidden' \
       --preview-label=' details ' \
       --bind 'ctrl-h:toggle-preview' \
-      --bind "ctrl-r:reload($SELF list)"
+      --bind 'ctrl-v:toggle-preview' \
+      --bind "ctrl-r:reload($SELF list-mru)"
   )
 
   [ -n "$selection" ] || return 0
@@ -188,11 +228,12 @@ pick() {
 case "${1:-}" in
   has) has ;;
   list) list ;;
+  list-mru) list_mru ;;
   preview) shift; preview "${1:-}" ;;
   pick) pick ;;
   run) shift; run "${1:-}" ;;
   *)
-    printf 'usage: %s {has|list|preview NAME|pick|run NAME}\n' "${0##*/}" >&2
+    printf 'usage: %s {has|list|list-mru|preview NAME|pick|run NAME}\n' "${0##*/}" >&2
     exit 2
     ;;
 esac
