@@ -119,8 +119,8 @@ pick() {
       --header='enter: switch · ctrl-s: save layout · ctrl-x: kill · ctrl-v: preview · ctrl-r: reload' \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \
-      --bind "ctrl-s:execute-silent($SELF save)+reload($SELF list)" \
-      --bind "ctrl-x:execute-silent($SELF kill {1})+reload($SELF list)" \
+      --bind "ctrl-s:execute($SELF save)+reload($SELF list)" \
+      --bind "ctrl-x:execute($SELF kill {1})+reload($SELF list)" \
       --bind 'ctrl-v:toggle-preview' \
       --bind "ctrl-r:reload($SELF list)" \
       --bind 'enter:become(echo {1})'

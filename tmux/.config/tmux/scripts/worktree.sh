@@ -326,7 +326,7 @@ pick_worktree() {
       --preview-window='right,60%,border-left,wrap' \
       --bind 'ctrl-v:toggle-preview' \
       --bind "ctrl-r:reload($SELF list-mru)" \
-      --bind "ctrl-x:execute-silent($SELF remove {1})+reload($SELF list-mru)"
+      --bind "ctrl-x:execute($SELF remove {1})+reload($SELF list-mru)"
   )
 
   [ -n "$selection" ] || return 0

@@ -264,9 +264,9 @@ pick() {
       --header="enter: go · ctrl-x: kill · ctrl-d: close session · ctrl-o: new window · ctrl-v: preview · ctrl-r: reload" \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \
-      --bind "ctrl-x:execute-silent(tmux kill-pane -t {1})+reload($list_cmd)" \
-      --bind "ctrl-d:execute-silent($SELF close-session {1})+reload($list_cmd)" \
-      --bind "ctrl-o:execute-silent($SELF open-window {1})+abort" \
+      --bind "ctrl-x:execute(tmux kill-pane -t {1})+reload($list_cmd)" \
+      --bind "ctrl-d:execute($SELF close-session {1})+reload($list_cmd)" \
+      --bind "ctrl-o:execute($SELF open-window {1})+abort" \
       --bind 'ctrl-v:toggle-preview' \
       --bind "ctrl-r:reload($list_cmd)" \
       --bind 'enter:become(echo {1})'
