@@ -23,7 +23,7 @@ make doctor
 
 | Config | Tool | Notes |
 |--------|------|-------|
-| `tmux/` | tmux | Session picker (`M-s`), pane pickers (`M-d`, `M-o`, `M-n`), layout snapshots, isolated popup (`M-1`), asciinema recording (`M-a`/`M-C-a`) |
+| `tmux/` | tmux | Session picker (`M-s`), pane pickers (`M-d`, `M-o`, `M-n`), task worktrees (`M-t`, `M-C-t`), layout snapshots, isolated popup (`M-1`), asciinema recording (`M-a`/`M-C-a`) |
 | `fish/` | fish | Fzf integration (fd, bat previews), zoxide, Homebrew PATH on Linux |
 | `nvim/` | neovim (submodule) | Mini.pick for files/grep/help, lazygit integration, spell for markdown/gitcommit, cursor restore |
 | `ghostty/` | ghostty | Minimal terminal config |
@@ -57,8 +57,23 @@ Inside tmux (`prefix` = `M-space`):
 | `M-L` | Lock mode (only `M-L` works until pressed again) |
 | `M-r` / `M-C-r` | Rename window / session |
 | `M-w` / `M-C-w` | New window / session |
+| `M-t` / `M-C-t` | New task worktree / worktree picker |
 | `M-?` | Searchable keybinding cheatsheet |
 | `prefix r` | Reload tmux config |
+
+## Task worktrees
+
+`M-t` creates an isolated checkout for the current repository at
+`~/worktrees/<repo>/<branch>` and opens OpenCode in a new tmux window. The
+branch keeps the name you type; slashes become dashes in the directory and
+window name (`feat/login` → `feat-login`).
+
+`M-C-t` opens the worktree picker. `Enter` opens a worktree, `ctrl-x` removes a
+clean one, and `ctrl-r` reloads the list. Removing a worktree keeps its branch.
+
+New worktrees copy `.env`, `.env.local`, `.env.development.local` and `.envrc`
+from the main checkout. Override the root with `WORKTREE_ROOT`, or set the tmux
+option `@worktree_root`.
 
 ## Dependencies
 

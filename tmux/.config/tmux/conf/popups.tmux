@@ -31,6 +31,11 @@ bind -n M-n if-shell "$PANE_SCRIPT has '#{pane_id}' nvim" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick nvim'" \
   "display-message -d 1500 'no nvim panes'"
 
+# Task worktrees. M-t creates one for the current repo and opens OpenCode in
+# it; M-C-t opens the picker for existing worktrees.
+bind -n M-t display-popup -d '#{pane_current_path}' -E -w 60% -h 25% -T '  worktree ' "$WORKTREE_SCRIPT prompt"
+bind -n M-C-t display-popup -B -E -w 90% -h 80% "$WORKTREE_SCRIPT pick"
+
 # ai run prompt picker (commands from run-commands.json)
 bind -n M-c if-shell "$AI_SCRIPT has" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$AI_SCRIPT pick'" \

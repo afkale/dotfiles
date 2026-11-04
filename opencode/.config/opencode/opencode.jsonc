@@ -1,0 +1,62 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openrouter/deepseek/deepseek-v4-flash",
+  "provider": {
+    "openrouter": {
+      "models": {
+        "deepseek/deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash (DeepInfra FP8)",
+          "limit": {
+            "context": 128000,
+            "output": 8192
+          },
+          "options": {
+            "provider": {
+              "order": ["deepinfra/fp8"],
+              "allow_fallbacks": false
+            }
+          }
+        }
+      }
+    }
+  },
+
+  // Ordered rules; the last matching rule wins. Broad defaults first, narrow
+  // exceptions after. `deny` rules still apply when `--auto` is used, so these
+  // are the guardrails for unattended `ai run` jobs.
+  "permissions": [
+    { "action": "shell", "resource": "*", "effect": "ask" },
+
+    // Routine read-only inspection is safe to run without a prompt.
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" },
+    { "action": "shell", "resource": "git show *", "effect": "allow" },
+    { "action": "shell", "resource": "git branch *", "effect": "allow" },
+    { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
+    { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+    { "action": "shell", "resource": "git worktree list *", "effect": "allow" },
+    { "action": "shell", "resource": "rg *", "effect": "allow" },
+    { "action": "shell", "resource": "fd *", "effect": "allow" },
+
+    // Destructive or remote-changing commands always need a human, even with
+    // --auto. Keep these last so they win over the broad rules above.
+    { "action": "shell", "resource": "git push *", "effect": "deny" },
+    { "action": "shell", "resource": "git reset --hard *", "effect": "deny" },
+    { "action": "shell", "resource": "git clean *", "effect": "deny" },
+    { "action": "shell", "resource": "gh pr merge *", "effect": "deny" },
+    { "action": "shell", "resource": "sudo *", "effect": "deny" },
+    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
+    { "action": "shell", "resource": "rm -fr *", "effect": "deny" },
+    { "action": "shell", "resource": "shutdown *", "effect": "deny" },
+    { "action": "shell", "resource": "reboot *", "effect": "deny" },
+
+    // Secrets are opt-in per session.
+    { "action": "read", "resource": "*.env", "effect": "ask" },
+    { "action": "read", "resource": "*.env.*", "effect": "ask" },
+    { "action": "read", "resource": "*.env.example", "effect": "allow" },
+
+    // Anything outside the project needs a prompt.
+    { "action": "external_directory", "resource": "*", "effect": "ask" }
+  ]
+}
