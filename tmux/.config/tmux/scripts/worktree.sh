@@ -16,7 +16,7 @@
 # The branch keeps its real name, so typing feat/login creates branch
 # feat/login in ~/worktrees/repo/feat-login.
 #
-# Override the root with WORKTREE_ROOT or `set -g @worktree_root /path`.
+# Override the root with the WORKTREE_ROOT environment variable.
 
 set -u
 
@@ -25,8 +25,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source-path=SCRIPTDIR source=lib.sh
 . "$SCRIPT_DIR/lib.sh"
 
-ROOT_SETTING=$(tmux show-option -gqv @worktree_root 2>/dev/null || true)
-WORKTREE_ROOT="${WORKTREE_ROOT:-${ROOT_SETTING:-$HOME/worktrees}}"
+WORKTREE_ROOT="${WORKTREE_ROOT:-$HOME/worktrees}"
 
 STATE_DIR=$(tmux_state_dir)
 MRU="${TMUX_WORKTREE_HISTORY:-$STATE_DIR/worktrees}"
@@ -246,43 +245,28 @@ list_worktrees() {
 
 list_mru() {
   local path branch dirty current
+  # shellcheck disable=SC2034 # read via mru_merge nameref
   declare -A row_of=() listed=()
   local order=()
 
   while IFS=$'\t' read -r path branch dirty; do
     [ -n "$path" ] || continue
+    # shellcheck disable=SC2034 # read via mru_merge nameref
     row_of[$path]="$path"$'\t'"$branch"$'\t'"$dirty"
     order+=("$path")
   done < <(list_worktrees)
 
   current=$(current_worktree 2>/dev/null || true)
 
-  # 1. MRU: worktrees opened before, most recent first, skipping the one the
-  # picker was opened from.
-  if [ -f "$MRU" ]; then
-    while IFS= read -r path; do
-      [ -n "$path" ] || continue
-      [ "$path" = "$current" ] && continue
-      [ -n "${row_of[$path]+x}" ] || continue
-      [ -n "${listed[$path]+x}" ] && continue
-      printf '%s\n' "${row_of[$path]}"
-      listed[$path]=1
-    done <"$MRU"
-  fi
-
-  # 2. Never opened from this menu: plain git worktree order.
-  for path in "${order[@]}"; do
-    [ "$path" = "$current" ] && continue
-    [ -n "${listed[$path]+x}" ] && continue
-    printf '%s\n' "${row_of[$path]}"
-  done
+  local -n _mru_order=order _mru_row=row_of _mru_listed=listed
+  mru_merge "$MRU" "$current" _mru_order _mru_row _mru_listed
 }
 
 preview_worktree() {
   local path=${1:-}
   [ -n "$path" ] && [ -d "$path" ] || return 0
 
-  printf '\033[38;2;196;167;231m%s\033[0m\n\n' "$path"
+  printf '%s%s%s\n\n' "$PAL_IRIS" "$path" "$PAL_RESET"
   printf 'branch: %s\n' "$(git -C "$path" branch --show-current 2>/dev/null || echo detached)"
   printf 'head:   %s\n\n' "$(git -C "$path" log -1 --oneline 2>/dev/null)"
   git -C "$path" status --short 2>/dev/null | head -n 40
@@ -314,12 +298,15 @@ focus_worktree() {
 }
 
 pick_worktree() {
-  local selection entries path
+  local selection entries path scope_name
   list_worktrees >/dev/null 2>&1 || {
     printf 'not inside a git repository\n'
     hold
     return 1
   }
+
+  scope_name=$(tmux display-message -p '#{session_name}' 2>/dev/null || true)
+  [ -n "$scope_name" ] || scope_name="session"
 
   entries=$(list_mru)
   if [ -z "$entries" ]; then
@@ -333,7 +320,7 @@ pick_worktree() {
       --with-nth=2,3 \
       --no-sort \
       "${FZF_STYLE[@]}" \
-      --border-label='  worktrees ' \
+      --border-label="  worktrees · $scope_name " \
       --header='enter: open · ctrl-x: remove · ctrl-v: preview · ctrl-r: reload · * = dirty' \
       --preview "$SELF preview {1}" \
       --preview-window='right,60%,border-left,wrap' \

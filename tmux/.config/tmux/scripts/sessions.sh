@@ -60,6 +60,7 @@ record_id() {
 # current session is omitted, so Enter goes back to where you came from.
 list() {
   local sid name windows attached current
+  # shellcheck disable=SC2034 # read via mru_merge nameref
   declare -A label_of=() listed=()
   local order=()
 
@@ -68,28 +69,15 @@ list() {
   while IFS=$'\t' read -r sid name windows attached; do
     [ -n "$name" ] || continue
     is_hidden_session "$name" && continue
+    # shellcheck disable=SC2034 # read via mru_merge nameref
     label_of[$name]="$sid"$'\t'"$name  $([ "$attached" = attached ] && printf '●' || printf '○')  ${windows}w"
     order+=("$name")
   done < <(tmux list-sessions -F \
     "#{session_id}"$'\t'"#{session_name}"$'\t'"#{session_windows}"$'\t'"#{?session_attached,attached,detached}" \
     2>/dev/null)
 
-  if [ -f "$MRU" ]; then
-    while IFS= read -r name; do
-      [ -n "$name" ] || continue
-      [ "$name" = "$current" ] && continue
-      [ -n "${label_of[$name]+x}" ] || continue
-      [ -n "${listed[$name]+x}" ] && continue
-      printf '%s\n' "${label_of[$name]}"
-      listed[$name]=1
-    done <"$MRU"
-  fi
-
-  for name in "${order[@]}"; do
-    [ "$name" = "$current" ] && continue
-    [ -n "${listed[$name]+x}" ] && continue
-    printf '%s\n' "${label_of[$name]}"
-  done
+  local -n _mru_order=order _mru_row=label_of _mru_listed=listed
+  mru_merge "$MRU" "$current" _mru_order _mru_row _mru_listed
 }
 
 focus_session() {

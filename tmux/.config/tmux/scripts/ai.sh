@@ -56,17 +56,15 @@ unique_window() {
   printf '%s\n' "$name"
 }
 
-# Launch opencode run in a background pane so the user can keep working.
-run_bg() {
-  local name="${1:-}" prompt=""
-  local -a extra=()
-  shift
+# load_command NAME — query prompt and args from the commands file.
+# Sets $prompt and $extra (array) in the caller's scope; returns non-zero
+# when the command is unknown or opencode is not installed.
+load_command() {
+  local name="${1:-}"
+  prompt="" extra=()
+  shift 2>/dev/null || true
 
-  if [ -z "$name" ]; then
-    printf 'usage: run_bg NAME [ARGS...]\n' >&2
-    hold
-    return 2
-  fi
+  [ -n "$name" ] || return 2
 
   prompt=$(jq -r --arg name "$name" '
     (if type == "array" then . else .commands // [] end)[]
@@ -76,11 +74,8 @@ run_bg() {
 
   if [ -z "$prompt" ]; then
     printf 'unknown ai command: %s\n' "$name"
-    hold
     return 1
   fi
-
-  record "$name"
 
   mapfile -t extra < <(jq -r --arg name "$name" '
     (if type == "array" then . else .commands // [] end)[]
@@ -90,9 +85,25 @@ run_bg() {
 
   if ! command -v opencode >/dev/null 2>&1; then
     printf 'opencode not found in PATH\n'
-    hold
     return 127
   fi
+}
+
+# Launch opencode run in a background pane so the user can keep working.
+run_bg() {
+  local name="${1:-}" prompt="" rc
+  local -a extra=()
+  shift
+
+  if [ -z "$name" ]; then
+    printf 'usage: run_bg NAME [ARGS...]\n' >&2
+    hold
+    return 2
+  fi
+
+  load_command "$name" || { rc=$?; hold; return "$rc"; }
+
+  record "$name"
 
   # Ensure the detached ai runner session exists.
   if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
@@ -198,13 +209,9 @@ preview() {
 # "name<TAB>name  description", with the name and description in rose-pine
 # colours. fzf searches the whole line, so descriptions are searchable too.
 list() {
-  local name_color=$'\033[38;2;196;167;231m'
-  local desc_color=$'\033[38;2;144;140;170m'
-  local reset=$'\033[0m'
-
-  jq -r --arg name_color "$name_color" \
-        --arg desc_color "$desc_color" \
-        --arg reset "$reset" '
+  jq -r --arg name_color "$PAL_IRIS" \
+        --arg desc_color "$PAL_SUBTLE" \
+        --arg reset "$PAL_RESET" '
     (if type == "array" then . else .commands // [] end)[]
     | [.name,
        ($name_color + .name + $reset
@@ -219,29 +226,19 @@ list() {
 # Same rows, but ordered like the other pickers: most recently run first.
 list_mru() {
   local name rest
+  # shellcheck disable=SC2034 # read via mru_merge nameref
   declare -A row_of=() listed=()
   local order=()
 
   while IFS=$'\t' read -r name rest; do
     [ -n "$name" ] || continue
+    # shellcheck disable=SC2034 # read via mru_merge nameref
     row_of[$name]="$name"$'\t'"$rest"
     order+=("$name")
   done < <(list)
 
-  if [ -f "$MRU" ]; then
-    while IFS= read -r name; do
-      [ -n "$name" ] || continue
-      [ -n "${row_of[$name]+x}" ] || continue
-      [ -n "${listed[$name]+x}" ] && continue
-      printf '%s\n' "${row_of[$name]}"
-      listed[$name]=1
-    done <"$MRU"
-  fi
-
-  for name in "${order[@]}"; do
-    [ -n "${listed[$name]+x}" ] && continue
-    printf '%s\n' "${row_of[$name]}"
-  done
+  local -n _mru_order=order _mru_row=row_of _mru_listed=listed
+  mru_merge "$MRU" "" _mru_order _mru_row _mru_listed
 }
 
 hold() {
@@ -252,34 +249,12 @@ hold() {
 }
 
 run() {
-  local name="${1:-}" prompt title rc
+  local name="${1:-}" prompt="" title rc
   local -a extra=()
 
-  prompt=$(jq -r --arg name "$name" '
-    (if type == "array" then . else .commands // [] end)[]
-    | select(.name == $name)
-    | .prompt
-  ' "$COMMANDS")
-
-  if [ -z "$prompt" ]; then
-    printf 'unknown ai command: %s\n' "$name"
-    hold
-    return 1
-  fi
+  load_command "$name" || { rc=$?; hold; return "$rc"; }
 
   record "$name"
-
-  mapfile -t extra < <(jq -r --arg name "$name" '
-    (if type == "array" then . else .commands // [] end)[]
-    | select(.name == $name)
-    | (.args // [])[]
-  ' "$COMMANDS")
-
-  if ! command -v opencode >/dev/null 2>&1; then
-    printf 'opencode not found in PATH\n'
-    hold
-    return 127
-  fi
 
   title="run · $name"
   opencode run --title "$title" "${extra[@]}" "$prompt"

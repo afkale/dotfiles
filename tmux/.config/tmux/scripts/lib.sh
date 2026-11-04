@@ -3,6 +3,10 @@
 #
 # Sourced by pane.sh, sessions.sh, worktree.sh, ai.sh and streamux.sh.
 
+# Derive our own directory so palette.sh can be found from any sourcing context.
+# shellcheck source-path=SCRIPTDIR source=palette.sh
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/palette.sh"
+
 # Popup sessions are named "_hidden*" and never show up in pickers.
 is_hidden_session() {
   case "${1:-}" in
@@ -62,9 +66,9 @@ FZF_STYLE=(
   --ansi
   --info=inline
   --border=rounded
-  --color='fg:#908caa,bg:#191724,hl:#eb6f92,fg+:#e0def4,bg+:#26233a,hl+:#eb6f92'
-  --color='info:#c4a7e7,prompt:#c4a7e7,pointer:#ebbcba,marker:#9ccfd8,spinner:#f6c177'
-  --color='header:#6e6a86,border:#403d52,label:#c4a7e7,selected-bg:#26233a'
+  --color="fg:${PAL_SUBTLE_HEX},bg:${PAL_BASE_HEX},hl:${PAL_LOVE_HEX},fg+:${PAL_TEXT_HEX},bg+:${PAL_OVERLAY_HEX},hl+:${PAL_LOVE_HEX}"
+  --color="info:${PAL_IRIS_HEX},prompt:${PAL_IRIS_HEX},pointer:${PAL_ROSE_HEX},marker:${PAL_FOAM_HEX},spinner:${PAL_GOLD_HEX}"
+  --color="header:${PAL_MUTED_HEX},border:${PAL_HL_MED_HEX},label:${PAL_IRIS_HEX},selected-bg:${PAL_OVERLAY_HEX}"
 )
 
 # mru_push FILE ITEM [LIMIT]
@@ -95,4 +99,42 @@ mru_push() {
           'length($0) && !seen[$0]++ && count++ < limit' >"$tmp"
     mv -f "$tmp" "$file"
   )
+}
+
+# mru_merge MRU_FILE CURRENT_ITEM ORDER_ARRAY ROW_MAP LISTED_MAP
+#
+# Print the rows in ROW_MAP (an associative array of "key<TAB>formatted-row")
+# in MRU-file order first (skipping CURRENT_ITEM), then remaining rows in
+# ORDER_ARRAY order. LISTED_MAP is an associative array used as a scratch set
+# to track already-emitted keys — create it as an empty array before calling.
+# Callers must use `local -n` (bash 4.3+ nameref) to pass array references.
+#
+# Example:
+#   local -A row_of=() listed=()
+#   local order=()
+#   # ... populate row_of and order from the data source ...
+#   local -n _mru_order=order _mru_row=row_of _mru_listed=listed
+#   mru_merge "$MRU" "$current" _mru_order _mru_row _mru_listed
+mru_merge() {
+  local mru_file=$1 current_item=$2
+  local -n _mr_order=$3 _mr_row=$4 _mr_listed=$5
+  local key
+
+  if [ -f "$mru_file" ]; then
+    while IFS= read -r key; do
+      [ -n "$key" ] || continue
+      [ "$key" = "$current_item" ] && continue
+      [ -n "${_mr_row[$key]+x}" ] || continue
+      [ -n "${_mr_listed[$key]+x}" ] && continue
+      printf '%s\n' "${_mr_row[$key]}"
+      # shellcheck disable=SC2004
+      _mr_listed[$key]=1
+    done <"$mru_file"
+  fi
+
+  for key in "${_mr_order[@]}"; do
+    [ "$key" = "$current_item" ] && continue
+    [ -n "${_mr_listed[$key]+x}" ] && continue
+    printf '%s\n' "${_mr_row[$key]}"
+  done
 }

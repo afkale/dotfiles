@@ -86,8 +86,7 @@ bell or arrow icons.
 main checkout) and returns focus to the window you were on.
 
 New worktrees copy `.env`, `.env.local`, `.env.development.local` and `.envrc`
-from the main checkout. Override the root with `WORKTREE_ROOT`, or set the tmux
-option `@worktree_root`.
+from the main checkout. Override the root with `WORKTREE_ROOT`.
 
 ## Dependencies
 

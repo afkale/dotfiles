@@ -60,7 +60,7 @@ start() {
     return 1
   }
 
-  tmux set -g @logofg "#eb6f92"
+  tmux set -g @logofg "$PAL_LOVE_HEX"
   # $$ becomes the asciinema pid after exec, so stop can target just this one.
   read -r -a term_cmd <<<"$term"
   # shellcheck disable=SC2016 # $$, $1 and "$@" belong to the inner shell
@@ -74,7 +74,7 @@ stop() {
   [ -n "$session" ] || return 1
 
   file=$(pid_path "$session")
-  tmux set -g @logofg "#c4a7e7"
+  tmux set -g @logofg "$PAL_IRIS_HEX"
 
   if [ ! -s "$file" ]; then
     message "not recording $session"

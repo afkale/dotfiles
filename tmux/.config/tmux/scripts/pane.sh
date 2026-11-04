@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
 # pane.sh — MRU tracking, "last pane" jump and the fuzzy pane picker (M-d).
 #
 #   pane.sh save [PANE_ID]       remember a pane as the most recently used
@@ -30,7 +31,7 @@ STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/tmux"
 HISTORY="${FZF_SESSION_HISTORY:-$STATE_DIR/panes}"
 LIMIT="${FZF_SESSION_HISTORY_LIMIT:-100}"
 
-# Private per-user scratch dir for the lock and atomic-write temp files.
+# Private per-user scratch dir for atomic-write temp files used by prune().
 # XDG_RUNTIME_DIR is already user-private; /tmp is only a fallback.
 runtime_dir() {
   local root="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}"
@@ -72,21 +73,9 @@ save() {
   [ -n "$pane" ] || pane=$(current_pane)
   [ -n "$pane" ] || return 0
 
-  if is_hidden_pane "$pane"; then
-    return 0
-  fi
+  is_hidden_pane "$pane" && return 0
 
-  mkdir -p "$(dirname "$HISTORY")" 2>/dev/null || true
-  lock
-
-  local tmp
-  tmp=$(mktemp "$RUNTIME_DIR/history.XXXXXX") || return 0
-  {
-    printf '%s\n' "$pane"
-    [ -f "$HISTORY" ] && cat "$HISTORY"
-  } | awk -v limit="$LIMIT" \
-        'length($0) && !seen[$0]++ && count++ < limit' >"$tmp"
-  mv -f "$tmp" "$HISTORY"
+  mru_push "$HISTORY" "$pane" "$LIMIT"
 }
 
 prune() {
@@ -116,27 +105,29 @@ matching_ids() {
 }
 
 # Notified rows are plain gold text: no bell, no marker, no extra icon.
-NOTIFY_COLOR=$'\033[38;2;246;193;119m'
-RESET_COLOR=$'\033[0m'
+# RESET_COLOR and NOTIFY_COLOR are available from palette.sh via lib.sh.
 
 print_entry() {
   local notify="${3:-0}" color="" reset=""
   if [ "$notify" = 1 ]; then
-    color=$NOTIFY_COLOR
-    reset=$RESET_COLOR
+    color=$PAL_GOLD
+    reset=$PAL_RESET
   fi
   printf '%s\t%s%s%s\n' "$1" "$color" "$2" "$reset"
 }
 
-list() {
-  local scope="${1:-current}" filter="${2:-}" current="" pane label bell session session_id
-  declare -A label_of=() listed=() allowed=() notified=()
-  local order=()
-  local current_session
+# fetch_panes SCOPE FILTER — populate label_of and order for the given scope.
+# Results are returned in the caller's arrays (label_of, order).
+fetch_panes() {
+  local scope="${1:-current}" filter="${2:-}" \
+        current_pane_id current_session \
+        pane label bell session session_id
+  # shellcheck disable=SC2034 # read via mru_merge nameref only
+  declare -A allowed=()
 
-  current=$(current_pane)
-  if [ -n "$current" ]; then
-    current_session=$(tmux display-message -p -t "$current" '#{session_id}' 2>/dev/null || true)
+  current_pane_id=$(current_pane)
+  if [ -n "$current_pane_id" ]; then
+    current_session=$(tmux display-message -p -t "$current_pane_id" '#{session_id}' 2>/dev/null || true)
   fi
   [ -n "${current_session:-}" ] || current_session=$(current_session_id 2>/dev/null || true)
 
@@ -153,33 +144,27 @@ list() {
       continue
     fi
     [ -n "$filter" ] && [ -z "${allowed[$pane]+x}" ] && continue
-    label_of[$pane]=$label
-    [ "${bell:-0}" = 1 ] && notified[$pane]=1
+    # Pre-format with bell colours so mru_merge can emit directly.
+    # shellcheck disable=SC2034 # read via mru_merge nameref
+    label_of[$pane]=$(print_entry "$pane" "$label" "${bell:-0}")
     order+=("$pane")
   done < <(tmux list-panes -a -F "$FIELDS" 2>/dev/null)
-
-  # 1. MRU: the pane visited before the current one comes first.
-  if [ -f "$HISTORY" ]; then
-    while IFS= read -r pane; do
-      [ -n "$pane" ] || continue
-      [ "$pane" = "$current" ] && continue
-      [ -n "${label_of[$pane]+x}" ] || continue
-      [ -n "${listed[$pane]+x}" ] && continue
-      print_entry "$pane" "${label_of[$pane]}" "${notified[$pane]:-0}"
-      listed[$pane]=1
-    done <"$HISTORY"
-  fi
-
-  # 2. Never visited yet: plain tmux order.
-  for pane in "${order[@]}"; do
-    [ "$pane" = "$current" ] && continue
-    [ -n "${listed[$pane]+x}" ] && continue
-    print_entry "$pane" "${label_of[$pane]}" "${notified[$pane]:-0}"
-  done
 }
 
-pane_exists() {
-  [ -n "${1:-}" ] && tmux display-message -p -t "$1" '#{pane_id}' >/dev/null 2>&1
+# list SCOPE FILTER — MRU-ordered "<pane_id><TAB><label>" for fzf, current pane
+# omitted so Enter jumps back to where you came from.
+list() {
+  local scope="${1:-current}" filter="${2:-}" current
+  # shellcheck disable=SC2034 # read via mru_merge nameref
+  declare -A label_of=() listed=()
+  local order=()
+
+  fetch_panes "$scope" "$filter"
+
+  current=$(current_pane)
+
+  local -n _mru_order=order _mru_row=label_of _mru_listed=listed
+  mru_merge "$HISTORY" "$current" _mru_order _mru_row _mru_listed
 }
 
 focus_pane() {
@@ -202,15 +187,15 @@ focus_pane() {
 }
 
 last() {
-  local current pane
+  local current pane session
   current=$(current_pane)
 
   if [ -f "$HISTORY" ]; then
     while IFS= read -r pane; do
       [ -n "$pane" ] || continue
       [ "$pane" = "$current" ] && continue
-      pane_exists "$pane" || continue
-      is_hidden_pane "$pane" && continue
+      session=$(tmux display-message -p -t "$pane" '#{session_name}' 2>/dev/null) || continue
+      is_hidden_session "$session" && continue
       focus_pane "$pane" && return 0
     done <"$HISTORY"
   fi
