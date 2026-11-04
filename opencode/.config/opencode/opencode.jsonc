@@ -112,6 +112,31 @@
       "color": "#fbbf24",
     },
 
+    // Refactoring guru — analyzes code for smells, design issues, and improvement
+    // opportunities. Read-only, uses Fowler/GoF patterns vocabulary.
+    "refactor": {
+      "description": "Analyzes code for structural improvements, code smells, and design patterns",
+      "mode": "subagent",
+      "system": "You are a refactoring and software design expert. Analyze the codebase or current changes for: code smells (long functions, feature envy, duplicated logic, primitive obsession, shotgun surgery, inappropriate intimacy), design pattern opportunities, abstraction boundary violations, complexity hotspots, and testability issues. Always reference Fowler's Refactoring patterns and Gamma et al. design patterns when applicable. For each finding: name the smell/pattern, cite the file+line, explain why it matters, and propose a concrete refactoring. If a large refactor is warranted, produce a phased plan. Do not edit files.",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "write", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "git status *", "effect": "allow" },
+        { "action": "shell", "resource": "git diff *", "effect": "allow" },
+        { "action": "shell", "resource": "git log *", "effect": "allow" },
+        { "action": "shell", "resource": "git show *", "effect": "allow" },
+        { "action": "shell", "resource": "git branch *", "effect": "allow" },
+        { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
+        { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+        { "action": "shell", "resource": "rg *", "effect": "allow" },
+        { "action": "shell", "resource": "fd *", "effect": "allow" },
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+        { "action": "webfetch", "resource": "*", "effect": "allow" },
+      ],
+      "color": "#a78bfa",
+    },
+
     // Extend the default build agent with subagent permissions.
     "build": {
       "permissions": [
