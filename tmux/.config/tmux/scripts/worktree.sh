@@ -336,12 +336,11 @@ pick_worktree() {
 
 remove_worktree() {
   local path=${1:-} root known=0 p session wid
-  [ -n "$path" ] && [ -d "$path" ] || { message "not a directory: ${path:-}"; return 1; }
-  root=$(repo_root) || { message "not inside a git repository"; return 1; }
+  [ -n "$path" ] && [ -d "$path" ] || { fail "not a directory: ${path:-}"; }
+  root=$(repo_root) || { fail "not inside a git repository"; }
 
   if [ "$(realpath "$path" 2>/dev/null)" = "$(realpath "$root" 2>/dev/null)" ]; then
-    message "refusing to remove the main worktree"
-    return 1
+    fail "refusing to remove the main worktree"
   fi
 
   while IFS= read -r p; do
@@ -351,24 +350,25 @@ remove_worktree() {
     fi
   done < <(git -C "$root" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
   if [ "$known" != 1 ]; then
-    message "not a worktree of this repository: $path"
-    return 1
+    fail "not a worktree of this repository: $path"
   fi
 
   # Reject paths outside WORKTREE_ROOT so we never delete arbitrary dirs.
   case "$(realpath "$path" 2>/dev/null || echo "$path")" in
     "$(realpath "$WORKTREE_ROOT" 2>/dev/null || echo "$WORKTREE_ROOT")"/*) ;;
-    *) message "refusing path outside $WORKTREE_ROOT"; return 1 ;;
+    *) fail "refusing path outside $WORKTREE_ROOT" ;;
   esac
 
   # Verify the worktree is clean. Abort if git status fails.
   local status
   status=$(git -C "$path" status --porcelain 2>/dev/null) || {
-    message "cannot verify clean status: $path"
-    return 1
+    fail "cannot verify clean status: $path"
   }
   if [ -n "$status" ]; then
-    message "worktree has uncommitted changes: $path"
+    printf '\n  worktree has uncommitted changes.\n\n'
+    printf '  commit or stash them first, or use git directly:\n'
+    printf '    git -C %s worktree remove %s --force\n\n' "$path" "$path"
+    hold
     return 1
   fi
 
@@ -401,23 +401,25 @@ remove_worktree() {
     # permission/lock failure does not silently delete everything.
     if [ -e "$path/.gitmodules" ]; then
       git -C "$path" submodule deinit --all --force >/dev/null 2>&1 || {
-        message "could not deinit submodules in $path"
-        return 1
+        fail "could not deinit submodules in $path"
       }
       if rm -rf -- "$path"; then
-        message "removed $path (branch kept)"
+        git -C "$root" worktree prune >/dev/null 2>&1 || true
+        printf '\n  removed %s (branch kept)\n\n' "$path"
+        hold
         return 0
       fi
-      message "could not remove $path"
-      return 1
+      fail "could not remove $path"
     fi
-    message "$err"
+    printf '\n  %s\n\n' "$err"
+    hold
     return 1
   }
 
   # Remove any leftover directory in case git left an empty shell.
   [ -d "$path" ] && rmdir -- "$path" 2>/dev/null || true
-  message "removed $path (branch kept)"
+  printf '\n  removed %s (branch kept)\n\n' "$path"
+  hold
   return 0
 }
 
