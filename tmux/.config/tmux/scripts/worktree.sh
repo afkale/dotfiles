@@ -335,7 +335,7 @@ pick_worktree() {
 }
 
 remove_worktree() {
-  local path=${1:-} root known=0 p
+  local path=${1:-} root known=0 p session wid
   [ -n "$path" ] && [ -d "$path" ] || { message "not a directory: ${path:-}"; return 1; }
   root=$(repo_root) || { message "not inside a git repository"; return 1; }
 
@@ -372,31 +372,53 @@ remove_worktree() {
     return 1
   fi
 
+  # Close any tmux window pointing at this worktree before removing it.
+  session=$(current_session 2>/dev/null || true)
+  if [ -n "$session" ]; then
+    wid=$(tmux list-windows -t "$session" -F $'#{window_name}\t#{window_id}\t#{pane_current_path}' 2>/dev/null |
+      awk -F '\t' -v p="$path" '$3 == p || index($3, p"/") == 1 { print $2; exit }')
+    [ -n "$wid" ] && tmux kill-window -t "$wid" 2>/dev/null || true
+  fi
+
+  # Prune the MRU so the path does not reappear in the picker.
+  # We remove it by writing every line except the removed path.
+  if [ -f "$MRU" ]; then
+    local tmpdir tmp
+    tmpdir=$(dirname "$MRU")
+    tmp=$(mktemp "$tmpdir/.mru.XXXXXX" 2>/dev/null) || return 0
+    if grep -Fxv "$path" "$MRU" >"$tmp" 2>/dev/null; then
+      mv -f "$tmp" "$MRU"
+    else
+      rm -f "$tmp"
+    fi
+  fi
+
   # Fast path: git removes it cleanly.
-  if git -C "$root" worktree remove "$path" 2>/dev/null; then
-    message "removed $path (branch kept)"
-    return 0
-  fi
-
-  # git refuses to remove any worktree that contains submodules, even when the
-  # checkout is clean. Only take the fallback when .gitmodules exists so a
-  # permission/lock failure does not silently delete everything.
-  if [ ! -e "$path/.gitmodules" ]; then
-    message "could not remove $path (maybe locked?)"
-    return 1
-  fi
-
-  git -C "$path" submodule deinit --all --force >/dev/null 2>&1 || {
-    message "could not deinit submodules in $path"
+  local err
+  err=$(git -C "$root" worktree remove "$path" 2>&1) || {
+    # git refuses to remove any worktree that contains submodules, even when the
+    # checkout is clean. Only take the fallback when .gitmodules exists so a
+    # permission/lock failure does not silently delete everything.
+    if [ -e "$path/.gitmodules" ]; then
+      git -C "$path" submodule deinit --all --force >/dev/null 2>&1 || {
+        message "could not deinit submodules in $path"
+        return 1
+      }
+      if rm -rf -- "$path"; then
+        message "removed $path (branch kept)"
+        return 0
+      fi
+      message "could not remove $path"
+      return 1
+    fi
+    message "$err"
     return 1
   }
-  if rm -rf -- "$path"; then
-    message "removed $path (branch kept)"
-    return 0
-  fi
 
-  message "could not remove $path"
-  return 1
+  # Remove any leftover directory in case git left an empty shell.
+  [ -d "$path" ] && rmdir -- "$path" 2>/dev/null || true
+  message "removed $path (branch kept)"
+  return 0
 }
 
 case "${1:-}" in
