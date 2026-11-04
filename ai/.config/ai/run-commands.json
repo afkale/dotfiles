@@ -11,7 +11,7 @@
     {
       "name": "review",
       "description": "Review uncommitted changes for bugs and risks",
-      "prompt": "Review the uncommitted changes in this directory. Look for correctness issues, regressions, security problems, and missing tests. Report findings with file and line references. Do not modify files.",
+      "prompt": "Use the reviewer subagent to review the uncommitted changes in this directory. Look for correctness issues, regressions, security problems, and missing tests. Report findings with file and line references.",
       "args": [
         "--auto"
       ]
