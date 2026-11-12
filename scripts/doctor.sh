@@ -67,6 +67,21 @@ else
     bad "workmux missing (install manually: brew install raine/workmux/workmux)"
   fi
 fi
+
+# Config checks (run when workmux is installed regardless of platform).
+if command -v workmux >/dev/null 2>&1; then
+  wm_cfg="$HOME/.config/workmux/config.yaml"
+  if [ -f "$wm_cfg" ] && grep -q 'status_format: false' "$wm_cfg"; then
+    ok "workmux: status_format disabled (custom status bar)"
+  else
+    bad "workmux: status_format not disabled (set status_format: false)"
+  fi
+  if [ -f "$wm_cfg" ] && grep -q 'nerdfont: true' "$wm_cfg"; then
+    ok "workmux: nerdfont enabled"
+  else
+    warn "workmux: nerdfont not enabled (set nerdfont: true)"
+  fi
+fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd"

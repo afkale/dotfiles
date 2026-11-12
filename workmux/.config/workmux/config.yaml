@@ -8,6 +8,13 @@
 # Project-specific behaviour belongs in a tracked .workmux.yaml; this file is
 # the dotfiles-managed default for every repository.
 
+# We use Nerd Fonts in the tmux status bar, so workmux can render them too.
+nerdfont: true
+
+# Disable auto-format rewriting: we manage the tmux status bar ourselves.
+# The agent status icon is rendered as #{@workmux_status} in status-left.
+status_format: false
+
 # One task per window, in the current tmux session.
 mode: window
 
