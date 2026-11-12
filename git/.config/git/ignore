@@ -1,0 +1,3 @@
+# workmux writes task prompt files into each worktree. Ignore the directory so
+# prompts never show up as repository changes, in every repository.
+.workmux/

@@ -54,8 +54,18 @@ if [ "$mode" = server ]; then
       warn "$cmd not expected on server"
     fi
   done
+  if command -v workmux >/dev/null 2>&1; then
+    ok "workmux"
+  else
+    warn "workmux missing (install manually: brew install raine/workmux/workmux)"
+  fi
 else
   required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm go"
+  if command -v workmux >/dev/null 2>&1; then
+    ok "workmux"
+  else
+    bad "workmux missing (install manually: brew install raine/workmux/workmux)"
+  fi
 fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
@@ -159,7 +169,7 @@ link_pkg() {
 }
 
 if [ "$mode" = server ]; then
-  for pkg in fish lazygit tmux wallpapers yazi; do
+  for pkg in fish git lazygit tmux wallpapers workmux yazi; do
     link_pkg "$pkg"
   done
   for pkg in ghostty opencode; do
@@ -170,7 +180,7 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  for pkg in fish ghostty lazygit tmux wallpapers yazi; do
+  for pkg in fish ghostty git lazygit tmux wallpapers workmux yazi; do
     link_pkg "$pkg"
   done
   link_pkg opencode
