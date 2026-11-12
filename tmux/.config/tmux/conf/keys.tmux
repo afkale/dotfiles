@@ -9,14 +9,13 @@ bind -n M-C-r command-prompt "rename-session '%%'"
 # ---------------------------------------------------------------------------
 # Create
 # ---------------------------------------------------------------------------
-# Creation follows the picker letters: M-s/M-d/M-t pick one, and Ctrl creates
-# a new one. This setup uses full windows rather than splits, so M-C-d opens a
-# new window.
-bind -n M-C-s \
+# M-C-w creates a new session with its first window, prompting for both names.
+bind -n M-C-w \
   new-session -c "#{pane_current_path}" \; \
   command-prompt "rename-session '%%'" \; \
   command-prompt "rename-window '%%'"
 
+# M-C-d creates a new window in the current session, prompting for its name.
 bind -n M-C-d \
   new-window -c "#{pane_current_path}" \; \
   command-prompt "rename-window '%%'"

@@ -55,6 +55,46 @@ tmux_state_dir() {
   printf '%s\n' "${XDG_STATE_HOME:-$HOME/.local/state}/tmux"
 }
 
+# Wait for a keypress when stderr is a terminal (inside a non-E popup).
+# In -E popups stdin is not a tty, so this returns immediately. Callers that
+# need to keep the popup visible on error must use hold_always instead.
+hold() {
+  [ -t 0 ] || return 0
+  printf '\npress any key to close'
+  IFS= read -rsn1 || true
+  printf '\n'
+}
+
+# Like hold() but waits for input regardless of whether stdin is a tty.
+# Use inside display-popup without the -E flag to keep errors visible.
+hold_always() {
+  printf '\npress any key to close'
+  IFS= read -rsn1 || true
+  printf '\n'
+}
+
+# Validate a branch/task name: alphanumeric, dots, underscores, slashes and
+# hyphens only, must not start with a hyphen, must be a valid git ref.
+validate_name() {
+  local name=$1
+  case "$name" in
+    ''|*[!A-Za-z0-9._/-]*)
+      message "invalid name: use letters, numbers, ., _, / or -"
+      return 1
+      ;;
+    -*)
+      message "invalid name: cannot start with -"
+      return 1
+      ;;
+  esac
+  if command -v git >/dev/null 2>&1; then
+    git check-ref-format --branch "$name" >/dev/null 2>&1 || {
+      message "invalid branch name: $name"
+      return 1
+    }
+  fi
+}
+
 # Shared look for every fzf menu in these scripts (panes, sessions, worktrees,
 # ai). Defining it once keeps the menus visually identical; callers add their
 # own --border-label, --header, preview and key bindings on top.

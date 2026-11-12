@@ -19,28 +19,26 @@ bind -n M-g display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  
 # Btop
 bind -n M-p display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  btop ' btop
 
-bind -n M-d if-shell "$PANE_SCRIPT has current" \
-  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick current'" \
-  "display-message -d 1500 'no panes in this session'"
-
+# Pane picker: current session, all sessions, or filtered by process.
 bind -n M-f if-shell "$PANE_SCRIPT has all" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick all'" \
   "display-message -d 1500 'no panes'"
-
 bind -n M-o if-shell "$PANE_SCRIPT has all opencode" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick all opencode'" \
   "display-message -d 1500 'no opencode panes'"
 
-bind -n M-n if-shell "$PANE_SCRIPT has all nvim" \
-  "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$PANE_SCRIPT pick all nvim'" \
-  "display-message -d 1500 'no nvim panes'"
+# Window navigator: every window across every session.
+bind -n M-n display-popup -B -E -w 90% -h 80% "$WINDOW_SCRIPT pick"
 
-# Task worktrees. M-t picks an existing worktree; M-C-t creates one for the
-# current repo and opens OpenCode in it. M-T reopens every worktree at once.
+# Workmux dashboard: overview of all active agents and worktrees.
+bind -n M-d display-popup -xC -yC -B -E -w 90% -h 80% "workmux dashboard"
+
+# Task worktrees. M-t picks an existing worktree; M-W opens a prompt for a new
+# task (create or reopen). M-T reopens every worktree at once.
 bind -n M-t if-shell "$WORKTREE_SCRIPT has" \
   "display-popup -B -E -d '#{pane_current_path}' -w 90% -h 80% '$WORKTREE_SCRIPT pick'" \
   "display-message -d 1500 'no other worktrees'"
-bind -n M-C-t display-popup -d '#{pane_current_path}' -E -w 60% -h 25% -T '  worktree ' "$WORKTREE_SCRIPT prompt"
+bind -n M-W display-popup -d '#{pane_current_path}' -E -w 60% -h 25% -T '  󰚩 task ' "$TASK_SCRIPT prompt"
 bind -n M-T run-shell -b "$WORKTREE_SCRIPT open-all"
 
 # ai run prompt picker (commands from run-commands.json)
