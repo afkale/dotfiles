@@ -51,7 +51,7 @@ Inside tmux (`prefix` = `M-space`):
 | `M-b` | Toggle status bar |
 | `M-a` | Start asciinema recording |
 | `M-C-a` | Stop recording |
-| `M-L` | Lock mode |
+| `M-L` | Lock mode (only `M-L` works until pressed again) |
 | `M-r` | Rename window |
 | `M-C-r` | Rename session |
 | `M-C-w` | New session with first window |
@@ -60,14 +60,10 @@ Inside tmux (`prefix` = `M-space`):
 
 ## Task worktrees
 
-`M-W` prompts for a task name and delegates to workmux. Workmux creates an
-isolated checkout at `~/worktrees/<repo>/<handle>` and opens OpenCode in a
-new tmux window. The handle is the branch name with slashes turned to dashes
-(`feat/login` → `feat-login`).
-
-Workmux owns creation (`workmux add`), agent status tracking (`workmux status`),
-and the dashboard (`workmux dashboard`). Use `M-d` to see all active agents and
-worktrees at a glance.
+`M-W` prompts for a task name (a git branch name) and delegates to workmux.
+workmux creates an isolated checkout at `~/worktrees/<repo>/<handle>`, opens a
+tmux window for it, and launches the agent. If the handle already has a worktree,
+it reopens the existing one.
 
 New worktrees copy `.env`, `.env.local`, `.env.development.local` and `.envrc`
 from the main checkout. Override the root with `WORKTREE_ROOT`.
@@ -88,6 +84,9 @@ is too old for `nvim-treesitter` (0.20.8 on 24.04, 0.25.9 on 26.04; it needs
 
 Tools that Homebrew can't provide (`ghostty`, `opencode`) are printed at the end with install hints.
 
+workmux is installed by `make deps` via cargo (or Homebrew when available) and
+sets up its own opencode agent-status integration on first use.
+
 ## Layout
 
 ```
@@ -104,5 +103,3 @@ dotfiles/
 ├── {tool}/.config/{tool}/…   # Stow-managed configs
 └── nvim/                     # Git submodule
 ```
-
-

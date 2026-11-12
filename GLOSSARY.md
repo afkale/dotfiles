@@ -37,37 +37,30 @@ _Avoid_: readonly mode
 
 **Hidden session**:
 A session whose name starts with an underscore, used to host popups. It is invisible to every
-picker and scope, so popup shells never show up as places to jump to.
+picker, scope and history file, so popup shells never show up as places to jump to.
 _Avoid_: background session, scratch session
 
 ### Navigation
 
 **Window list**:
-A searchable picker (`M-n`) showing every window across every session. The main way to jump
-between tasks.
-_Avoid_: window switcher, pane picker
+The `M-n` picker listing every window across every session. Windows in hidden sessions are
+excluded. The current window is marked with a narrow arrow.
+_Avoid_: window switcher, session list
 
 **Dashboard**:
-The workmux dashboard (`M-d`), a popup overlaying the current terminal that shows all active
-agents and worktrees at a glance.
+The `M-d` popup showing workmux's overview of all active agents and worktrees. It is the primary
+navigation surface for agent work, replacing the old session and pane pickers.
 _Avoid_: sidebar, agent list
 
 **Cheatsheet**:
-A searchable popup of everything tmux currently has bound, read from the live server rather than
-from a document.
-_Avoid_: help, keybindings list
+A searchable list of everything tmux currently has bound, read from the live server rather than
+from a document. Opened with `M-?`.
 
-### The IDE
-
-**IDE window**:
-A window that holds the coding cockpit: nvim as the editor, with tool popups available over it.
-Windows stay whole rather than being split, so each IDE window is one full view.
-_Avoid_: editor window, dev window
+### Tools
 
 **Tool popup**:
-A full-size overlay running a single tool — a file manager (`M-y` yazi), a git client (`M-g`
-lazygit), a process monitor (`M-p` btop), or the cheatsheet (`M-?`) — that closes back to the
-pane beneath it.
+A full-size overlay running a single tool — a file manager (`M-y`), a git client (`M-g`), a process
+monitor (`M-p`), or the cheatsheet (`M-?`) — that closes back to the pane beneath it.
 _Avoid_: float, floating window
 
 **Isolated popup**:
@@ -78,20 +71,29 @@ _Avoid_: nested tmux, sandbox
 ### Work objects
 
 **Worktree**:
-An isolated checkout of the current repository for one task, created by workmux (`workmux add`).
-The branch keeps the name you type; the directory and window name replace slashes with dashes.
+An isolated checkout of the current repository for one task, created by workmux. The branch keeps
+the name you type; the directory and window name replace slashes with dashes.
 _Avoid_: task branch, sandbox checkout
 
 **Handle**:
-The directory name of a worktree, used as the window name and as the address for workmux
-commands. Derived from the branch name by replacing `/` with `-`.
-_Avoid_: branch name, worktree name
+The worktree directory name, used to address agents in workmux commands. For example,
+`docs-update` in `~/worktrees/dotfiles/docs-update`.
+_Avoid_: worktree name, branch alias
 
 **Agent status**:
-An icon on the tmux status bar showing whether the worktree's opencode agent is busy, idle, or
-absent, provided by `workmux status`.
+An icon on the tmux status bar showing the state of the workmux agents in the current session:
+idle, working, waiting for input, or done. Provided by the workmux opencode integration.
+
+### Session boundary
 
 **Recording**:
 A per-session asciinema capture, started (`M-a`) and stopped (`M-C-a`) for the session it belongs
 to and unaffected by other recordings on the machine.
 _Avoid_: cast, stream
+
+### The IDE
+
+**IDE window**:
+A window that holds the coding cockpit: nvim as the editor, with tool popups available over it.
+Windows stay whole rather than being split, so each IDE window is one full view.
+_Avoid_: editor window, dev window
