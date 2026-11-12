@@ -2,4 +2,4 @@
 # missing after apt + brew.
 ghostty|PPA/AppImage: https://ghostty.org/download
 opencode|install separately (no formula): https://opencode.ai/docs
-workmux|Homebrew: brew install raine/workmux/workmux · Cargo: cargo install workmux
+workmux|Homebrew: brew install raine/workmux/workmux · Cargo: cargo install workmux (also used on Arch when no brew)

@@ -14,6 +14,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BIN_DIR="$HOME/.local/bin"
 BREW=''
 BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux bat btop fd fish jq ripgrep zoxide tree-sitter-cli'
+CARGO_TOOLS='workmux'
 
 # Prefer our own links for now; brew is prepended once it is located.
 PATH="$BIN_DIR:$PATH"
@@ -183,6 +184,25 @@ install_homebrew() {
 
 # Debian installs fd as fdfind and bat as batcat. Link the names the configs
 # (and doctor) expect into ~/.local/bin.
+install_cargo_tools() {
+  local tool cargo_bin
+  cargo_bin=$(command -v cargo 2>/dev/null || true)
+  [ -n "$cargo_bin" ] || {
+    warn 'cargo is not available'
+    return 1
+  }
+
+  for tool in $CARGO_TOOLS; do
+    command -v "$tool" >/dev/null 2>&1 && continue
+    if [ "$dry" -eq 1 ]; then
+      say "would run: cargo install $tool"
+    else
+      say "Installing $tool via cargo..."
+      "$cargo_bin" install "$tool" || return 1
+    fi
+  done
+}
+
 link_compat() {
   local src=$1 dst=$2 target
   command -v "$dst" >/dev/null 2>&1 && return 0
@@ -250,11 +270,13 @@ fi
 case "$family" in
   arch)
     install_arch || exit 1
+    install_cargo_tools || warn 'cargo install failed for some tools'
     ;;
   debian)
     install_debian || exit 1
     install_homebrew || exit 1
     install_brew_tools || exit 1
+    install_cargo_tools || warn 'cargo install failed for some tools (brew may have handled them)'
     ;;
   *)
     warn 'unsupported distribution; install from packages/arch.txt (pacman) or packages/debian.txt (apt)'

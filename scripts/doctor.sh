@@ -54,33 +54,8 @@ if [ "$mode" = server ]; then
       warn "$cmd not expected on server"
     fi
   done
-  if command -v workmux >/dev/null 2>&1; then
-    ok "workmux"
-  else
-    warn "workmux missing (install manually: brew install raine/workmux/workmux)"
-  fi
 else
   required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm go"
-  if command -v workmux >/dev/null 2>&1; then
-    ok "workmux"
-  else
-    bad "workmux missing (install manually: brew install raine/workmux/workmux)"
-  fi
-fi
-
-# Config checks (run when workmux is installed regardless of platform).
-if command -v workmux >/dev/null 2>&1; then
-  wm_cfg="$HOME/.config/workmux/config.yaml"
-  if [ -f "$wm_cfg" ] && grep -q 'status_format: false' "$wm_cfg"; then
-    ok "workmux: status_format disabled (custom status bar)"
-  else
-    bad "workmux: status_format not disabled (set status_format: false)"
-  fi
-  if [ -f "$wm_cfg" ] && grep -q 'nerdfont: true' "$wm_cfg"; then
-    ok "workmux: nerdfont enabled"
-  else
-    warn "workmux: nerdfont not enabled (set nerdfont: true)"
-  fi
 fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
@@ -104,6 +79,63 @@ elif [ "$mode" = server ]; then
   warn "opencode not expected on server"
 else
   warn "opencode missing (install separately)"
+fi
+
+section "workmux"
+wm_bin=$(command -v workmux 2>/dev/null || true)
+if [ -n "$wm_bin" ]; then
+  ok "workmux ($wm_bin)"
+else
+  if [ "$mode" = server ]; then
+    warn "workmux not installed (install via cargo or brew)"
+  else
+    bad "workmux not installed (make deps or: cargo install workmux)"
+  fi
+fi
+
+wm_cfg="$HOME/.config/workmux/config.yaml"
+if [ -n "$wm_bin" ] || [ "$mode" != server ]; then
+  if [ -f "$wm_cfg" ]; then
+    if [ "$(realpath "$wm_cfg" 2>/dev/null)" = "$(realpath "$ROOT/workmux/.config/workmux/config.yaml" 2>/dev/null)" ]; then
+      ok "workmux config: linked"
+    else
+      bad "workmux config: not a stow link (run 'make stow')"
+    fi
+  else
+    bad "workmux config: missing (~/.config/workmux/config.yaml)"
+  fi
+fi
+
+if [ -n "$wm_bin" ]; then
+  if grep -q 'status_format: false' "$wm_cfg" 2>/dev/null; then
+    ok "workmux status_format: disabled (our custom status bar)"
+  else
+    bad "workmux status_format: not disabled (set status_format: false)"
+  fi
+
+  if grep -q 'nerdfont: true' "$wm_cfg" 2>/dev/null; then
+    ok "workmux nerdfont: enabled"
+  else
+    warn "workmux nerdfont: not enabled (set nerdfont: true)"
+  fi
+
+  # Check that the tmux status bar reads @workmux_status.
+  tmux_conf="$ROOT/tmux/.config/tmux/conf/status.tmux"
+  if [ -f "$tmux_conf" ] && grep -q '@workmux_status' "$tmux_conf"; then
+    ok "workmux status var: in status bar"
+  else
+    bad "workmux status var: missing from status bar (add #{@workmux_status})"
+  fi
+
+  # Check that the opencode workmux-status plugin is installed when opencode is present.
+  if command -v opencode >/dev/null 2>&1; then
+    wm_plugin="$HOME/.config/opencode/plugins/workmux-status"
+    if [ -d "$wm_plugin" ] && [ -f "$wm_plugin/index.ts" ]; then
+      ok "workmux opencode plugin: installed"
+    else
+      warn "workmux opencode plugin: not installed (run 'workmux setup --hooks')"
+    fi
+  fi
 fi
 
 section "versions"
