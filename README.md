@@ -121,4 +121,4 @@ dotfiles/
 └── nvim/                     # Git submodule
 ```
 
-Layout snapshots are saved to `~/.local/state/tmux/sessions`. Run `sessions.sh restore` after a reboot to recreate them.
+

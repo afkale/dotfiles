@@ -7,7 +7,7 @@
 # Every window in every session is listed as "session: window", except windows
 # in hidden sessions. The current window is marked with a narrow arrow.
 #
-# Hidden sessions ("_hidden*") are excluded everywhere, like pane.sh.
+# Hidden sessions ("_hidden*") are excluded everywhere.
 
 set -u
 

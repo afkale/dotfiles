@@ -22,8 +22,7 @@ validate_characters() {
   return 0
 }
 
-# For ai.sh:valid we test the schema logic without the file read.
-# The real valid() does: commands is an array, each has name (string, no tabs),
+# JSON validation: commands is an array, each has name (string, no tabs),
 # description (string), prompt (non-empty string), args (array of strings),
 # and unique names.
 check_json() {
@@ -106,7 +105,7 @@ check "accepts alphanumeric" pass \
   'validate_characters "feature123"'
 
 
-# ── JSON validation (ai.sh:valid) ──────────────────────────────────────────
+# ── JSON validation (command schema) ───────────────────────────────────────
 
 echo ""
 echo "JSON validation"

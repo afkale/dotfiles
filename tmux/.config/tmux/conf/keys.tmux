@@ -21,19 +21,10 @@ bind -n M-C-d \
   command-prompt "rename-window '%%'"
 
 # ---------------------------------------------------------------------------
-# Movement
-# ---------------------------------------------------------------------------
-# Jump straight to the pane visited before this one (no picker).
-bind -n M-` run-shell "$PANE_SCRIPT last"
-
-# ---------------------------------------------------------------------------
 # Utilities
 # ---------------------------------------------------------------------------
 bind -n M-v copy-mode
 bind -n M-b set status
-
-# Snapshot the current layout (restore with sessions.sh after a reboot).
-bind -n M-C-l run-shell "$SESSIONS_SCRIPT save"
 
 # ---------------------------------------------------------------------------
 # Session recording (streamux)
