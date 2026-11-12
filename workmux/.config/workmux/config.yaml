@@ -15,6 +15,12 @@ nerdfont: true
 # The agent status icon is rendered as #{@workmux_status} in status-left.
 status_format: false
 
+# Use Nerd Font icons instead of emoji for agent status.
+status_icons:
+  working: ''   # nf-fa-gear (spinning)
+  waiting: ''   # nf-fa-info_circle
+  done: ''      # nf-fa-check
+
 # One task per window, in the current tmux session.
 mode: window
 

@@ -48,9 +48,16 @@ excluded. The current window is marked with a narrow arrow.
 _Avoid_: window switcher, session list
 
 **Dashboard**:
-The `M-d` popup showing workmux's overview of all active agents and worktrees. It is the primary
-navigation surface for agent work, replacing the old session and pane pickers.
-_Avoid_: sidebar, agent list
+The `M-d` popup showing workmux's full overview of all active agents and worktrees.
+Used for deeper inspection, diffing, and actions that need the full TUI.
+_Avoid_: full view, TUI overview
+
+**Sidebar**:
+A persistent left-side pane in every window of a project session, scoped to that
+session's agents only. It is the primary management surface for agent work:
+showing live status, starting new worktrees, and jumping between agents.
+Toggled on demand with `M-s`.
+_Avoid_: sidebar popup, agent strip, agent list
 
 **Cheatsheet**:
 A searchable list of everything tmux currently has bound, read from the live server rather than
@@ -71,8 +78,9 @@ _Avoid_: nested tmux, sandbox
 ### Work objects
 
 **Worktree**:
-An isolated checkout of the current repository for one task, created by workmux. The branch keeps
-the name you type; the directory and window name replace slashes with dashes.
+An isolated checkout of the current repository for one task, created by workmux.
+Managed from the sidebar, not via a separate prompt popup. The branch keeps the
+name you type; the directory and window name replace slashes with dashes.
 _Avoid_: task branch, sandbox checkout
 
 **Handle**:
@@ -81,8 +89,9 @@ The worktree directory name, used to address agents in workmux commands. For exa
 _Avoid_: worktree name, branch alias
 
 **Agent status**:
-An icon on the tmux status bar showing the state of the workmux agents in the current session:
-idle, working, waiting for input, or done. Provided by the workmux opencode integration.
+An icon shown in both the sidebar and status bar, reporting the state of a workmux
+agent: idle, working, waiting for input, or done. Provided by the workmux sidebar
+daemon and opencode integration.
 
 ### Session boundary
 

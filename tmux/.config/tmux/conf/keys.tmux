@@ -9,16 +9,29 @@ bind -n M-C-r command-prompt "rename-session '%%'"
 # ---------------------------------------------------------------------------
 # Create
 # ---------------------------------------------------------------------------
-# M-C-w creates a new session with its first window, prompting for both names.
+# M-C-w creates a project session with the workmux sidebar (see session.sh).
+# Two prompts: session name, then window name (default "code").
+# %% in the second prompt is the first prompt's answer (session name).
 bind -n M-C-w \
-  new-session -c "#{pane_current_path}" \; \
-  command-prompt "rename-session '%%'" \; \
+  command-prompt -p "session name:" \
+    "command-prompt -I \"code\" -p \"first window name (enter for 'code'):\" \
+      \"run-shell '$TMUX_SCRIPTS/session.sh create \"#{pane_current_path}\" \"%%\" \"%1\"'\""
+
+# M-w creates a new window in the current session, prompting for its name.
+bind -n M-w \
+  new-window -c "#{pane_current_path}" \; \
   command-prompt "rename-window '%%'"
 
-# M-C-d creates a new window in the current session, prompting for its name.
+# M-C-d: convenience alias for M-w (you can drop this if M-w is enough).
 bind -n M-C-d \
   new-window -c "#{pane_current_path}" \; \
   command-prompt "rename-window '%%'"
+
+# ---------------------------------------------------------------------------
+# Navigation
+# ---------------------------------------------------------------------------
+# M-` (backtick) jumps to the last window (highest index) in the session.
+bind -n M-\` last-window
 
 # ---------------------------------------------------------------------------
 # Utilities

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # lib.sh — helpers shared by the tmux scripts in this directory.
 #
-# Sourced by streamux.sh, task.sh and window.sh.
+# Sourced by streamux.sh and window.sh.
 
 # Derive our own directory so palette.sh can be found from any sourcing context.
 # shellcheck source-path=SCRIPTDIR source=palette.sh

@@ -30,13 +30,15 @@ Adopt workmux as the task/worktree/agent layer. workmux now owns:
 - **Worktree creation** — `workmux add` replaces `worktree.sh new`
 - **Agent status tracking** — `workmux status` replaces the bespoke MRU system
 - **Dashboard display** — `workmux dashboard` replaces the pane/session pickers
-  as the primary navigation surface
+  as the full TUI overview
+- **Sidebar display** — `workmux sidebar --session` provides a persistent
+  agent status strip in every window, replacing the popup-only workflow
 - **OpenCode integration** — `workmux setup --hooks` installs the status plugin
   for the tmux status bar
 
-The remaining tmux scripts (`task.sh`, `window.sh`, `streamux.sh`, `popup.sh`,
-`status.sh`) handle only the thin integration layer between tmux keybindings
-and workmux or other external tools.
+The remaining tmux scripts (`window.sh`, `streamux.sh`, `popup.sh`,
+`status.sh`, `session.sh`) handle only the thin integration layer between
+tmux keybindings and workmux or other external tools.
 
 ## Rejected alternatives
 
@@ -53,12 +55,14 @@ instead of a window. This was rejected because the existing window-per-worktree
 model (all agents visible in one session's window list) maps naturally to the
 `M-n` window navigator and keeps the workflow single-session.
 
-### Sidebar UI for agent status
+### Popup-only agent management
 
-A persistent sidebar showing agent state was considered but rejected in favour
-of the dashboard popup. The popup overlays the current terminal without
-shrinking the editor pane, and it is available on demand (`M-d`) rather than
-consuming screen real estate continuously.
+Initially the dashboard popup (`M-d`) was the only workmux surface, with an
+additional popup prompt (`M-W`) for creating task worktrees. This was replaced
+by the persistent sidebar (`workmux sidebar --session`), which shows live agent
+status without requiring a keypress. The sidebar is scoped per-project session,
+so it only shows relevant agents. The dashboard remains as `M-d` for deeper
+TUI operations (diffing, inspection).
 
 ### Bundle agent skills into the dotfiles
 
