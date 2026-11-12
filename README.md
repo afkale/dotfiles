@@ -23,7 +23,7 @@ make doctor
 
 | Config | Tool | Notes |
 |--------|------|-------|
-| `tmux/` | tmux | Session picker (`M-s`), pane pickers (`M-d` local, `M-f` global), task worktrees (`M-t`, `M-C-t`), layout snapshots, isolated popup (`M-1`), asciinema recording (`M-a`/`M-C-a`) |
+| `tmux/` | tmux | Window navigator (`M-n`), workmux dashboard (`M-d`), task worktrees (`M-W`), isolated popup (`M-1`), asciinema recording (`M-a`/`M-C-a`) |
 | `fish/` | fish | Fzf integration (fd, bat previews), zoxide, Homebrew PATH on Linux |
 | `nvim/` | neovim (submodule) | Mini.pick for files/grep/help, lazygit integration, spell for markdown/gitcommit, cursor restore |
 | `ghostty/` | ghostty | Minimal terminal config |
@@ -39,51 +39,35 @@ Inside tmux (`prefix` = `M-space`):
 
 | Key | Action |
 |-----|--------|
-| `M-s` / `M-C-s` | Session picker / new session |
-| `M-d` / `M-C-d` | Pane picker (current session) / new window |
-| `M-t` / `M-C-t` | Worktree picker / new task worktree |
-| `M-T` | Open a window for every worktree in the repo |
-| `M-f` | Pane picker (all sessions) |
-| `M-o` | Opencode pane picker (all sessions) |
-| `M-n` | Nvim pane picker (all sessions) |
-| `M-c` | Opencode run-prompt picker |
+| `M-d` | Workmux dashboard |
+| `M-n` | Window navigator (every window across every session) |
+| `M-W` | New task worktree prompt |
 | `M-1` | Isolated popup shell |
-| ``M-` `` | Last pane jump |
+| `M-?` | Searchable keybinding cheatsheet |
+| `M-y` | Yazi file manager |
 | `M-g` | LazyGit |
-| `M-p` | Btop |
-| `M-y` | Yazi |
+| `M-p` | Btop monitor |
 | `M-v` | Copy mode |
+| `M-b` | Toggle status bar |
 | `M-a` | Start asciinema recording |
 | `M-C-a` | Stop recording |
-| `M-C-l` | Save layout snapshot |
-| `M-b` | Toggle status bar |
-| `M-L` | Lock mode (only `M-L` works until pressed again) |
-| `M-r` / `M-C-r` | Rename window / session |
-| `M-?` | Searchable keybinding cheatsheet |
+| `M-L` | Lock mode |
+| `M-r` | Rename window |
+| `M-C-r` | Rename session |
+| `M-C-w` | New session with first window |
+| `M-C-d` | New window in current session |
 | `prefix r` | Reload tmux config |
 
 ## Task worktrees
 
-`M-C-t` creates an isolated checkout for the current repository at
-`~/worktrees/<repo>/<branch>` and opens OpenCode in a new tmux window. The
-branch keeps the name you type; slashes become dashes in the directory and
-window name (`feat/login` → `feat-login`).
+`M-W` prompts for a task name and delegates to workmux. Workmux creates an
+isolated checkout at `~/worktrees/<repo>/<handle>` and opens OpenCode in a
+new tmux window. The handle is the branch name with slashes turned to dashes
+(`feat/login` → `feat-login`).
 
-`M-t` opens the worktree picker. `Enter` opens a worktree, `ctrl-x` removes a
-clean one, `ctrl-v` hides/shows the preview split, and `ctrl-r` reloads the
-list. Removing a worktree keeps its branch.
-
-Like the pane picker, the session (`M-s`), worktree (`M-t`), and OpenCode
-run-prompt (`M-c`) pickers list the most recently used entry first. The session
-and worktree pickers omit the current one so pressing `Enter` takes you back
-to where you were. All of these menus share the same fzf look (border, palette, inline info) and every list
-supports `ctrl-r` to reload.
-
-Panes that rang the bell are shown as plain gold text in the pane picker — no
-bell or arrow icons.
-
-`M-T` reopens every worktree of the current repository at once (including the
-main checkout) and returns focus to the window you were on.
+Workmux owns creation (`workmux add`), agent status tracking (`workmux status`),
+and the dashboard (`workmux dashboard`). Use `M-d` to see all active agents and
+worktrees at a glance.
 
 New worktrees copy `.env`, `.env.local`, `.env.development.local` and `.envrc`
 from the main checkout. Override the root with `WORKTREE_ROOT`.
