@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# window.sh — fuzzy window navigator across every session (M-n).
+# window.sh — fuzzy window navigator across every session (M-d).
 #
 #   window.sh list       "<window_id><TAB><label>", plain order, for fzf
 #   window.sh pick       switch to the selected window
 #
 # Every window in every session is listed as "session: window", except windows
-# in hidden sessions. The current window is marked with a narrow arrow.
+# in hidden sessions and the current window (no point navigating to where you
+# already are).
 #
 # Hidden sessions ("_hidden*") are excluded everywhere.
 
@@ -19,7 +20,7 @@ SCRIPT_DIR=${SELF%/*}
 FIELDS="#{session_name}"$'\t'"#{window_index}"$'\t'"#{window_name}"$'\t'"#{window_id}"$'\t'"#{session_id}"$'\t'"#{?window_active,active,inactive}"
 
 list() {
-  local current_session current_window sn win_idx win_name win_id label
+  local current_session current_window sn win_idx win_name win_id
 
   current_session=$(tmux display-message -p '#{session_name}' 2>/dev/null || true)
   current_window=$(tmux display-message -p '#{window_index}' 2>/dev/null || true)
@@ -29,14 +30,10 @@ list() {
     [ -n "$sn" ] || continue
     is_hidden_session "$sn" && continue
 
-    # Mark the current window with a narrow arrow
-    if [ "$sn" = "$current_session" ] && [ "$win_idx" = "$current_window" ]; then
-      label="  $sn: $win_name"
-    else
-      label="  $sn: $win_name"
-    fi
+    # Skip the current window — you're already there, no point navigating to it.
+    [ "$sn" = "$current_session" ] && [ "$win_idx" = "$current_window" ] && continue
 
-    printf '%s\t%s\n' "$win_id" "$label"
+    printf '%s\t%s\n' "$win_id" "  $sn: $win_name"
   done < <(tmux list-windows -a -F "$FIELDS" 2>/dev/null)
 }
 

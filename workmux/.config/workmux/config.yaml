@@ -30,9 +30,9 @@ worktree_dir: ~/worktrees/{project}
 # Full keeps the whole branch name: feature/login becomes feature-login.
 worktree_naming: full
 
-# A non-empty, single-glyph prefix keeps workmux's name classification intact.
-# The dashboard carries the project column, so the window stays handle-only.
-window_prefix: "·"
+# Empty prefix: the window name is just the worktree handle with no decoration.
+# The dashboard and sidebar already identify worktrees unambiguously.
+window_prefix: ""
 
 # One full-view pane: the agent, and no extra split.
 agent: opencode

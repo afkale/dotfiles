@@ -43,12 +43,12 @@ _Avoid_: background session, scratch session
 ### Navigation
 
 **Window list**:
-The `M-n` picker listing every window across every session. Windows in hidden sessions are
-excluded. The current window is marked with a narrow arrow.
+The `M-d` fzf picker listing every window across every session. Windows in hidden sessions are
+excluded, and the current window is not listed (no point navigating to where you already are).
 _Avoid_: window switcher, session list
 
 **Dashboard**:
-The `M-d` popup showing workmux's full overview of all active agents and worktrees.
+The `M-n` popup showing workmux's full TUI overview of all active agents and worktrees.
 Used for deeper inspection, diffing, and actions that need the full TUI.
 _Avoid_: full view, TUI overview
 
@@ -58,6 +58,17 @@ session's agents only. It is the primary management surface for agent work:
 showing live status, starting new worktrees, and jumping between agents.
 Toggled on demand with `M-s`.
 _Avoid_: sidebar popup, agent strip, agent list
+
+**Agent jump**:
+The `M-C-n` binding that jumps to the most recently finished or waiting agent.
+Repeated presses cycle through completed and waiting agents in reverse
+chronological order.
+_Avoid_: next agent, cycle agents
+
+**Agent toggle**:
+The `M-C-p` binding that toggles between the current agent and the last
+agent you visited, like vim's `Ctrl+^`.
+_Avoid_: previous agent, agent flip
 
 **Cheatsheet**:
 A searchable list of everything tmux currently has bound, read from the live server rather than
@@ -99,6 +110,12 @@ daemon and opencode integration.
 A per-session asciinema capture, started (`M-a`) and stopped (`M-C-a`) for the session it belongs
 to and unaffected by other recordings on the machine.
 _Avoid_: cast, stream
+
+**Resurrect**:
+The `M-C-r` dry-run of `workmux resurrect`, showing which worktrees would be
+reopened after a tmux server crash. Does not restore automatically — preview
+first, then run `workmux resurrect` at the shell.
+_Avoid_: recovery, restore
 
 ### The IDE
 

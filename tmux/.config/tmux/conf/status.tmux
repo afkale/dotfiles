@@ -37,7 +37,8 @@ set -g status-right-length 85
 
 # The logo turns gold while the prefix (M-space) is pressed, red while lock
 # mode or session recording is on, and iris otherwise. The current window
-# follows the session name.
+# follows the session name. The window name is the bare worktree handle
+# (window_prefix is empty in workmux config).
 set -g status-left " #[fg=#{?client_prefix,#{@thm_gold},#{?#{==:#{@locked},1},#{@thm_love},#{@logofg}}},bold]#{@logo} #[fg=#{@thm_text},bold]#S #[fg=#{@thm_hl_high}]│ #[fg=#{@thm_muted}]#{window_index}:#[fg=#{@thm_iris}]#{window_name}#{@workmux_status}#{?window_zoomed_flag, ,} "
 
 set -g status-right "#[fg=#{@thm_foam}]#($TMUX_SCRIPTS/status.sh battery)#[fg=#{@thm_hl_high}] │ #[fg=#{@thm_gold}]#{@icon_calendar} %a %d %b #[fg=#{@thm_hl_high}]│ #[fg=#{@thm_iris}]#{@icon_clock} %H:%M "

@@ -9,13 +9,13 @@ bind -n M-C-r command-prompt "rename-session '%%'"
 # ---------------------------------------------------------------------------
 # Create
 # ---------------------------------------------------------------------------
-# M-C-w creates a project session with the workmux sidebar (see session.sh).
-# Two prompts: session name, then window name (default "code").
-# %% in the second prompt is the first prompt's answer (session name).
+# M-C-w creates a project session managed by workmux (see session.sh).
+# Prompts for a session name. Workmux creates a session-mode worktree named
+# after the base branch, so subsequent workmux commands know about this
+# session. The sidebar (M-s) is the primary agent management surface.
 bind -n M-C-w \
   command-prompt -p "session name:" \
-    "command-prompt -I \"code\" -p \"first window name (enter for 'code'):\" \
-      \"run-shell '$TMUX_SCRIPTS/session.sh create \"#{pane_current_path}\" \"%%\" \"%1\"'\""
+    "run-shell '$TMUX_SCRIPTS/session.sh create \"#{pane_current_path}\" \"%%\"'"
 
 # M-w creates a new window in the current session, prompting for its name.
 bind -n M-w \
@@ -44,6 +44,20 @@ bind -n M-b set status
 # ---------------------------------------------------------------------------
 bind -n M-a run-shell -b "$STREAMUX_SCRIPT start"
 bind -n M-C-a run-shell -b "$STREAMUX_SCRIPT stop"
+
+# ---------------------------------------------------------------------------
+# Workmux agent navigation
+# ---------------------------------------------------------------------------
+# M-C-n: jump to the agent that most recently finished or is waiting for input.
+# Repeated presses cycle through all completed/waiting agents.
+bind -n M-C-n run-shell "workmux last-done"
+
+# M-C-p: toggle between the current agent and the last agent you visited.
+bind -n M-C-p run-shell "workmux last-agent"
+
+# M-C-r: dry-run of workmux resurrect — preview what worktrees would reopen
+# after a crash. Run `workmux resurrect` at the shell to actually restore.
+bind -n M-C-r run-shell "workmux resurrect --dry-run"
 
 # ---------------------------------------------------------------------------
 # Lock mode: only M-L keeps working until it is pressed again.

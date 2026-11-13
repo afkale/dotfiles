@@ -16,10 +16,11 @@ bind -n M-g display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  
 # Btop
 bind -n M-p display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  btop ' btop
 
-# Workmux dashboard: fullscreen popup, same shape as yazi/lazygit.
+# Workmux dashboard: fullscreen TUI of all agents and worktrees.
 bind -n M-n display-popup -d '#{pane_current_path}' -E -w 100% -h 100% -T '  workmux dashboard ' workmux dashboard
 
-# Window navigator: every window across every session.
+# Window navigator: every window across every session. The current window is
+# excluded — you're already there, so there's nothing to navigate to.
 bind -n M-d display-popup -B -E -w 90% -h 80% "$WINDOW_SCRIPT pick"
 
 # Workmux sidebar: toggle the project-scoped agent sidebar in this session.
