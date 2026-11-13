@@ -85,13 +85,14 @@ pick() {
       --with-nth=2.. \
       --no-sort \
       "${FZF_STYLE[@]}" \
-      --border-label='  panes · all sessions ' \
-      --header='enter: go · ctrl-v: preview · ctrl-r: reload' \
+      --border-label='    panes' \
+      --header='enter: go · ctrl-x: kill · ctrl-v: preview · ctrl-r: reload' \
       --preview 'tmux capture-pane -p -e -t {1} -S -200' \
       --preview-window='right,60%,border-left' \
       --bind 'ctrl-v:toggle-preview' \
       --bind "ctrl-r:reload($SELF list)" \
-      --bind 'enter:become(echo {1})'
+      --bind 'enter:become(echo {1})' \
+      --bind 'ctrl-x:execute(tmux kill-pane -t {1} 2>/dev/null)+clear-query+reload('"$SELF"' list)'
   )
 
   [ -n "$selection" ] || return 0
