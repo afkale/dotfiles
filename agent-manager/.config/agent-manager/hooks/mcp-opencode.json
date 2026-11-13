@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "agent-manager": {
+      "command": [
+        "/home/afkale/.local/bin/agent-manager",
+        "mcp"
+      ],
+      "enabled": true,
+      "environment": {
+        "AGENT_MANAGER_SESSION_ID": "{env:AGENT_MANAGER_SESSION_ID}"
+      },
+      "type": "local"
+    }
+  }
+}

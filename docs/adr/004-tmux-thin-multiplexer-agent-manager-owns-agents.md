@@ -77,7 +77,11 @@ dedicated tmux key.
 - `M-d` explicitly filters `am_*` sessions out — the pane picker is for
   human-created windows only
 - agent-manager provides its own MCP to opencode; the snippet is tracked in
-  `opencode/.config/opencode/opencode.jsonc` as the `mcp.agent-manager` block
+  `opencode/.config/opencode/opencode.jsonc` as the `mcp.agent-manager` block.
+  The agent-manager side of the MCP hook is tracked in
+  `agent-manager/.config/agent-manager/hooks/mcp-opencode.json`.
+- agent-manager's OpenCode TUI plugin (`track-conversation`) is tracked in
+  `opencode/.config/opencode/plugins/agent-manager/tui.ts`.
 
 ### 4. Glossary is rewritten for tmux + agent-manager
 
