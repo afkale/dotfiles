@@ -49,8 +49,10 @@ reload). Everything else is a direct chord.
 | `M-d` | Pane picker fzf — every pane, every session, `am_*` filtered out |
 | `M-n` / `M-p` | Next / previous window |
 | `M-r` / `M-C-r` | Rename window / session |
+| `M-1` | Isolated shell popup (own tmux socket, no status bar) |
 | `M-y` | Yazi file manager (popup) |
 | `M-g` | LazyGit (popup) |
+| `M-b` | Btop (popup) |
 | `M-v` | Copy mode (vi keys, clipboard pipe) |
 
 ## Dependencies
