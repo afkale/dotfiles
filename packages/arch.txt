@@ -16,6 +16,7 @@ python
 go
 ripgrep
 stow
+tmux
 tree-sitter-cli
 yazi
 zoxide

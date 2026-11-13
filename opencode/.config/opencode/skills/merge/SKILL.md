@@ -1,28 +1,25 @@
 ---
 name: merge
-description: Commit, rebase, and merge the current branch.
+description: Commit, rebase, and merge the current branch into its base branch.
 disable-model-invocation: true
 allowed-tools: Read, Bash, Glob, Grep
 ---
-
-<!-- Customize the commit style and rebase behavior to match your workflow. -->
 
 **Arguments:** `$ARGUMENTS`
 
 Check the arguments for flags:
 
-- `--keep`, `-k` → pass `--keep` to `workmux merge` (keeps the worktree and tmux window after merging)
-- `--no-verify`, `-n` → pass `--no-verify` to `workmux merge`
+- `--no-verify`, `-n` → pass `--no-verify` to the commit in step 1
+- `--keep`, `-k` → accepted for habit, but nothing is deleted either way: worktrees
+  belong to agent-manager, which the skill never removes
 
-Strip all flags from arguments.
+Strip all flags from arguments. A remaining argument names the base branch.
 
-Commit, rebase, and merge the current branch.
+Finish work on the current branch:
 
-This command finishes work on the current branch by:
-
-1. Committing all uncommitted changes
-2. Rebasing onto the base branch
-3. Running `workmux merge` to merge and clean up
+1. Commit all uncommitted changes
+2. Rebase onto the base branch
+3. Fast-forward the base branch to this branch
 
 ## Step 1: Commit
 
@@ -33,13 +30,12 @@ Skip if the working tree is clean.
 
 ## Step 2: Rebase
 
-Get the base branch from git config:
+Resolve the base branch:
 
-```
-git config --local --get "branch.$(git branch --show-current).workmux-base"
-```
-
-If no base branch is configured, default to "main".
+1. The argument, when one was given
+2. Otherwise `main`, when that branch exists locally
+3. Otherwise the repository default, from
+   `git symbolic-ref --short refs/remotes/origin/HEAD` (strip the `origin/`)
 
 Rebase onto the local base branch (do NOT fetch from origin first):
 
@@ -47,7 +43,7 @@ Rebase onto the local base branch (do NOT fetch from origin first):
 git rebase <base-branch>
 ```
 
-IMPORTANT: Do NOT run `git fetch`. Do NOT rebase onto `origin/<branch>`. Only rebase onto the local branch name (e.g., `git rebase main`, not `git rebase origin/main`).
+IMPORTANT: Do NOT run `git fetch`. Do NOT rebase onto `origin/<branch>`. Only rebase onto the local branch name (e.g. `git rebase main`, not `git rebase origin/main`).
 
 If conflicts occur:
 
@@ -63,10 +59,14 @@ If conflicts occur:
 
 ## Step 3: Merge
 
-Run: `workmux merge --rebase --notification [--keep] [--no-verify]`
+The rebase put this branch directly on top of the base, so the merge is always a
+fast-forward:
 
-Include `--keep` only if the `--keep` flag was passed in arguments.
-Include `--no-verify` only if the `--no-verify` flag was passed in arguments.
+```
+git checkout <base-branch>
+git merge --ff-only <branch>
+git checkout <branch>
+```
 
-This will merge the branch into the base branch and clean up the worktree and
-tmux window (unless `--keep` is used).
+Report the resulting commit range. Do not delete the branch or the worktree, and
+do not touch any agent session: that cleanup belongs to agent-manager (`am`).

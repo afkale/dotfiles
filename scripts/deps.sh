@@ -13,7 +13,7 @@ set -u
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BIN_DIR="$HOME/.local/bin"
 BREW=''
-BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd bat btop fd fish jq ripgrep zoxide tree-sitter-cli'
+BREW_TOOLS='neovim fzf asciinema lazygit yazi lsd tmux bat btop fd fish jq ripgrep zoxide tree-sitter-cli'
 CARGO_TOOLS=''
 
 # Prefer our own links for now; brew is prepended once it is located.

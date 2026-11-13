@@ -46,7 +46,7 @@ section() { printf '\n%s\n' "$*"; }
 
 section "tools"
 if [ "$mode" = server ]; then
-  required="git stow fish nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 tree-sitter node npm go"
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 tree-sitter node npm go"
   for cmd in ghostty opencode; do
     if command -v "$cmd" >/dev/null 2>&1; then
       ok "$cmd"
@@ -55,7 +55,7 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  required="git stow fish nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm go"
+  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm go"
 fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
@@ -79,6 +79,12 @@ elif [ "$mode" = server ]; then
   warn "opencode not expected on server"
 else
   warn "opencode missing (install separately)"
+fi
+
+if command -v agent-manager >/dev/null 2>&1; then
+  ok "agent-manager"
+else
+  warn "agent-manager missing (see packages/extra.txt)"
 fi
 
 section "versions"
@@ -156,7 +162,7 @@ link_pkg() {
 }
 
 if [ "$mode" = server ]; then
-  for pkg in fish git lazygit wallpapers yazi; do
+  for pkg in fish git lazygit tmux wallpapers yazi; do
     link_pkg "$pkg"
   done
   for pkg in ghostty opencode; do
@@ -167,7 +173,7 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  for pkg in fish ghostty git lazygit wallpapers yazi; do
+  for pkg in fish ghostty git lazygit tmux wallpapers yazi; do
     link_pkg "$pkg"
   done
   link_pkg opencode
@@ -191,6 +197,15 @@ while IFS= read -r -d '' file; do
   fi
 done < <(find . -name .git -prune -o -name '*.sh' -print0)
 [ "$bash_ok" -eq 1 ] && ok "bash scripts"
+
+if command -v tmux >/dev/null 2>&1; then
+  if tmux -L dotfiles-doctor -f "$ROOT/tmux/.config/tmux/tmux.conf" new-session -d 2>/dev/null; then
+    ok "tmux config"
+  else
+    bad "tmux config failed to load"
+  fi
+  tmux -L dotfiles-doctor kill-server 2>/dev/null || true
+fi
 
 if command -v fish >/dev/null 2>&1; then
   fish_ok=1

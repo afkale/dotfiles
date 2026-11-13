@@ -29,6 +29,7 @@ end
 if status is-interactive
   zoxide init fish | source
   fzf --fish | source
+  abbr --add am agent-manager
 end
 
 # Homebrew on Linux (installed by `make deps` on Debian/Ubuntu).

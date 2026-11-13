@@ -13,26 +13,26 @@ Arguments: $ARGUMENTS
 
 Behavior:
 
-- No arguments: rebase on the current branch's workmux base branch
-  (`git config branch.<current>.workmux-base`), falling back to local main when
-  none is configured
+- No arguments: rebase on local `main`, falling back to the repository default
+  branch when `main` does not exist
 - "origin": fetch origin, rebase on origin/main
 - "origin/branch": fetch origin, rebase on origin/branch
-- "branch": rebase on local branch (use "main" to force a rebase on local main)
+- "branch": rebase on that local branch (use "main" to force a rebase on local main)
 
 Steps:
 
 1. Check for local changes with `git status --porcelain`:
    - If the working tree has staged, unstaged, or untracked changes, stash them
-     with `git stash push --include-untracked -m "workmux rebase"`.
+     with `git stash push --include-untracked -m "rebase"`.
    - Remember whether this command created a stash. Existing stash entries must
      remain untouched.
    - If stashing fails, stop before fetching or rebasing.
 2. Parse arguments:
-   - No args → target is the current branch's workmux base branch
-     (`git config --get branch.$(git branch --show-current).workmux-base`); if
-     that is empty, target is "main". No fetch.
-   - Contains "/" (e.g., "origin/develop") → split into remote and branch, fetch
+   - No args → target is `main` when `git rev-parse --verify main` succeeds,
+     otherwise the repository default from
+     `git symbolic-ref --short refs/remotes/origin/HEAD` with `origin/` stripped.
+     No fetch.
+   - Contains "/" (e.g. "origin/develop") → split into remote and branch, fetch
      remote, target is remote/branch
    - Just "origin" → fetch origin, target is "origin/main"
    - Anything else → target is that branch name, no fetch

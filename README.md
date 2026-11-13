@@ -1,6 +1,7 @@
 # dotfiles
 
-My personal dotfiles — herdr, fish, neovim, ghostty, lazygit, yazi and opencode configs, plus wallpapers and helpers to set them up on a fresh machine.
+My personal dotfiles — tmux, fish, neovim, ghostty, lazygit, yazi and opencode
+configs, plus wallpapers and helpers to set them up on a fresh machine.
 
 ## Quick start
 
@@ -23,33 +24,34 @@ make doctor
 
 | Config | Tool | Notes |
 |--------|------|-------|
-| `fish/` | fish | Fzf integration (fd, bat previews), zoxide, Homebrew PATH on Linux |
+| `tmux/` | tmux | Thin multiplexer (Session / Window / Pane), pane picker (`M-d`), minimal Rose Pine bar |
+| `fish/` | fish | Fzf integration (fd, bat previews), zoxide, `abbr am` for agent-manager |
 | `nvim/` | neovim (submodule) | Mini.pick for files/grep/help, lazygit integration, spell for markdown/gitcommit, cursor restore |
-| `ghostty/` | ghostty | Minimal terminal config |
-| `herdr/` | herdr | Agent-aware terminal multiplexer |
+| `ghostty/` | ghostty | Launches tmux |
 | `lazygit/` | lazygit | Custom keybindings and theme |
 | `yazi/` | yazi | Manager settings and Rosé Pine theme |
 | `wallpapers/` | — | Wallpaper images |
-| `opencode/` | opencode | Run commands |
+| `opencode/` | opencode | Agent CLI — agent-manager MCP, merge/rebase skills |
 | `scripts/` | — | `deps.sh`, `doctor.sh`, `push.sh` |
+
+Agent workflow lives in **agent-manager** (the `am` command), not in the
+terminal multiplexer.
 
 ## Keybindings
 
-Inside herdr (`prefix` = `alt+space`):
+Prefix = `alt+space` (layout verbs only: splits, zoom, close, copy mode,
+reload). Everything else is a direct chord.
 
 | Key | Action |
 |-----|--------|
-| `alt+d` | Goto picker (agents + terminals) |
-| `alt+s` | Toggle sidebar |
-| `alt+?` | Searchable keymap help |
-| `alt+y` | Yazi file manager |
-| `alt+g` | LazyGit |
-| `alt+p` | Btop monitor |
-| `alt+w` | New tab |
-| `ctrl+alt+w` | New workspace |
-| `alt+r` | Rename tab |
-| `ctrl+alt+r` | Rename workspace |
-| `prefix+r` | Reload herdr config |
+| `M-w` | New window (prompts for name) |
+| `M-C-w` | New session (prompts for session then window name) |
+| `M-d` | Pane picker fzf — every pane, every session, `am_*` filtered out |
+| `M-n` / `M-p` | Next / previous window |
+| `M-r` / `M-C-r` | Rename window / session |
+| `M-y` | Yazi file manager (popup) |
+| `M-g` | LazyGit (popup) |
+| `M-v` | Copy mode (vi keys, clipboard pipe) |
 
 ## Dependencies
 
@@ -65,7 +67,8 @@ Inside herdr (`prefix` = `alt+space`):
 is too old for `nvim-treesitter` (0.20.8 on 24.04, 0.25.9 on 26.04; it needs
 0.26.1 or newer).
 
-Tools that Homebrew can't provide (`ghostty`, `opencode`) are printed at the end with install hints.
+Tools that Homebrew can't provide (`ghostty`, `opencode`, `agent-manager`) are
+printed at the end with install hints.
 
 ## Layout
 
@@ -81,5 +84,6 @@ dotfiles/
 │   ├── doctor.sh             # Health checks (tools, links, syntax)
 │   └── push.sh               # Push submodules, then parent
 ├── {tool}/.config/{tool}/…   # Stow-managed configs
+├── tmux/                     # tmux config + scripts
 └── nvim/                     # Git submodule
 ```

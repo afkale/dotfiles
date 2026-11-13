@@ -3,6 +3,19 @@
   "model": "openrouter/deepseek/deepseek-v4-flash",
   "default_agent": "build",
   "worktree": { "directory": "~/worktrees" },
+
+  // Agent Manager: runs this session's agent inside a managed tmux session and
+  // exposes the agent-manager tools. `am` opens its interactive manager.
+  "mcp": {
+    "agent-manager": {
+      "type": "local",
+      "command": ["agent-manager", "mcp"],
+      "enabled": true,
+      "environment": {
+        "AGENT_MANAGER_SESSION_ID": "{env:AGENT_MANAGER_SESSION_ID}"
+      }
+    }
+  },
   "experimental": {
     "subagent_depth": 2,
     "background_compaction": true,

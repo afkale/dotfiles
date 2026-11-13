@@ -1,6 +1,6 @@
 # ADR-003: Herdr replaces tmux as the terminal multiplexer
 
-**Status**: Accepted
+**Status**: Superseded by ADR-004
 
 **Date**: 2026-11-13
 
