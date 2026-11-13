@@ -46,7 +46,7 @@ section() { printf '\n%s\n' "$*"; }
 
 section "tools"
 if [ "$mode" = server ]; then
-  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 tree-sitter node npm go"
+  required="git stow fish nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 tree-sitter node npm go"
   for cmd in ghostty opencode; do
     if command -v "$cmd" >/dev/null 2>&1; then
       ok "$cmd"
@@ -55,7 +55,7 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  required="git stow fish tmux nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm go"
+  required="git stow fish nvim fzf fd rg bat lsd zoxide jq lazygit btop asciinema yazi less python3 ghostty tree-sitter node npm go"
 fi
 for cmd in $required; do
   if command -v "$cmd" >/dev/null 2>&1; then
@@ -81,71 +81,13 @@ else
   warn "opencode missing (install separately)"
 fi
 
-section "workmux"
-wm_bin=$(command -v workmux 2>/dev/null || true)
-if [ -n "$wm_bin" ]; then
-  ok "workmux ($wm_bin)"
-else
-  if [ "$mode" = server ]; then
-    warn "workmux not installed (install via cargo or brew)"
-  else
-    bad "workmux not installed (make deps or: cargo install workmux)"
-  fi
-fi
-
-wm_cfg="$HOME/.config/workmux/config.yaml"
-if [ -n "$wm_bin" ] || [ "$mode" != server ]; then
-  if [ -f "$wm_cfg" ]; then
-    if [ "$(realpath "$wm_cfg" 2>/dev/null)" = "$(realpath "$ROOT/workmux/.config/workmux/config.yaml" 2>/dev/null)" ]; then
-      ok "workmux config: linked"
-    else
-      bad "workmux config: not a stow link (run 'make stow')"
-    fi
-  else
-    bad "workmux config: missing (~/.config/workmux/config.yaml)"
-  fi
-fi
-
-if [ -n "$wm_bin" ]; then
-  if grep -q 'status_format: false' "$wm_cfg" 2>/dev/null; then
-    ok "workmux status_format: disabled (our custom status bar)"
-  else
-    bad "workmux status_format: not disabled (set status_format: false)"
-  fi
-
-  if grep -q 'nerdfont: true' "$wm_cfg" 2>/dev/null; then
-    ok "workmux nerdfont: enabled"
-  else
-    warn "workmux nerdfont: not enabled (set nerdfont: true)"
-  fi
-
-  # Check that the tmux status bar reads @workmux_status.
-  tmux_conf="$ROOT/tmux/.config/tmux/conf/status.tmux"
-  if [ -f "$tmux_conf" ] && grep -q '@workmux_status' "$tmux_conf"; then
-    ok "workmux status var: in status bar"
-  else
-    bad "workmux status var: missing from status bar (add #{@workmux_status})"
-  fi
-
-  # Check that the opencode workmux-status plugin is installed when opencode is present.
-  if command -v opencode >/dev/null 2>&1; then
-    wm_plugin="$HOME/.config/opencode/plugins/workmux-status"
-    if [ -d "$wm_plugin" ] && [ -f "$wm_plugin/index.ts" ]; then
-      ok "workmux opencode plugin: installed"
-    else
-      warn "workmux opencode plugin: not installed (run 'workmux setup --hooks')"
-    fi
-  fi
-fi
-
 section "versions"
 
 version_ge() {
   [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -1)" = "$1" ]
 }
 
-# Print the first dotted version found in the tool's banner. The banners differ
-# ("NVIM v0.12.6", "0.74.5 (abcdef)", "tmux 3.8"), so extract instead of parsing.
+# Print the first dotted version found in the tool's banner.
 check_version() {
   local cmd=$1 min=$2 raw have
   command -v "$cmd" >/dev/null 2>&1 || return 0
@@ -154,7 +96,6 @@ check_version() {
     nvim)        raw=$(nvim --version 2>/dev/null | head -1) ;;
     fzf)         raw=$(fzf --version 2>/dev/null) ;;
     asciinema)   raw=$(asciinema --version 2>/dev/null) ;;
-    tmux)        raw=$(tmux -V 2>/dev/null) ;;
     tree-sitter) raw=$(tree-sitter --version 2>/dev/null) ;;
   esac
 
@@ -171,7 +112,6 @@ check_version() {
 check_version nvim 0.12
 check_version fzf 0.48
 check_version asciinema 3.0
-check_version tmux 3.3
 check_version tree-sitter 0.26.1
 
 section "submodules"
@@ -216,7 +156,7 @@ link_pkg() {
 }
 
 if [ "$mode" = server ]; then
-  for pkg in fish git lazygit tmux wallpapers workmux yazi; do
+  for pkg in fish git lazygit wallpapers yazi; do
     link_pkg "$pkg"
   done
   for pkg in ghostty opencode; do
@@ -227,7 +167,7 @@ if [ "$mode" = server ]; then
     fi
   done
 else
-  for pkg in fish ghostty git lazygit tmux wallpapers workmux yazi; do
+  for pkg in fish ghostty git lazygit wallpapers yazi; do
     link_pkg "$pkg"
   done
   link_pkg opencode
@@ -271,26 +211,6 @@ if [ -e "$HOME/.config/nvim/init.lua" ] && command -v nvim >/dev/null 2>&1; then
   fi
 else
   warn "nvim not linked; skipping startup check"
-fi
-
-if [ -e "$HOME/.config/tmux/tmux.conf" ] && command -v tmux >/dev/null 2>&1; then
-  sock="dotfiles-doctor-$$"
-  err=$(mktemp)
-  if tmux -L "$sock" -f "$HOME/.config/tmux/tmux.conf" new-session -d -s doctor 2>"$err"; then
-    if [ -s "$err" ]; then
-      bad "tmux config reported errors:"
-      sed 's/^/       /' "$err"
-    else
-      ok "tmux config"
-    fi
-  else
-    bad "tmux config failed to load:"
-    sed 's/^/       /' "$err"
-  fi
-  tmux -L "$sock" kill-server 2>/dev/null || true
-  rm -f "$err"
-else
-  warn "tmux not linked; skipping config check"
 fi
 
 printf '\n'

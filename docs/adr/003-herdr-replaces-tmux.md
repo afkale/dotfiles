@@ -20,11 +20,11 @@ daemon, and agents are first-class instead of being inferred by workmux.
 
 ## Decision
 
-### 1. Herdr is primary; tmux stays installed
+### 1. Herdr is primary; tmux is fully removed
 
-Ghostty and daily use move to herdr. The tmux configuration is left untouched and functional as
-a fallback (remote machines, edge cases). `~/.config/herdr/config.toml` is edited in place and
-is not stowed into this repo for now; this is an accepted, reversible gap.
+Ghostty and daily use move to herdr. The tmux configuration has been removed entirely from the
+dotfiles — no fallback is maintained. `~/.config/herdr/config.toml` is edited in place and is not
+stowed into this repo for now; this is an accepted, reversible gap.
 
 ### 2. Prefix mirrors tmux
 
@@ -72,9 +72,10 @@ exists.
 
 ### 5. Retired tmux features are not emulated
 
-Lock mode, streamux recordings, workmux keybindings, the isolated `M-1` popup, and the custom
-tmux copy-mode bindings are dropped. Herdr's copy mode already provides vi selection and search,
-and the `M-1` script attaches a nested tmux server that cannot run inside a herdr popup.
+Lock mode, streamux recordings, workmux (worktrees, dashboard, sidebar), the isolated `M-1`
+popup, and the custom tmux copy-mode bindings are dropped. Herdr's copy mode already provides vi
+selection and search, and the `M-1` script attaches a nested tmux server that cannot run inside a
+herdr popup.
 
 ### 6. Glossary follows herdr
 
@@ -134,6 +135,6 @@ memory, so only those were translated literally.
 
 - `~/.config/herdr/config.toml` — tmux-parity `[keys]` table and three popup commands
 - `GLOSSARY.md` — rewritten herdr-first, with a Legacy (tmux) section
-- `tmux/` — unchanged; still the documented fallback
+- `tmux/` — removed; no fallback maintained
 - `ghostty/.config/ghostty/config.ghostty` — launch command not changed in this ADR; herdr is
   started explicitly for now

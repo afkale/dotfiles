@@ -4,7 +4,7 @@
 
 - Run `shellcheck -x *.sh` for shell scripts.
 - Run `bash -n file.sh` for syntax checks.
-- Config is stowed: `make stow` after editing files under `opencode/`, `tmux/`, etc.
+- Config is stowed: `make stow` after editing files under `opencode/`, `nvim/`, etc.
 - Run `make doctor` to verify the setup is healthy.
 - `make push` checks everything before pushing.
 
