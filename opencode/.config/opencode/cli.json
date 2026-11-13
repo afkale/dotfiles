@@ -5,5 +5,10 @@
   },
   "theme": {
     "name": "system"
+  },
+  "session": {
+    "sidebar": "hide",
+    "scrollbar": false,
+    "markdown": "rendered"
   }
 }
