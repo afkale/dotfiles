@@ -1,97 +1,102 @@
 # Terminal workflow
 
-The vocabulary of a single terminal setup built on tmux: how sessions, windows and panes are
-organised, how movement between them works, and how the surrounding tools (nvim, lazygit, yazi,
-btop, opencode) are reached. One person's workflow, not a library.
+The vocabulary of a single terminal setup built on herdr (which replaced tmux): how workspaces,
+tabs and panes are organised, how movement between them works, where agents run, and how the
+surrounding tools (nvim, lazygit, yazi, btop, opencode) are reached. One person's workflow, not a
+library.
 
 ## Language
 
 ### Foundations
 
 **Client**:
-A terminal attached to tmux, viewing one session at a time.
+A terminal attached to the herdr server, viewing one workspace at a time.
 _Avoid_: terminal, connection
 
-**Session**:
-A named group of windows that a client attaches to.
-_Avoid_: workspace, project
+**Server**:
+The background herdr process that owns panes and process state and keeps them alive across
+detach.
+_Avoid_: daemon, backend
 
-**Window**:
-A container inside a session that fills the terminal and holds one or more panes. Windows are
-indexed from 1 and renumbered when one closes.
-_Avoid_: tab, workspace
+**Workspace**:
+The top-level project container — one per repo, task, or investigation. A workspace owns tabs
+and panes, and its sidebar state rolls up from the agents inside it. Replaces the tmux session.
+_Avoid_: session, project, space
+
+**Tab**:
+A full-terminal layout inside a workspace, used to separate views such as agents, logs, server,
+or review. Replaces the tmux window.
+_Avoid_: window, pane
 
 **Pane**:
-A region inside a window that runs one process. Every new window starts with a single pane.
+A real terminal region inside a tab that runs one process. Every new tab starts with a single
+pane; panes can be split right or down.
 _Avoid_: split, frame
 
+**Agent**:
+A process herdr recognises inside a pane, classified as blocked, working, done, idle, or
+unknown. Only agent panes contribute to workspace status.
+_Avoid_: job, task, process
+
+### Control
+
 **Prefix**:
-The keystroke that arms tmux's own key bindings instead of passing keys to the running program.
-Most day-to-day movement is bound without it.
+The keystroke that arms herdr's own bindings instead of passing keys to the running program.
+Bound to `alt+space`, with `ctrl+space` as fallback, to preserve tmux muscle memory.
 _Avoid_: leader, modifier
 
-**Lock mode**:
-A state where every binding except the unlock key is inert, so a stray keystroke cannot rearrange
-the layout. It is announced on the status bar.
-_Avoid_: readonly mode
+**Terminal mode**:
+The default state: every key goes to the focused pane.
+_Avoid_: insert mode, normal mode
 
-**Hidden session**:
-A session whose name starts with an underscore, used to host popups. It is invisible to every
-picker, scope and history file, so popup shells never show up as places to jump to.
-_Avoid_: background session, scratch session
+**Navigate mode**:
+The persistent workspace navigation surface. Movement keys (`h/j/k/l`, arrows) move between
+workspaces and panes; `Esc` or `Ctrl+[` leaves it.
+_Avoid_: workspace mode, focus mode
 
-### Navigation
+**Goto picker**:
+The `prefix+g` / `alt+d` list of every agent and terminal, grouped by workspace. `/` searches;
+`j/k` moves when not searching.
+_Avoid_: window list, switcher
 
-**Window list**:
-The `M-d` fzf picker listing every window across every session. Windows in hidden sessions are
-excluded, and the current window is not listed (no point navigating to where you already are).
-_Avoid_: window switcher, session list
+**Copy mode**:
+`prefix+[` enters vi-style scrollback navigation and selection in the focused pane. `v` or Space
+starts a selection, `y` or Enter copies, `q` or Esc leaves; `/` and `?` search. The pane keeps
+running throughout.
+_Avoid_: scrollback, edit mode
 
-**Dashboard**:
-The `M-n` popup showing workmux's full TUI overview of all active agents and worktrees.
-Used for deeper inspection, diffing, and actions that need the full TUI.
-_Avoid_: full view, TUI overview
+**Resize mode**:
+`prefix+shift+r` then movement keys adjusts split sizes. The binding moves off `r` so `r` can
+stay the config reload key.
+_Avoid_: layout mode
+
+### Surfaces
 
 **Sidebar**:
-A persistent left-side pane in every window of a project session, scoped to that
-session's agents only. It is the primary management surface for agent work:
-showing live status, starting new worktrees, and jumping between agents.
-Toggled on demand with `M-s`.
-_Avoid_: sidebar popup, agent strip, agent list
-
-**Agent jump**:
-The `M-C-n` binding that jumps to the most recently finished or waiting agent.
-Repeated presses cycle through completed and waiting agents in reverse
-chronological order.
-_Avoid_: next agent, cycle agents
-
-**Agent toggle**:
-The `M-C-p` binding that toggles between the current agent and the last
-agent you visited, like vim's `Ctrl+^`.
-_Avoid_: previous agent, agent flip
-
-**Cheatsheet**:
-A searchable list of everything tmux currently has bound, read from the live server rather than
-from a document. Opened with `M-?`.
-
-### Tools
+Herdr's left-side agent panel, rolled up per workspace: live status, and jump targets for
+agents. Toggled with `prefix+b` or `alt+s`.
+_Avoid_: workmux sidebar (legacy), agent strip, agent list
 
 **Tool popup**:
-A full-size overlay running a single tool — a file manager (`M-y`), a git client (`M-g`), a process
-monitor (`M-p`), or the cheatsheet (`M-?`) — that closes back to the pane beneath it.
+A full-size overlay running a single tool — a file manager (`alt+y`), a git client (`alt+g`), or
+a process monitor (`alt+p`) — that closes back to the pane beneath it.
 _Avoid_: float, floating window
 
-**Isolated popup**:
-A popup (`M-1`) that runs its own tmux server with its own socket and a bare session, so the main
-configuration's bindings and status bar do not leak into it.
-_Avoid_: nested tmux, sandbox
+**Keymap help**:
+Herdr's built-in panel listing every active binding, including custom commands. Opened with
+`prefix+?` or `alt+?`; `/` filters, Backspace edits, `ctrl+u` clears.
+_Avoid_: cheatsheet (legacy)
+
+**Herdr session**:
+A named persistent server namespace (`herdr --session work`) with its own panes, sockets, and
+persisted runtime state. A different axis from a workspace; the unqualified word "session" is
+never used for this.
+_Avoid_: session, profile
 
 ### Work objects
 
 **Worktree**:
 An isolated checkout of the current repository for one task, created by workmux.
-Managed from the sidebar, not via a separate prompt popup. The branch keeps the
-name you type; the directory and window name replace slashes with dashes.
 _Avoid_: task branch, sandbox checkout
 
 **Handle**:
@@ -100,26 +105,31 @@ The worktree directory name, used to address agents in workmux commands. For exa
 _Avoid_: worktree name, branch alias
 
 **Agent status**:
-An icon shown in both the sidebar and status bar, reporting the state of a workmux
-agent: idle, working, waiting for input, or done. Provided by the workmux sidebar
-daemon and opencode integration.
-
-### Session boundary
-
-**Recording**:
-A per-session asciinema capture, started (`M-a`) and stopped (`M-C-a`) for the session it belongs
-to and unaffected by other recordings on the machine.
-_Avoid_: cast, stream
-
-**Resurrect**:
-The `M-C-r` dry-run of `workmux resurrect`, showing which worktrees would be
-reopened after a tmux server crash. Does not restore automatically — preview
-first, then run `workmux resurrect` at the shell.
-_Avoid_: recovery, restore
+Herdr's per-agent state — blocked, working, done, idle, or unknown — shown on the agent row and
+summarised on the workspace.
+_Avoid_: workmux status (legacy)
 
 ### The IDE
 
-**IDE window**:
-A window that holds the coding cockpit: nvim as the editor, with tool popups available over it.
-Windows stay whole rather than being split, so each IDE window is one full view.
+**IDE tab**:
+A tab that holds the coding cockpit: nvim as the editor, with tool popups available over it.
+Tabs stay whole rather than being split, so each IDE tab is one full view.
 _Avoid_: editor window, dev window
+
+## Legacy (tmux)
+
+Kept so the tmux configuration still reads coherently. Tmux remains installed as a fallback and
+is no longer the primary multiplexer.
+
+**Session (tmux)** → Workspace. **Window** → Tab. **Pane** and **Prefix** carry over; the prefix
+key is now `alt+space`.
+
+**Lock mode**, **Hidden session**, **Recording** (streamux), and **Isolated popup** (`M-1`) are
+retired. Herdr has no lock mode, popups are native rather than nested tmux servers, and streamux
+is unused.
+
+**Window list** (`M-d`) → Goto picker. **Sidebar** (`M-s`, workmux) → herdr Sidebar. **Agent
+jump** (`M-C-n`) and **Agent toggle** (`M-C-p`) → Goto picker and sidebar. **Cheatsheet**
+(`M-?`) → Keymap help. **Tool popup** (`M-y`/`M-g`/`M-p`) → `alt+y`/`alt+g`/`alt+p`.
+**Dashboard** (`M-n`) and **Resurrect** (`M-C-r`) remain workmux CLI features only; they are no
+longer bound.

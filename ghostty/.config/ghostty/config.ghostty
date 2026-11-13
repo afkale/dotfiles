@@ -5,7 +5,7 @@ confirm-close-surface = false
 font-size = 16
 theme = "Rose Pine"
 
-command = tmux
+command = herdr
 
 window-padding-x = 0
 window-padding-y = 0

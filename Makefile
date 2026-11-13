@@ -1,7 +1,7 @@
 .PHONY: setup server stow server-stow restow server-restow unlink server-unlink \
 	update shell check-deps deps server-deps doctor server-doc push
 
-CFG_DIRS := ai fish ghostty git lazygit nvim opencode tmux wallpapers workmux yazi
+CFG_DIRS := ai fish ghostty git herdr lazygit nvim opencode tmux wallpapers workmux yazi
 STOW_OPTS := -t ~
 
 setup: check-deps

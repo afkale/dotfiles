@@ -10,5 +10,6 @@
     "sidebar": "hide",
     "scrollbar": false,
     "markdown": "rendered"
-  }
+  },
+  "plugins": ["./herdr-opencode"]
 }
