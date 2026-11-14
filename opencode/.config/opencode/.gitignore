@@ -1,2 +1,7 @@
 # Runtime agent files — symlinked by agent-manager; not part of dotfiles.
 *.agent
+
+# Secrets stay local.
+.env
+.env.*
+!.env.example
