@@ -6,8 +6,9 @@
 - Run `bash -n file.sh` for syntax checks.
 - Config is stowed: `make stow` after editing files under `opencode/`, `nvim/`, etc.
 - Run `make doctor` to verify the setup is healthy.
-- `make push` only checks that submodules are pushed before the parent. Run
-  `make doctor` and `shellcheck -x` yourself before pushing.
+- Hooks run through prek (`prek install` once per clone). pre-commit scans for
+  secrets with gitleaks. pre-push runs `shellcheck` and `make doctor`.
+- `make push` only checks that submodules are pushed before the parent.
 
 ## Git conventions
 
@@ -22,8 +23,6 @@
   each other's changes.
 - **Branch prefix**: agent-manager creates branches prefixed `am/`
   (e.g. `am/ticket-13-history`).
-- **Commit with `--no-verify`**: the pre-commit hook errors with
-  `prek: not found`, so skip hooks on agent commits.
 - **Archive finished sessions**: call `archive_session` after an agent
   finishes to keep the session list clean. Agent Manager does not do
   this automatically.
