@@ -35,7 +35,8 @@
 
 - Shell: POSIX-ish bash, SC2034 is ok for sourced variables.
 - Fish: keep it interactive-only; use `abbr` not `alias` for common commands.
-- Lua: follow `nvim/` patterns — packer-style plugins via `ale.pack.*`.
+- Lua: follow `nvim/` patterns — plugins are declared with `vim.pack.add` and
+  configured per topic under `lua/ale/pack/`.
 - Markdown: wrap at 100 columns in README/docs, keep tables compact.
 
 ## Forbidden
