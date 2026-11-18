@@ -12,7 +12,7 @@ export default Plugin.define({
       const info = context.data.session.get(sessionID);
       if (!info || info.parentID) return;
       try {
-        execFileSync("/home/afkale/.local/bin/agent-manager", ["track-conversation", "--tool", "opencode", "--id", sessionID], { stdio: ["ignore", "ignore", "pipe"] });
+        execFileSync("agent-manager", ["track-conversation", "--tool", "opencode", "--id", sessionID], { stdio: ["ignore", "ignore", "pipe"] });
         last = sessionID;
       } catch {}
     };

@@ -3,7 +3,7 @@
   "mcp": {
     "agent-manager": {
       "command": [
-        "/home/afkale/.local/bin/agent-manager",
+        "agent-manager",
         "mcp"
       ],
       "enabled": true,
