@@ -10,5 +10,9 @@
     "sidebar": "hide",
     "scrollbar": false,
     "markdown": "rendered"
+  },
+  "tabs": {
+    "mode": "on",
+    "layout": "horizontal"
   }
 }
