@@ -1,9 +1,8 @@
 # Spec: diagnóstico y mejoras del setup de programación con agentes
 
-**Estado**: en curso. Aplicado: R1 (`.env` ignorado), R2 (`writer`), R6 (eliminados `compose.yml`
-y `data/`), R8 (worktrees gestionados por agent-manager), R5 opción B (AGENTS.md corregido).
-Decidido: no hay pre-commit en dotfiles. Pendiente: R4 (`*-prompt`), R7 (rutas absolutas), R9 (skills).
-**Fecha**: 2026-11-14
+**Estado**: en curso. Revisado el 2026-11-18. Resueltos: R1, R4, R5, R6, R7, R8, R9 (parcial),
+R12 (nuevo). Pendientes: R2, R3 (verificar), R10, R11.
+**Fecha**: 2026-11-14 (diagnóstico original, revisado el 2026-11-18)
 **Alcance**: `opencode/` (config, agentes, skills, plugins), `agent-manager/`, `AGENTS.md` raíz y de
 `opencode/`, `docs/`, `scripts/`, `Makefile`, y lo que el repo no versiona pero está en el flujo.
 **Fuera de alcance**: nvim, tmux, yazi, lazygit, fish (salvo cuando afectan a agentes).
@@ -12,295 +11,151 @@ Decidido: no hay pre-commit en dotfiles. Pendiente: R4 (`*-prompt`), R7 (rutas a
 
 ## 1. Resumen
 
-El setup está bien pensado: hay una capa de permisos por comando, agentes de solo lectura, un flujo
-de planificación (grill → spec → tickets) apoyado en GitHub, y `make doctor` pasa. Los problemas
-son de **coherencia** más que de diseño:
-
-1. Una regla de permisos del agente `writer` queda **anulada** por una `deny` posterior: el agente
-   no puede ejecutar `git`, `rg` ni `fd` pese a estar declarado.
-2. **Secretos y artefactos sin proteger**: `.env` (contraseña de 9router) y `data/` no están en
-   `.gitignore`. Un `git add -A` los commitea.
-3. **La documentación promete cosas que el código no hace**: `make push` "checks everything" pero no
-   ejecuta doctor ni shellcheck.
-4. **Ruido en la lista de agentes**: los `*-prompt.md` aparecen como agentes primarios duplicados.
-5. **Inventario de skills redundante**: ~45 skills con solapamiento de disparadores, varios con
-   nombres de origen (`grill-me`, `grilling`, `grill-with-docs`).
-6. **Rutas absolutas y estado huérfano**: `/home/afkale/...` hardcodeado en 3 sitios; `compose.yml`
-   de 9router sin uso; `data/model-catalog*.json` (1,3 MB) dentro del repo.
-
----
+El diagnóstico original encontró problemas de **coherencia** más que de diseño. Desde entonces se han
+resuelto la mayoría: secretos fuera del repo, rutas absolutas, agentes duplicados, convención de
+worktrees, y el inventario de skills, que pasa de 45 a 18 (solo las de Matt Pocock). Quedan
+pendientes la verificación de permisos de subagentes (R2, R3) y la documentación (README, ADR).
 
 ## 2. Qué funciona (no tocar)
 
 | Área | Evidencia |
 |---|---|
-| Permisos por comando con "última regla gana" | `opencode/.config/opencode/opencode.jsonc`: `git push`, `reset --hard`, `clean`, `rm -rf`, `sudo` en `deny`. `opencode debug agents` confirma que el global se aplica a todos los agentes. |
-| Subagentes de solo lectura | `reviewer`, `auditor`, `refactor`, `planner` tienen `edit`/`write` en `deny`. Verificado con `opencode debug agents`. |
-| Config válida contra el esquema | `opencode debug config` carga `agents` y `permissions` (arrays) sin error. El esquema oficial (`opencode.ai/config.json`) los admite. |
-| Estado del toolchain | `make doctor` → `all checks passed` (nvim 0.12.6, fzf 0.75.0, tree-sitter 0.26.9, opencode y agent-manager presentes). |
-| Flujo de planificación en GitHub | `docs/agents/issue-tracker.md` define issues, sub-issues y dependencias nativas. `docs/agents/domain.md` y `GLOSSARY.md` están enlazados. |
-| ADRs con historia | `docs/adr/003` (superseded) y `004` documentan la vuelta de herdr a tmux. |
+| Permisos por comando con "última regla gana" | `opencode.jsonc`: `git push`, `reset --hard`, `clean`, `rm -rf`, `sudo` en `deny`. |
+| Subagentes de solo lectura | `reviewer`, `auditor`, `refactor`, `planner` tienen `edit`/`write` en `deny`. |
+| Config válida | `opencode.jsonc` parsea como JSON tras quitar comentarios. |
+| Estado del toolchain | `make doctor` → `all checks passed` (2026-11-18). |
+| Flujo de planificación en GitHub | `docs/agents/issue-tracker.md` define issues, sub-issues y dependencias. |
+| ADRs con historia | `docs/adr/003` (superseded) y `004`. |
 | `make push` seguro | `scripts/push.sh` no hace push si un submódulo está sucio o sin upstream. |
+| Hooks de commit y push | `prek`: gitleaks en commit; shellcheck y `make doctor` en push. |
 
----
-
-## 3. Hallazgos
+## 3. Estado de los hallazgos
 
 Severidad: **alta** = pérdida de datos o permisos rotos; **media** = comportamiento incorrecto o
 engañoso; **baja** = higiene.
 
-### H1 (alta) · Secretos no ignorados por git
-
-- `git check-ignore -v opencode/.config/opencode/.env` → sin salida, exit 1: **no está ignorado**.
-- Mismo resultado para `data/model-catalog.json` y `compose.yml` (ver H6).
-- `opencode/.config/opencode/.gitignore` solo contiene `*.agent`.
-- El `.env` contiene `NINEROUTER_PASSWORD`. `git status` lo muestra como `??`, a un `git add -A` de
-  publicarse.
-- Aunque el permiso `read *.env → ask` evita que el agente lo lea, no evita que se commitee.
-
-### H2 (alta) · Permisos del agente `writer` anulados
-
-`opencode debug agents` muestra que el orden efectivo de reglas de `writer` pone `shell * deny` al
-final. Evaluando las reglas con "última regla gana":
-
-| Comando | Declarado | Efectivo |
-|---|---|---|
-| `git diff HEAD` | allow | **deny** |
-| `git log -5` | allow | **deny** |
-| `rg foo` | allow | **deny** |
-| `fd x` | allow | **deny** |
-
-Las reglas `allow` de `git *`, `rg *`, `fd *` son código muerto. El agente documenta, pero no puede
-investigar con shell. `reviewer`, `refactor` y `auditor` no tienen este problema porque su `shell *
-deny` va antes de sus allows.
-
-### H3 (media) · `git status` sin argumentos denegado en subagentes
-
-Las reglas de subagentes usan `git status *`. Esa forma exige un argumento tras `status`, así que
-`git status` a secas cae en `shell * deny` (en `reviewer`, `refactor`, `auditor`). **Pendiente de
-verificar** con una ejecución real del agente; el matcher de OpenCode podría aceptar el caso sin
-argumentos.
-
-### H4 (media) · Agentes duplicados como primarios
-
-`opencode debug agents` lista `planner-prompt`, `reviewer-prompt`, `refactor-prompt` como
-`mode: primary`, sin descripción, con los mismos permisos base. Son ficheros de `agents/` (no
-`agent` en el JSON), que OpenCode carga como agentes propios. Resultado: tres entradas extra
-en el selector de agentes que no hacen nada distinto de `reviewer`, `planner` y `refactor`.
-
-### H5 (media) · `make push` no comprueba lo que dice AGENTS.md
-
-`opencode/.config/opencode/AGENTS.md` dice: "`make push` checks everything before pushing". Pero
-`scripts/push.sh` solo valida submódulos (upstream, cambios sin commitear, commits sin publicar) y
-después hace `git push --dry-run` y `git push`. No ejecuta `make doctor`, `shellcheck` ni
-`bash -n`. Un agente que lea AGENTS.md asumirá una garantía que no existe.
-
-### H6 (media) · Estado sin propietario dentro del repo
-
-| Ruta | Estado | Problema |
-|---|---|---|
-| `opencode/.config/opencode/compose.yml` | sin trackear | Define 9router (proxy de LLM, puerto 20128). Ninguna referencia en `opencode.jsonc` ni en docs. |
-| `opencode/.config/opencode/data/` | sin trackear, 1,3 MB | Catálogo de modelos generado en la fecha de hoy. No hay script que lo genere en el repo. Va a `~/.config/opencode/` vía stow. |
-| `opencode/.config/opencode/cli.json` | modificado sin commitear | Añade `tabs`. Permisos de fichero `0600` en un fichero que el resto de la config tiene `0644`. |
-
-### H7 (media) · Rutas absolutas y no portables
-
-- `opencode/.config/opencode/opencode.jsonc` → `"command": ["agent-manager", "mcp"]` (bien, usa PATH).
-- `agent-manager/.config/agent-manager/hooks/mcp-opencode.json` → `/home/afkale/.local/bin/agent-manager`.
-- `opencode/.config/opencode/plugins/agent-manager/tui.ts` → `execFileSync("/home/afkale/.local/bin/agent-manager", ...)`.
-
-El README promete "fresh machine path". Estas tres rutas rompen eso. Además, `mcp-opencode.json` y
-`opencode.jsonc` declaran el mismo MCP dos veces: el riesgo es que diverjan.
-
-### H8 (media) · Dos convenciones de worktrees contradictorias
-
-- `opencode/.config/opencode/AGENTS.md`: "Worktrees go in `~/worktrees/<repo>/<name>`".
-- Mismo fichero, sección Agent Manager: "worktrees in `orchestrator-worktrees/`".
-- `opencode.jsonc` define `"worktree": { "directory": "~/worktrees" }`.
-- En esta máquina existe `~/worktrees/` (dotfiles, gohosts, newstruth) y **no** existe
-  `orchestrator-worktrees/`.
-
-Un agente tiene dos instrucciones contradictorias sobre dónde crear un worktree.
-
-### H9 (media) · Solapamiento de skills
-
-Hay 45 `SKILL.md` con ~9.100 caracteres de descripción (~2.300 tokens) cargados en cada sesión.
-Solapamientos por disparador:
-
-| Grupo | Skills | Observación |
-|---|---|---|
-| Entrevista | `grill-me`, `grilling`, `grill-with-docs`, `loop-me` | `grill-with-docs` es un puntero que llama a `grilling` y `domain-modeling`. `grill-me` hace casi lo mismo. |
-| Handoff | `handoff`, `claude-handoff` | Dos formas de pasar el contexto a otro agente. |
-| Git | `merge`, `rebase`, `open-pr`, `pr` | `pr` y `open-pr` escriben PR bodies; `pr` no tiene `disable-model-invocation`. |
-| UI | `ui-polish-pro`, `taste-skill`, `ui-ux-pro-max` | Tres skills de diseño con descripciones que se pisan. `taste-skill` tiene 928 caracteres de descripción. |
-| Escritura | `writing-beats`, `writing-fragments`, `writing-shape`, `writing-for-agents` | Los tres primeros son de escritura creativa, distinta de la de agentes. |
-| Planificación | `to-spec`, `to-tickets`, `implement`, `implement-spec`, `wayfinder`, `chief-of-staff` | Cadena válida, pero `implement` e `implement-spec` solapan. |
-
-`git-guardrails-claude-code` es para Claude Code, no para OpenCode.
-
-### H10 (baja) · Plugins
-
-- `plugins/agent-manager/tui.ts` hace `setInterval(check, 250)` y lee la sesión cada 250 ms. El
-  `execFileSync` solo se llama al cambiar de sesión, así que el coste es bajo, pero el polling
-  podría ser un evento del router si OpenCode lo expone.
-- `plugins/bell/tui.ts` llama a `tmux display-message` para cada aviso. Aceptable.
-
-### H11 (baja) · ADRs y convención de nombres
-
-- `docs/adr/` tiene `003-...` y `004-...` (3 dígitos, sin 001 ni 002). La skill `domain-modeling`
-  documenta ejemplos con 4 dígitos (`0001-...`).
-- `README.md` no menciona `agent-manager/` ni `docs/` en su tabla ni en el árbol de Layout.
-
-### H12 (baja) · Git hooks y `prek`
-
-`AGENTS.md` pide `--no-verify` porque "the pre-commit hook errors with `prek: not found`". Este repo
-no tiene hooks activos (`.git/hooks` solo tiene samples y `core.hooksPath` no está definido). El
-problema vive en otro repo. La skill `setup-pre-commit` existe, pero aquí no se usa. Conviene decidir
-si el repo de dotfiles debe tener un hook.
-
-### H13 (baja) · Posibles agentes inútiles
-
-`Explore` declara `shell * allow`, pero la regla global `shell * ask` va después y gana. Su
-"allow" de shell no tiene efecto. Revisar si se quiere `Explore` sin prompts.
-
----
+| ID | Sev. | Hallazgo | Estado |
+|---|---|---|---|
+| H1 | alta | Secretos no ignorados por git | **Resuelto**: `.env` y `service.json` eliminados; `doctor.sh` falla si aparece un fichero de credenciales sin ignorar (R12). |
+| H2 | alta | Permisos de `writer` anulados por `shell * deny` | **Pendiente de verificar** (R2). |
+| H3 | media | `git status` sin argumentos denegado en subagentes | **Pendiente de verificar** (R3). |
+| H4 | media | `*-prompt.md` duplicados como agentes primarios | **Resuelto**: ficheros borrados; reglas movidas al campo `system`. |
+| H5 | media | `make push` no hace lo que dice AGENTS.md | **Resuelto**: AGENTS.md ya dice que solo valida submódulos (R5). |
+| H6 | media | Estado sin propietario dentro del repo | **Resuelto**: `compose.yml` eliminado; `data/` ignorado; `cli.json` commiteado. |
+| H7 | media | Rutas absolutas `/home/afkale/...` | **Resuelto**: `tui.ts` y `mcp-opencode.json` usan `agent-manager` por PATH. |
+| H8 | media | Dos convenciones de worktrees | **Resuelto**: AGENTS.md ya no menciona `orchestrator-worktrees/`. |
+| H9 | media | Solapamiento de skills | **Resuelto en parte**: 45 → 18 skills (R9). |
+| H10 | baja | Polling de 250 ms en `plugins/agent-manager/tui.ts` | **Abierto**, sin decidir. |
+| H11 | baja | Formato de ADR (3 o 4 dígitos) y README sin `agent-manager/` ni `docs/` | **Abierto** (R10). |
+| H12 | baja | Hooks de git y `prek` | **Resuelto**: `prek` activo y documentado en AGENTS.md. |
+| H13 | baja | `Explore` tiene `shell allow` sin efecto | **Abierto**, sin decidir. |
 
 ## 4. Requisitos
 
-Cada requisito tiene una comprobación verificable.
+### R1 · Ignorar secretos y runtime (H1, H6): **resuelto**
 
-### R1 · Ignorar secretos y runtime (H1, H6)
+- `.env`, `.env.*` (salvo `.env.example`) y `data/` están ignorados en
+  `opencode/.config/opencode/.gitignore` y `.gitignore` raíz.
+- `opencode/.config/opencode/.env` eliminado (2026-11-18).
 
-- `.env`, `.env.*` (salvo `.env.example`), `data/` y `*.db` quedan ignorados en
-  `opencode/.config/opencode/.gitignore` (o en `.gitignore` raíz).
-- **Verificación**: `git check-ignore -v opencode/.config/opencode/.env opencode/.config/opencode/data/model-catalog.json` devuelve exit 0 para ambos.
+### R2 · Precedencia de reglas de `writer` (H2): **pendiente de verificar**
 
-### R2 · Arreglar la precedencia de reglas de `writer` (H2)
-
-- Mover las reglas `shell git *`, `shell rg *`, `shell fd *` **después** de `shell * deny`, o
-  sustituir `shell * deny` por un `ask`/`deny` más específico.
-- **Verificación**: `opencode debug agents` → para `writer`, `git diff HEAD` evalúa a `allow`,
+- Reordenar las reglas `shell git *`, `shell rg *`, `shell fd *` después de `shell * deny`.
+- **Verificación**: `opencode debug agents` → para `writer`, `git diff HEAD` evalúa a `allow` y
   `npm test` a `deny`.
 
-### R3 · Probar `git status` sin argumentos en subagentes (H3)
+### R3 · `git status` sin argumentos en subagentes (H3): **pendiente de verificar**
 
 - Ejecutar `git status` desde un subagente. Si se deniega, añadir `git status` (sin `*`) junto a
   `git status *` en `reviewer`, `refactor`, `auditor`, `writer`.
 
-### R4 · Quitar los `*-prompt` duplicados de la lista de agentes (H4)
+### R4 · Quitar los `*-prompt` duplicados (H4): **resuelto**
 
-- Opción A: borrar `agents/planner-prompt.md`, `agents/reviewer-prompt.md`,
-  `agents/refactor-prompt.md` si su contenido ya está en `opencode.jsonc`.
-- Opción B: mover su texto al campo `system` del agente homónimo y borrar los ficheros.
-- **Verificación**: `opencode debug agents | jq '.[] | select(.mode=="primary") | .name'` no
-  incluye `*-prompt`.
+- Reglas de `planner-prompt.md`, `reviewer-prompt.md` y `refactor-prompt.md` movidas a los campos
+  `system` de `opencode.jsonc`. Los tres ficheros borrados (commit `7cb93be`).
 
-### R5 · Que `make push` haga lo que AGENTS.md dice (H5)
+### R5 · `make push` y AGENTS.md (H5): **resuelto sin cambio de código**
 
-- Opción A: añadir a `scripts/push.sh` un paso previo que ejecute `scripts/doctor.sh` y `shellcheck -x`
-  sobre los `.sh` modificados.
-- Opción B: corregir AGENTS.md para decir que `make push` solo valida submódulos.
-- **Verificación**: la elección queda explícita en el texto de AGENTS.md y coincide con lo que hace
-  `make push --dry-run`.
+- AGENTS.md dice que `make push` solo comprueba submódulos. `pre-push` (prek) ejecuta shellcheck y
+  `make doctor`. La promesa ya es exacta. No se añade validación a `push.sh`.
 
-### R6 · Decidir el destino de `compose.yml` y `data/` (H6)
+### R6 · Estado huérfano (H6): **resuelto**
 
-- Si 9router se usa: moverlo a `docs/` o a un directorio propio con README y commitearlo.
-  Si no se usa: borrarlo.
-- `data/` se regenera o se ignora. Si se regenera, añadir el script al repo.
-- `cli.json`: commitear el cambio `tabs` (si se quiere) y dejar los permisos de fichero según el resto
-  (`0644`).
+- `compose.yml` eliminado (9router retirado). `data/` ignorado (commit `ba3045a`).
+- `cli.json`: bloque `tabs` commiteado (commit `fcfdc4a`).
 
-### R7 · Eliminar rutas absolutas (H7)
+### R7 · Rutas absolutas (H7): **resuelto**
 
-- `plugins/agent-manager/tui.ts`: resolver `agent-manager` por PATH (`execFileSync("agent-manager", ...)`).
-- `mcp-opencode.json`: borrar el fichero si `opencode.jsonc` ya declara el MCP, o usar `agent-manager`
-  sin ruta.
-- **Verificación**: `grep -rn "/home/afkale" opencode agent-manager` no devuelve nada salvo
-  documentación.
+- `plugins/agent-manager/tui.ts` ejecuta `agent-manager` por PATH (commit `dbc23fb`).
+- `agent-manager/.config/agent-manager/hooks/mcp-opencode.json` usa `agent-manager` por PATH.
+  Se conserva porque el binario de agent-manager referencia ese nombre de fichero (no verificado
+  en ejecución). La copia antigua de `~/.config/agent-manager/hooks/`
+  se movió a `/tmp/opencode/mcp-opencode.json.bak` y el enlace de stow se restauró.
+- **Verificación**: `grep -rn "/home/afkale" opencode agent-manager` solo devuelve documentación.
 
-### R8 · Una sola convención de worktrees (H8)
+### R8 · Una sola convención de worktrees (H8): **resuelto**
 
-- Elegir una: `~/worktrees/<repo>/<name>` (lo que hace `opencode.jsonc`).
-- Corregir la sección Agent Manager de `AGENTS.md` (o configurar agent-manager para usar la misma
-  ruta).
-- **Verificación**: la palabra `orchestrator-worktrees` no aparece en AGENTS.md salvo que agent-manager
-  la use de verdad.
+- AGENTS.md no menciona `orchestrator-worktrees/`. Los worktrees van en `~/worktrees/`
+  (`opencode.jsonc`), gestionados por agent-manager.
 
-### R9 · Reducir y separar skills (H9)
+### R9 · Reducir skills (H9): **resuelto en parte**
 
-- Fusionar `grill-me` en `grilling` (o al revés) y dejar `grill-with-docs` como alias.
-- Fusionar `handoff` y `claude-handoff`, o marcar uno como específico de Claude Code.
-- Elegir un skill de UI como entrada y dejar los otros dos como referencia interna.
-- Revisar `pr` y `open-pr`: uno de los dos debe tener `disable-model-invocation: true`.
-- Mover `git-guardrails-claude-code` fuera de `opencode/` si no aplica.
-- **Verificación**: `ls opencode/.config/opencode/skills/*/SKILL.md | wc -l` baja de 45 a un número
-  acordado, y la suma de caracteres de descripciones baja en al menos un 30 %.
+- Se mantienen las 18 skills de Matt Pocock: `setup-matt-pocock-skills`, `grilling`,
+  `grill-with-docs`, `grill-me`, `domain-modeling`, `diagnosing-bugs`, `tdd`, `to-spec`,
+  `to-tickets`, `to-questionnaire`, `triage`, `improve-codebase-architecture`, `codebase-design`,
+  `prototype`, `setup-pre-commit`, `setup-ts-deep-modules`, `migrate-to-shoehorn`, `wayfinder`.
+- Se eliminan 27 skills (commit `git rm` del 2026-11-18). Quedan en el historial de git.
+- No se ha medido la reducción de caracteres de descripciones (criterio original: ≥ 30 %).
 
-### R10 · Documentación al día (H11, H12)
+### R10 · Documentación al día (H11): **pendiente**
 
 - Añadir `agent-manager/` y `docs/` a `README.md`.
-- Unificar el formato de ADR a `NNN-` (3 dígitos) o a `NNNN-` (4 dígitos) y actualizar
-  `domain-modeling/ADR-FORMAT.md` para que coincida.
-- Decidir si el repo de dotfiles debe tener pre-commit (ver §6).
+- Unificar el formato de ADR a `NNN-` o `NNNN-` y actualizar `domain-modeling/ADR-FORMAT.md`.
+
+### R11 · Limpieza de nvim: **resuelto parcialmente**
+
+- AGENTS.md describe `vim.pack.add` en vez de packer (commit `8c45538`).
+- `lazy-lock.json` local eliminado. Sigue ignorado en `nvim/.config/nvim/.gitignore`; no se ha
+  tocado el submódulo.
+
+### R12 · Comprobación de secretos en `doctor.sh` (nuevo): **resuelto**
+
+- `doctor.sh` falla si un fichero que parece credencial (`.env*`, `*secret*`, `*credential*`,
+  `*password*`, `service.json`) bajo `opencode/` no está ignorado (commit `b50e3d8`).
+- **Verificación**: crear `opencode/.config/opencode/test-password.json` → `make doctor` falla.
 
 ---
 
-## 5. Plan de implementación sugerido
+## 5. Plan de implementación
 
-Orden por riesgo. Cada paso es un commit atómico (AGENTS.md: "Keep commits atomic").
+1. **Seguridad (R1, R12)**: hecho.
+2. **Permisos (R2, R3)**: pendiente. Ejecutar `opencode debug agents` antes de editar.
+3. **Agentes (R4)**: hecho.
+4. **Rutas y worktrees (R7, R8)**: hecho.
+5. **Estado huérfano (R6)**: hecho.
+6. **Push y docs (R5, R10)**: R5 hecho; R10 pendiente.
+7. **Skills (R9)**: hecho en parte; falta medir caracteres de descripción.
 
-1. **Seguridad (R1)**: ignorar `.env` y `data/`. Riesgo bajo, impacto alto. Hacer primero.
-2. **Permisos (R2, R3)**: reordenar las reglas de `writer` y probar `git status`.
-3. **Agentes (R4)**: quitar los `*-prompt` tras confirmar que su texto está en `system`.
-4. **Rutas y worktrees (R7, R8)**: quitar rutas absolutas y unificar la convención.
-5. **Estado huérfano (R6)**: decidir sobre 9router y `data/` con el usuario.
-6. **Push y docs (R5, R10)**: alinear AGENTS.md y `push.sh`.
-7. **Skills (R9)**: el paso más grande. Hacerlo en un PR aparte, con la lista acordada.
+## 6. Decisiones
 
-Cada paso se verifica con `make doctor` y con los comandos de §4. Tras `make stow`, reejecutar
-`opencode debug agents` para confirmar que el estado efectivo coincide con la intención.
-
----
-
-## 6. Decisiones que necesito del usuario
-
-1. **9router** (`compose.yml`): ¿lo usas? Si sí, ¿lo commiteamos o lo quitamos?
-2. **`data/model-catalog*.json`**: ¿qué lo genera? Si es manual, ¿lo ignoramos o lo borramos?
-3. **Skills a eliminar**: ¿cuáles de los 45 usas de verdad? Propongo revisar la lista juntos antes de
-   borrar nada. Candidatos: `grill-me` (si usas `grilling`), `claude-handoff`, `git-guardrails-claude-code`.
-4. **Worktrees**: ¿`~/worktrees/<repo>/<name>` (lo que hace OpenCode) o `orchestrator-worktrees/`
-   (lo que AGENTS.md dice para agent-manager)?
-5. **Pre-commit en dotfiles**: ¿quieres hook (`setup-pre-commit`) o confías en `make push`?
-6. **`make push`**: ¿que valide (R5 opción A) o corregir la promesa de AGENTS.md (R5 opción B)?
-
----
+| Decisión | Resultado |
+|---|---|
+| 9router | Retirado. Se eliminan `.env`, `service.json` y `compose.yml`. |
+| `data/model-catalog*.json` | Ignorado; no se versiona. |
+| Skills a mantener | Solo las 18 de Matt Pocock (lista arriba). |
+| Worktrees | `~/worktrees/` (lo que hace `opencode.jsonc`). |
+| Pre-commit en dotfiles | Sí: `prek` con gitleaks, shellcheck y `make doctor`. |
+| `make push` | Solo comprueba submódulos. No se añade validación. |
+| Repo | Uso personal en máquinas propias: las rutas absolutas son un error. |
 
 ## 7. Criterios de aceptación
 
-- [ ] `git check-ignore` confirma que `.env`, `data/` y los secretos no están en `git status`.
+- [x] `git check-ignore` confirma que `.env` y `data/` no aparecen en `git status`.
 - [ ] `opencode debug agents`: `writer` ejecuta `git diff` y `rg`, y no ejecuta `git push`.
-- [ ] `opencode debug agents`: no aparecen `*-prompt` como agentes primarios.
-- [ ] `grep -rn "/home/afkale" opencode agent-manager` solo devuelve documentación.
-- [ ] Una sola convención de worktrees en AGENTS.md.
-- [ ] `make doctor` pasa tras cada commit.
+- [ ] `opencode debug agents`: no aparecen `*-prompt` como agentes primarios (ficheros borrados;
+      falta ejecutar el comando).
+- [x] `grep -rn "/home/afkale" opencode agent-manager` solo devuelve documentación.
+- [x] Una sola convención de worktrees en AGENTS.md.
+- [x] `make doctor` pasa tras los cambios de 2026-11-18.
 - [ ] README y ADRs reflejan la estructura real del repo.
 - [ ] Las decisiones de §6 están registradas en `docs/adr/` o en AGENTS.md.
-
----
-
-## 8. Evidencia de la investigación
-
-Comandos ejecutados (sin cambios en el repo):
-
-- `git status --short`, `git log --oneline | head`, `git ls-files`
-- `opencode --version` → `opencode v2.2.7`
-- `opencode debug config`, `opencode debug agents` (efectivos por agente)
-- `curl https://opencode.ai/config.json` → esquema: `agents`, `permissions`, `mcp`, `worktree` existen
-- `git check-ignore -v ...` → exit 1 para `.env`, `data/`, `compose.yml`
-- `make doctor` → `all checks passed`
-- `grep` de `9router|20128|model-catalog` → solo `compose.yml`
-- `grep "prek"` → solo `AGENTS.md:25`
-- `scripts/push.sh`: sin llamadas a `doctor`, `shellcheck` ni `bash -n`
-- Inventario de skills: 45 `SKILL.md`, 9.097 caracteres de descripciones
-- `git worktree list` → solo el checkout principal; `~/worktrees/` existe; `~/orchestrator-worktrees/` no
