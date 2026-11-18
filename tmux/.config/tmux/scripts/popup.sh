@@ -28,5 +28,12 @@ tmux -L "$SOCKET" set -g mouse on
 tmux -L "$SOCKET" unbind -a -T root
 tmux -L "$SOCKET" unbind -a -T prefix
 tmux -L "$SOCKET" bind -n M-1 detach-client
+tmux -L "$SOCKET" set -g mode-keys vi
+tmux -L "$SOCKET" bind -n M-v copy-mode
+tmux -L "$SOCKET" bind -T copy-mode-vi v send-keys -X begin-selection
+tmux -L "$SOCKET" bind -T copy-mode-vi C-v send-keys -X rectangle-toggle
+tmux -L "$SOCKET" bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel \
+  "wl-copy 2>/dev/null || xclip -selection clipboard 2>/dev/null || cat >/dev/null"
+tmux -L "$SOCKET" bind -T copy-mode-vi Escape send-keys -X cancel
 
 exec tmux -L "$SOCKET" attach -t "=$SESSION"
