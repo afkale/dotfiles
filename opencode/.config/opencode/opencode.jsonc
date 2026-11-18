@@ -4,6 +4,13 @@
   "default_agent": "build",
   "worktree": { "directory": "~/worktrees" },
 
+  // Pinned on purpose: OpenCode does not auto-update plugins. Bump versions by hand.
+  "plugins": [
+    { "package": "@rehydra/opencode@0.16.5" },
+    { "package": "@plannotator/opencode@0.29.0" },
+    { "package": "@knikolov/opencode-plugin-simple-memory@2.0.0" }
+  ],
+
   // Agent Manager: runs this session's agent inside a managed tmux session and
   // exposes the agent-manager tools. `am` opens its interactive manager.
   "mcp": {
