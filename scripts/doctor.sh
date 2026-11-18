@@ -188,6 +188,17 @@ else
   bad "~/.config/nvim is not linked (make setup)"
 fi
 
+section "secrets"
+secret_re='(^|/)(\.env(\..*)?|.*secret.*|.*credential.*|.*password.*|service\.json)$'
+leaks=$(git ls-files -co --exclude-standard -- opencode 2>/dev/null | grep -E "$secret_re" | grep -v '\.env\.example$' || true)
+if [ -z "$leaks" ]; then
+  ok "no unignored credential files under opencode/"
+else
+  while IFS= read -r leak; do
+    bad "$leak looks like a credential and is not gitignored"
+  done <<< "$leaks"
+fi
+
 section "syntax"
 bash_ok=1
 while IFS= read -r -d '' file; do
