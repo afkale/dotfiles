@@ -17,9 +17,10 @@ and agent-manager keybindings that feel wrong to the user.
 - `tmux/.config/tmux/tmux.conf`: add a toggle for the status bar on a free chord. `M-s` is free
   (checked with `tmux list-keys -T root`). Also keep the popup's copy keys in sync with the
   main copy-mode table.
-- agent-manager keybindings: location to be found in step 1. Only `focus_key` and
-  `arrow_step_keys` are in `agent-manager settings`, so the bindings probably live in the
-  binary or a file under `~/.config/agent-manager/`.
+- agent-manager keybindings: changed in the app with `s` → keybindings row, stored in `state.db`
+  (no file in the repo). Two tables: session keys and list keys. Changes apply at once.
+  `agent-manager export` and `import` carry the keybindings as JSON, if they should live in
+  the repo. Exports may contain secrets, so check the file before committing it.
 
 ## Order
 1. Find where agent-manager defines its keys, and list the current bindings. Nothing changes yet.
