@@ -100,10 +100,12 @@ engañoso; **baja** = higiene.
 
 ### R9 · Reducir skills (H9): **resuelto en parte**
 
-- Se mantienen las 18 skills de Matt Pocock: `setup-matt-pocock-skills`, `grilling`,
-  `grill-with-docs`, `grill-me`, `domain-modeling`, `diagnosing-bugs`, `tdd`, `to-spec`,
+- Se mantienen 25 skills de Matt Pocock (copia de `mattpocock/skills` @ `abeeaf9`): `setup-matt-pocock-skills`,
+  `grilling`, `grill-with-docs`, `grill-me`, `domain-modeling`, `diagnosing-bugs`, `tdd`, `to-spec`,
   `to-tickets`, `to-questionnaire`, `triage`, `improve-codebase-architecture`, `codebase-design`,
-  `prototype`, `setup-pre-commit`, `setup-ts-deep-modules`, `migrate-to-shoehorn`, `wayfinder`.
+  `prototype`, `setup-pre-commit`, `setup-ts-deep-modules`, `migrate-to-shoehorn`, `wayfinder`,
+  `handoff`, `teach`, `wait-what` (productividad) y `ask-matt`, `implement`, `implement-spec`,
+  `retro` (restaurados el 2026-11-23 tras el borrado de `99e7fe2`).
 - Se eliminan 27 skills (commit `git rm` del 2026-11-18). Quedan en el historial de git.
 - No se ha medido la reducción de caracteres de descripciones (criterio original: ≥ 30 %).
 
@@ -142,7 +144,7 @@ engañoso; **baja** = higiene.
 |---|---|
 | 9router | Retirado. Se eliminan `.env`, `service.json` y `compose.yml`. |
 | `data/model-catalog*.json` | Ignorado; no se versiona. |
-| Skills a mantener | Solo las 18 de Matt Pocock (lista arriba). |
+| Skills a mantener | Las 25 de Matt Pocock (lista en R9). Revertido el 2026-11-23: se restauraron `ask-matt`, `implement`, `implement-spec` y `retro`, y se añadieron `handoff`, `teach` y `wait-what`. |
 | Worktrees | `~/worktrees/` (lo que hace `opencode.jsonc`). |
 | Pre-commit en dotfiles | Sí: `prek` con gitleaks, shellcheck y `make doctor`. |
 | `make push` | Solo comprueba submódulos. No se añade validación. |

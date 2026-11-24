@@ -3,3 +3,4 @@ fish/.config/fish/fish_variables
 result
 tags
 /opencode/.config/opencode/data
+opencode/.config/opencode/service.json
