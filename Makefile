@@ -1,5 +1,5 @@
 .PHONY: setup server stow server-stow restow server-restow unlink server-unlink \
-	update shell check-deps deps server-deps doctor server-doc push
+	update shell check-deps deps server-deps doctor server-doc push test
 
 CFG_DIRS := agent-manager fish ghostty git lazygit nvim opencode tmux wallpapers yazi
 STOW_OPTS := -t ~
@@ -59,3 +59,6 @@ server-doc:
 
 push:
 	@scripts/push.sh
+
+test:
+	@bash tmux/.config/tmux/scripts/popup_test.sh

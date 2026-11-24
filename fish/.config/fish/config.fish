@@ -30,6 +30,13 @@ if status is-interactive
   zoxide init fish | source
   fzf --fish | source
   abbr --add am agent-manager
+  abbr --add gs  'git status'
+  abbr --add gc  'git commit'
+  abbr --add gp  'git push'
+  abbr --add gl  'git log --oneline --graph --decorate -20'
+  abbr --add gd  'git diff'
+  abbr --add gco 'git checkout'
+  abbr --add gcb 'git checkout -b'
 end
 
 # Homebrew on Linux (installed by `make deps` on Debian/Ubuntu).
