@@ -233,20 +233,19 @@ keybinding:
     init: 'i'
     update: 'u'
     bulkMenu: 'b'
-
 customCommands:
   - key: 'r'
     context: 'commits'
     command: 'git rebase main'
     description: 'Rebase current branch onto main'
-    subprocess: true
+    output: terminal
   - key: 'F'
     context: 'status'
     command: 'git push --force-with-lease'
     description: 'Force push with lease'
-    subprocess: true
+    output: terminal
   - key: 'A'
     context: 'commits'
     command: 'git commit --amend --no-edit'
     description: 'Amend last commit (no edit)'
-    subprocess: true
+    output: terminal
