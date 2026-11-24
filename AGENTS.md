@@ -26,3 +26,14 @@ Five canonical roles mapped to GitHub labels (`needs-triage`, `needs-info`,
 ### Domain docs
 
 Single-context: root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
+
+### Skill sources
+
+`opencode/.config/opencode/skills/` is a verbatim copy of `mattpocock/skills` @ `abeeaf9`
+(all 39). Do not edit those files; resync from upstream and fix the wrapper instead.
+
+### Slash commands
+
+The 24 skills upstream marks user-invoked only (`disable-model-invocation: true`) have a
+one-line `commands/<id>.md` wrapper, so they run as `/<id>`. The wrapper loads the skill by
+ID; the skill stays the source of truth.

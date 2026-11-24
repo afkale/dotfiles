@@ -100,12 +100,21 @@ engañoso; **baja** = higiene.
 
 ### R9 · Reducir skills (H9): **resuelto en parte**
 
-- Se mantienen 25 skills de Matt Pocock (copia de `mattpocock/skills` @ `abeeaf9`): `setup-matt-pocock-skills`,
-  `grilling`, `grill-with-docs`, `grill-me`, `domain-modeling`, `diagnosing-bugs`, `tdd`, `to-spec`,
-  `to-tickets`, `to-questionnaire`, `triage`, `improve-codebase-architecture`, `codebase-design`,
-  `prototype`, `setup-pre-commit`, `setup-ts-deep-modules`, `migrate-to-shoehorn`, `wayfinder`,
-  `handoff`, `teach`, `wait-what` (productividad) y `ask-matt`, `implement`, `implement-spec`,
-  `retro` (restaurados el 2026-11-23 tras el borrado de `99e7fe2`).
+- Se mantienen las 39 skills de Matt Pocock (copia íntegra de `mattpocock/skills` @ `abeeaf9`;
+  el árbol es idéntico en `d653911`), agrupadas como en upstream:
+  - `engineering/`: `ask-matt`, `code-review`, `codebase-design`, `diagnosing-bugs`,
+    `domain-modeling`, `grill-with-docs`, `implement`, `implement-spec`,
+    `improve-codebase-architecture`, `pr`, `prototype`, `research`, `retro`,
+    `setup-matt-pocock-skills`, `tdd`, `to-spec`, `to-tickets`, `triage`, `wayfinder`, `wizard`.
+  - `productivity/`: `grill-me`, `grilling`, `handoff`, `teach`, `to-questionnaire`,
+    `wait-what`, `writing-for-agents`.
+  - `misc/`: `git-guardrails-claude-code`, `migrate-to-shoehorn`, `scaffold-exercises`,
+    `setup-pre-commit`.
+  - `in-progress/`: `chief-of-staff`, `claude-handoff`, `loop-me`, `software-factory`,
+    `writing-beats`, `writing-fragments`, `writing-shape`.
+- Las 24 skills marcadas por upstream como de invocación manual (`disable-model-invocation:
+  true`) tienen un `commands/<id>.md` que las carga, para que respondan a `/<id>` como en
+  Claude Code y Codex. Siguen fuera de la lista que ve el modelo.
 - Se eliminan 27 skills (commit `git rm` del 2026-11-18). Quedan en el historial de git.
 - No se ha medido la reducción de caracteres de descripciones (criterio original: ≥ 30 %).
 
@@ -144,7 +153,7 @@ engañoso; **baja** = higiene.
 |---|---|
 | 9router | Retirado. Se eliminan `.env`, `service.json` y `compose.yml`. |
 | `data/model-catalog*.json` | Ignorado; no se versiona. |
-| Skills a mantener | Las 25 de Matt Pocock (lista en R9). Revertido el 2026-11-23: se restauraron `ask-matt`, `implement`, `implement-spec` y `retro`, y se añadieron `handoff`, `teach` y `wait-what`. |
+| Skills a mantener | Las 39 de Matt Pocock (lista en R9), copia íntegra de `abeeaf9`. Las 24 de invocación manual llevan un `commands/<id>.md` para que funcionen como `/<id>`. Revertido el 2026-11-23: se restauraron `ask-matt`, `implement`, `implement-spec` y `retro`, y se añadieron `handoff`, `teach` y `wait-what`. |
 | Worktrees | `~/worktrees/` (lo que hace `opencode.jsonc`). |
 | Pre-commit en dotfiles | Sí: `prek` con gitleaks, shellcheck y `make doctor`. |
 | `make push` | Solo comprueba submódulos. No se añade validación. |
