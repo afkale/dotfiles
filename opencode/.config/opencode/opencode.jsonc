@@ -21,6 +21,22 @@
       "environment": {
         "AGENT_MANAGER_SESSION_ID": "{env:AGENT_MANAGER_SESSION_ID}"
       }
+    },
+    "browsermcp": {
+      "type": "local",
+      "command": ["npx", "-y", "@browsermcp/mcp@latest"],
+      "enabled": true
+    },
+    "servers": {
+      "browse": {
+        "type": "local",
+        "command": ["/home/afkale/.local/bin/browse", "mcp"],
+        "cwd": "/home/afkale",
+        "pool": true,
+        "environment": {
+          "OPENCODE_BROWSER_RUNTIME": "auto-update"
+        }
+      }
     }
   },
   "experimental": {
