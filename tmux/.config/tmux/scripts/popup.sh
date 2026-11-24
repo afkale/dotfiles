@@ -22,7 +22,10 @@ if ! tmux -L "$SOCKET" has-session -t "=$SESSION" 2>/dev/null; then
   tmux -L "$SOCKET" -f /dev/null new-session -d -s "$SESSION" -c "$PWD" || exit 1
 fi
 
-# Apply minimal settings idempotently.
+# Apply minimal settings idempotently. The session is destroyed when the last
+# client detaches, so the next open starts a fresh shell in the directory it
+# is opened from.
+tmux -L "$SOCKET" set-hook -t "$SESSION" client-detached "kill-session -t '$SESSION'" 2>/dev/null || true
 tmux -L "$SOCKET" set -g status off
 tmux -L "$SOCKET" set -g mouse on
 tmux -L "$SOCKET" unbind -a -T root
