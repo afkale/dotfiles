@@ -32,6 +32,26 @@ Single-context: root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
 `opencode/.config/opencode/skills/` is a verbatim copy of `mattpocock/skills` @ `abeeaf9`
 (all 39). Do not edit those files; resync from upstream and fix the wrapper instead.
 
+### Presenting information
+
+Every response must start with a one- or two-line **TL;DR** in bold that states the
+outcome or the ask. Details follow only after that line, and only as much as the task
+requires.
+
+Visual hierarchy rules:
+
+- **Bold** the key point or decision; leave supporting detail in plain text.
+- One idea per paragraph. Break long explanations into short paragraphs or bullets.
+- Indent secondary detail under the point it supports; do not flatten everything to
+  the same level.
+- Prefer bullets over tables. Tables only when comparing three or more items on the
+  same axes; never more than four columns.
+- Avoid deep nesting (max two levels). If a third level is needed, split into a
+  separate section.
+- Code blocks only for code the user will copy or run. Inline backticks for names,
+  paths, and commands mentioned in prose.
+- Do not repeat the user's question back to them. Answer it.
+
 ### Asking questions
 
 When a skill (or any instruction) tells you to ask the user a question, prefer OpenCode's
