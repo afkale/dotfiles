@@ -32,6 +32,13 @@ Single-context: root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
 `opencode/.config/opencode/skills/` is a verbatim copy of `mattpocock/skills` @ `abeeaf9`
 (all 39). Do not edit those files; resync from upstream and fix the wrapper instead.
 
+### Asking questions
+
+When a skill (or any instruction) tells you to ask the user a question, prefer OpenCode's
+`question` tool over printing numbered questions in prose. The tool renders an interactive
+picker in the TUI and keeps the conversation structured. Fall back to prose only when the
+question needs free-form text or a long explanation that doesn't fit the tool's options.
+
 ### Slash commands
 
 The 24 skills upstream marks user-invoked only (`disable-model-invocation: true`) have a

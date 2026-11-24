@@ -16,6 +16,15 @@
 - Keep commits atomic and descriptive.
 - Do not commit `.env`, `.env.local`, or `.envrc` files.
 
+## Agent skills
+
+### Asking questions
+
+When a skill (or any instruction) tells you to ask the user a question, prefer OpenCode's
+`question` tool over printing numbered questions in prose. The tool renders an interactive
+picker in the TUI and keeps the conversation structured. Fall back to prose only when the
+question needs free-form text or a long explanation that doesn't fit the tool's options.
+
 ## Agent Manager
 
 - **Parallel agents**: always set `worktree: true` when calling
